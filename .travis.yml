@@ -1,0 +1,9 @@
+language: php
+before_script:
+  - cd in-web
+  - composer install --dev
+  - cp env.travis .env
+  - php artisan key:generate
+script: vendor/bin/phpunit
+notifications:
+    slack: cylab-be:jIZ8x1I8D5tD7cOHcelYm5L7
