@@ -31,3 +31,9 @@ Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm
 Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 
 Route::get("/", "ConfigurationController@index");
+
+//Route::
+Route::get('rule', 'RuleController@getAll');
+Route::get('rule/{id}', 'RuleController@get');
+Route::put('rule/{id}', "RuleController@edit");
+Route::delete("rule/{id}", "RuleController@delete");
