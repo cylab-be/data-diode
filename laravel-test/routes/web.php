@@ -32,8 +32,8 @@ Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 
 Route::get("/", "ConfigurationController@index");
 
-//Route::
-Route::get('rule', 'RuleController@getAll');
-Route::get('rule/{id}', 'RuleController@get');
-Route::put('rule/{id}', "RuleController@edit");
-Route::delete("rule/{id}", "RuleController@delete");
+Route::post('rule', 'RuleController@create');
+Route::get('rule', 'RuleController@retrieveAll');
+Route::get('rule/{rule}', 'RuleController@retrieve');
+Route::put('rule/{rule}', "RuleController@update");
+Route::delete("rule/{rule}", "RuleController@delete");

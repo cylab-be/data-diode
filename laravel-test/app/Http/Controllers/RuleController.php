@@ -15,22 +15,24 @@ class RuleController extends Controller
 	}
     
     public function create(Request $request) {
-        //
+        return response()->json(Rule::create($request->all()), 201);
     }
     
-    public function getAll() {
+    public function retrieveAll() {
         return RuleResource::collection(Rule::all());
     }
 
-    public function get($id) {
-        return new RuleResource(Rule::findOrFail($id));
+    public function retrieve(Rule $rule) {
+        return new RuleResource($rule);
     }
 
-    public function edit(Request $request, $id) {
-        //
+    public function update(Request $request, Rule $rule) {
+        $rule->update($request->all());
+        return response()->json($rule, 200);
     }
 
-    public function delete($id) {
-        //
+    public function delete(Rule $rule) {
+        $rule->delete();
+        return response()->json(null, 204);
     }
 }
