@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Rule;
 use App\Http\Resources\Rule as RuleResource;
+use App\Http\Requests\CreateRuleRequest;
 
 class RuleController extends Controller
 {
@@ -14,7 +15,7 @@ class RuleController extends Controller
 		$this->middleware("auth");
 	}
     
-    public function create(Request $request) {
+    public function create(CreateRuleRequest $request) {
         return response()->json(Rule::create($request->all()), 201);
     }
     
