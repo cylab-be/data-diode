@@ -24,7 +24,8 @@ $(function() {
         ajaxResponse: function(url, params, response){
             return response.data;
         },
-        addRowPos: "bottom"
+        addRowPos: "bottom",
+        cellEdited: editRule
     });
     $("#add-rule").click(function() {
         swal.setDefaults({
@@ -106,6 +107,26 @@ function addRule(values){
                 
             });
             toastr.success("Successfully added !");
+        }
+    });
+}
+
+function editRule(cell){
+    $.ajax({
+        type: "PUT",
+        url: "/rule/" + cell.getRow().row.data.id,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        data: {
+            input_port: cell.getRow().row.data.input_port,
+            output_port: cell.getRow().row.data.output_port
+        },
+        error: function() {
+            toastr.error("Operation failed !");
+        },
+        success: function(){
+            toastr.success("Successfully edited !");
         }
     });
 }

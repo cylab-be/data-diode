@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Rule;
 use App\Http\Resources\Rule as RuleResource;
 use App\Http\Requests\CreateRuleRequest;
+use App\Http\Requests\EditRuleRequest;
 
 class RuleController extends Controller
 {
@@ -27,7 +28,7 @@ class RuleController extends Controller
         return new RuleResource($rule);
     }
 
-    public function update(Request $request, Rule $rule) {
+    public function update(EditRuleRequest $request, Rule $rule) {
         $rule->update($request->all());
         return response()->json($rule, 200);
     }
