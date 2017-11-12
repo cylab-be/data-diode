@@ -2,11 +2,15 @@
 
 @section('head')
     @parent
-    {{Html::script("js/jquery-3.2.1.min.js")}}
-    {{Html::script("js/jquery-ui.min.js")}}
-    {{Html::script("js/tabulator.min.js")}}
-    {{Html::style("css/tabulator.min.css")}}
-    {{Html::style("css/tabulator_semantic-ui.min.css")}}
+    {{Html::script("lib/jquery/jquery-3.2.1.min.js")}}
+    {{Html::script("lib/jquery-ui/jquery-ui.min.js")}}
+    {{Html::script("lib/tabulator/js/tabulator.min.js")}}
+    {{Html::style("lib/tabulator/css/tabulator.min.css")}}
+    {{Html::style("lib/tabulator/css/semantic-ui/tabulator_semantic-ui.min.css")}}
+    {{Html::style("lib/jquery-ui/jquery-ui.min.css")}}
+    {{Html::script("lib/toastr/toastr.min.js")}}
+    {{Html::script("lib/sweetalert/sweetalert2.all.min.js")}}
+    {{Html::style("lib/toastr/toastr.min.css")}}
     {{Html::script("js/configuration.js")}}
 @endsection
 
@@ -28,6 +32,7 @@
                     <div class="panel-heading">Port Forwarding</div>
                     <div class="panel-body">
                         <div id="ports-table"></div>
+                        <button id="add-rule">Add Rule</button>
                     </div>
                 </div>
             </div>
