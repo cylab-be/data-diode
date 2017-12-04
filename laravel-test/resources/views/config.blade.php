@@ -37,31 +37,5 @@
                 </div>
             </div>
         </div>
-    </div>      
-    <script>
-        /*$(function(){
-            $.ajax({
-                type: "POST",
-                url: "/rule",
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: {
-                    input_port: 123,
-                    output_port: 456
-                }
-            });
-            $.ajax({
-                type: "POST",
-                url: "/rule",
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: {
-                    input_port: 500,
-                    output_port: 5555
-                }
-            });
-        // });*/
-    </script>
+    </div>
 @endsection

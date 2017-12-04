@@ -6,6 +6,7 @@ $(function() {
             {title:"Input Port", field:"input_port", editor: "input", validator: ["unique", "required", "integer", "min:1", "max:65535"]},
             {title:"Ouput Port", field:"output_port", editor: "input", validator: ["unique", "required", "integer", "min:1", "max:65535"]},
             {formatter: "buttonCross", align: "center", cellClick: function(e, cell){
+                swal.resetDefaults();
                 swal({
                     title: "Warning",
                     type: "warning",
@@ -28,6 +29,7 @@ $(function() {
         cellEdited: editRule
     });
     $("#add-rule").click(function() {
+        swal.resetDefaults();
         swal.setDefaults({
             progressSteps: ["1", "2"]
         });
@@ -47,7 +49,6 @@ $(function() {
             inputValidator: validatePort
         }
         ]).then(function(result){
-            swal.resetDefaults();
             addRule(result);
         });
     });
