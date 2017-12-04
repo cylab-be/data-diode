@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class Rule extends Model
 {
     protected $table = "rule";
-    protected $fillable = ["input_port", "output_port"];
+    protected $fillable = ["input_port", "output_port", "destination"];
 }

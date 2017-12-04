@@ -26,7 +26,8 @@ class EditRuleRequest extends FormRequest
     {
         return [
             "input_port" => "required|integer|between:1,65535|unique:rule,input_port," . $this->rule->id,
-            "output_port" => "required|integer|between:1,65535|unique:rule,output_port," . $this->rule->id
+            "output_port" => "required|integer|between:1,65535|unique:rule,output_port," . $this->rule->id,
+            "destination" => "required|ip"
         ];
     }
 }

@@ -3,9 +3,8 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use App\User;
 
-class CreateDefaultUser extends Migration
+class AddIpColumn extends Migration
 {
     /**
      * Run the migrations.
@@ -14,11 +13,9 @@ class CreateDefaultUser extends Migration
      */
     public function up()
     {
-        User::create(array(
-            "email" => "admin@admin",
-            "name" => "Admin",
-            "password" => Hash::make("admin")
-        ));
+        Schema::table("rule", function (Blueprint $table) {
+            $table->ipAddress("destination")->default("255.255.255.255");
+        });
     }
 
     /**
@@ -28,6 +25,8 @@ class CreateDefaultUser extends Migration
      */
     public function down()
     {
-        User::where("email", "=", "admin@admin")->first()->delete();
+        Schema::table("rule", function (Blueprint $table) {
+            $table->dropColumn("destination");
+        });
     }
 }

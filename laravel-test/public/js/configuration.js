@@ -5,6 +5,7 @@ $(function() {
             {title:"ID", field:"id", visible: false},
             {title:"Input Port", field:"input_port", editor: "input", validator: ["unique", "required", "integer", "min:1", "max:65535"]},
             {title:"Ouput Port", field:"output_port", editor: "input", validator: ["unique", "required", "integer", "min:1", "max:65535"]},
+            {title:"Destination address", field:"destination", editor: "input", validator: ["required", "regex:^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"]},
             {formatter: "buttonCross", align: "center", cellClick: function(e, cell){
                 swal.resetDefaults();
                 swal({
@@ -31,7 +32,7 @@ $(function() {
     $("#add-rule").click(function() {
         swal.resetDefaults();
         swal.setDefaults({
-            progressSteps: ["1", "2"]
+            progressSteps: ["1", "2", "3"]
         });
         swal.queue([
         {
@@ -44,9 +45,16 @@ $(function() {
         {
             title: "Output port",
             input: "number",
-            confirmButtonText: "OK",
+            confirmButtonText: "Next",
             showCancelButton: true,
             inputValidator: validatePort
+        },
+        {
+            title: "Destination address",
+            input: "text",
+            confirmButtonText: "OK",
+            showCancelButton: true,
+            inputValidator: validateIP
         }
         ]).then(function(result){
             addRule(result);
@@ -86,6 +94,20 @@ function validatePort(value){
     });
 }
 
+function validateIP(value){
+    return new Promise(function(resolve, reject){
+        if(!value){
+            reject("Destination address is needed");
+        } else {
+            if(!value.match("^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")){
+                reject("This is not a valid IP address");
+            } else {
+                resolve();
+            }
+        }
+    });
+}
+
 function addRule(values){
     $.ajax({
         type: "POST",
@@ -95,7 +117,8 @@ function addRule(values){
         },
         data: {
             input_port: values[0],
-            output_port: values[1]
+            output_port: values[1],
+            destination: values[2]
         },
         error: function() {
             toastr.error("Operation failed !");
@@ -104,7 +127,8 @@ function addRule(values){
             $("#ports-table").tabulator("addRow", {
                 id: data.id,
                 input_port: values[0],
-                output_port: values[1]
+                output_port: values[1],
+                destination: values[2]
                 
             });
             toastr.success("Successfully added !");
@@ -121,7 +145,8 @@ function editRule(cell){
         },
         data: {
             input_port: cell.getRow().row.data.input_port,
-            output_port: cell.getRow().row.data.output_port
+            output_port: cell.getRow().row.data.output_port,
+            destination: cell.getRow().row.data.destination
         },
         error: function() {
             toastr.error("Operation failed !");

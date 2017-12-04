@@ -18,6 +18,7 @@ class Rule extends Resource
             "id" => $this->id,
             "input_port" => $this->input_port,
             "output_port" => $this->output_port,
+            "destination" => $this->destination,
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at
         ];
