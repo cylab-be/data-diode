@@ -6,6 +6,7 @@ before_script:
   - composer install --dev
   - cp env.travis .env
   - touch storage/app/db.sqlite
+  - touch database/database.sqlite
   - php artisan key:generate
   - php artisan migrate
 script: vendor/bin/phpunit
