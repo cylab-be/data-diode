@@ -424,8 +424,10 @@ class RuleTest extends TestCase
     
     public function tearDown(){
         $this->user->delete();
-        $this->rule->delete();
-        $this->rule2->delete();
+        if(Rule::find($this->rule->id))
+            Rule::destroy($this->rule->id);
+        if(Rule::find($this->rule2->id))
+            Rule::destroy($this->rule2->id);
         parent::tearDown();
     }
 }
