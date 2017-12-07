@@ -9,6 +9,6 @@ before_script:
   - touch database/database.sqlite
   - php artisan key:generate
   - php artisan migrate
-script: vendor/bin/phpunit
+script: vendor/bin/phpunit && vendor/bin/phpcs
 notifications:
     slack: cylab-be:jIZ8x1I8D5tD7cOHcelYm5L7
