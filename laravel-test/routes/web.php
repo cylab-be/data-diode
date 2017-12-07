@@ -19,9 +19,9 @@ Route::post('login', 'Auth\LoginController@login');
 Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 
 // Registration Routes...
-if(env("ALLOW_USER_REGISTRATION", false)){
-	Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
-	Route::post('register', 'Auth\RegisterController@register');
+if (env("ALLOW_USER_REGISTRATION", false)) {
+    Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
+    Route::post('register', 'Auth\RegisterController@register');
 }
 
 // Password Reset Routes...

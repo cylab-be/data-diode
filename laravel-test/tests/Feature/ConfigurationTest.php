@@ -11,24 +11,27 @@ class TestAccess extends TestCase
     
     private $user;
     
-    public function setUp(){
+    public function setUp()
+    {
         parent::setUp();
         $this->user = factory(User::class)->create();
     }
     
-    public function testAccessConfigurationNotConnected() {
+    public function testAccessConfigurationNotConnected()
+    {
         $response = $this->get("/");
         $response->assertRedirect("/login");
     }
     
-    public function testAccessConfigurationConnected(){
+    public function testAccessConfigurationConnected()
+    {
         $response = $this->actingAs($this->user)->get("/");
         $response->assertStatus(200);
     }
     
-    public function tearDown(){
+    public function tearDown()
+    {
         $this->user->delete();
         parent::tearDown();
     }
-    
 }
