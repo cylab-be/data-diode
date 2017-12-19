@@ -21,6 +21,7 @@ class DeleteIptablesRuleJob extends ChangeIptablesRuleJob
      */
     public function __construct(Rule $rule)
     {
-        $this->process = new Process("sudo iptables -t nat -D PREROUTING -i " . "enp0s3" . " -p udp --dport " . $rule->input_port . " -j DNAT --to " . $rule->destination . ":" . $rule->output_port);
+        $this->process = new Process("sudo iptables -t nat -D PREROUTING -i " . "enp0s3" . " -p udp --dport "
+            . $rule->input_port . " -j DNAT --to " . $rule->destination . ":" . $rule->output_port);
     }
 }
