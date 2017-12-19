@@ -20,6 +20,22 @@ $(function() {
         }
     }).on("select2:select", function(event){
         console.log(JSON.stringify(event.params.data));
+        $.ajax({
+            type: "POST",
+            url: "/interface/edit",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: {
+                id: event.params.data.id
+            },
+            error: function() {
+                toastr.error("Operation failed !");
+            },
+            success: function(data) {
+                toastr.success("Saved !");
+            }
+        });
     });
     $.ajax({
         type: "GET",

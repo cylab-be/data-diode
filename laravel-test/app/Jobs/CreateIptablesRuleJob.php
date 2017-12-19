@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Symfony\Component\Process\Process;
 use App\Rule;
+use App\NetworkInterface;
 
 class CreateIptablesRuleJob extends ChangeIptablesRuleJob
 {
@@ -22,6 +23,7 @@ class CreateIptablesRuleJob extends ChangeIptablesRuleJob
     public function __construct(Rule $rule)
     {
         $this->process = new Process("sudo " . base_path("app/Scripts") . "/datadiode.sh add "
-            . "enp0s3" . " " . $rule->input_port . " " . $rule->destination . " " . $rule->output_port);
+            . NetworkInterface::getCurrentInterface() . " " . $rule->input_port . " "
+            . $rule->destination . " " . $rule->output_port);
     }
 }
