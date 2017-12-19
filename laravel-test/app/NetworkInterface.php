@@ -30,10 +30,9 @@ class NetworkInterface
     
     public static function getCurrentInterface()
     {
-        if (option_exists("input_interface")) {
-            return option("input_interface");
-        } else {
-            return null;
+        if (!option_exists("input_interface")) {
+            option(["input_interface" => "lo"]);
         }
+        return option("input_interface");
     }
 }
