@@ -6,13 +6,16 @@ output_port=$5
 case $1 in
     "add")
         iptables -t nat -A PREROUTING -i $interface -p udp --dport $input_port -j DNAT --to $destination:$output_port
+        exit $?
         ;;
     "remove")
         iptables -t nat -D PREROUTING -i $interface -p udp --dport $input_port -j DNAT --to $destination:$output_port
+        exit $?
         ;;
     "save")
         iptables-save > /etc/iptables/rules.v4 \
         && ip6tables-save > /etc/iptables/rules.v6
+        exit $?
         ;;
     *)
         exit 1

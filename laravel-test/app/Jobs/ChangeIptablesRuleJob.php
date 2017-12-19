@@ -28,11 +28,10 @@ abstract class ChangeIptablesRuleJob implements ShouldQueue
         if (!$this->process->isSuccessful()) {
             throw new ProcessFailedException($this->process);
         }
-//saveProcess = 
-//new Process("sudo iptables-save > /etc/iptables/rules.v4 && sudo ip6tables-save > /etc/iptables/rules.v6");
-//saveProcess->run();
-//f (!$saveProcess->isSuccessful()) {
-//   throw new ProcessFailedException($saveProcess);
-//
+        $saveProcess = new Process("sudo " . base_path("app/Scripts") . "/datadiode.sh save");
+        $saveProcess->run();
+        if (!$saveProcess->isSuccessful()) {
+            throw new ProcessFailedException($saveProcess);
+        }
     }
 }

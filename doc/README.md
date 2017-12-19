@@ -79,11 +79,16 @@ This project uses a script which is using iptables and iptables-persistent. So t
 
 ```bash
 sudo apt install iptables-persistent
-sudo visudo
-```` 
-Just add the following line
 ```
-www-data ALL=NOPASSWD: /var/www/data-diode/script/datadiode.sh
+
+Give apache the ability to use sudo
+```bash
+sudo visudo
+```
+and add
+
+```
+www-data ALL=NOPASSWD: /var/www/data-diode/laravel-test/app/Scripts/datadiode.sh
 ```
 
 ### Enable IP forwarding
@@ -100,6 +105,7 @@ iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 iptables-save > /etc/iptables/rules.v4
 ip6tables-save > /etc/iptables/rules.v6
 ```
+Where eth0 is the output NIC
 
 ### Done
 

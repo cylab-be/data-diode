@@ -15,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //Rule::observe(RuleObserver::class);
+        Rule::observe(RuleObserver::class);
     }
 
     /**
