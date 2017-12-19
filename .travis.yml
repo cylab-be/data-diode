@@ -1,3 +1,4 @@
+sudo: required
 language: php
 php:
   - '7.1'
@@ -5,6 +6,7 @@ before_script:
   - cd laravel-test
   - composer install --dev
   - cp env.travis .env
+  - echo "travis ALL=NOPASSWD: /home/travis/build/RUCD/data-diode/laravel-test/app/Scripts/datadiode.sh" | sudo EDITOR='tee -a' visudo
   - touch storage/app/db.sqlite
   - touch database/database.sqlite
   - php artisan key:generate
