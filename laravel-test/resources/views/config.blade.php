@@ -11,6 +11,8 @@
     {{Html::script("lib/toastr/toastr.min.js")}}
     {{Html::script("lib/sweetalert/sweetalert2.all.min.js")}}
     {{Html::style("lib/toastr/toastr.min.css")}}
+    {{Html::style("lib/select2/select2.min.css")}}
+    {{Html::script("lib/select2/select2.min.js")}}
     {{Html::script("js/configuration.js")}}
 @endsection
 
@@ -19,9 +21,9 @@
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <div class="panel panel-default">
-                    <div class="panel-heading">Interfaces</div>
+                    <div class="panel-heading">Input interface</div>
                     <div class="panel-body">
-                        Interface configuration
+                        <select id="interface"></select>
                     </div>
                 </div>
             </div>

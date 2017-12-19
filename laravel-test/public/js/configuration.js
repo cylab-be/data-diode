@@ -1,4 +1,34 @@
 $(function() {
+    $("#interface").select2({
+        placeholder: "Select the input network interface",
+        width: "250px",
+        ajax: {
+            url: "/interface",
+            dataType: "json",
+            processResults: function(data) {
+                var array = [];
+                for(i = 0; i < data.length; i++){
+                    array.push({
+                        id: data[i],
+                        text: data[i]
+                    });
+                }
+                return {
+                    results: array
+                };
+            }
+        }
+    }).on("select2:select", function(event){
+        console.log(JSON.stringify(event.params.data));
+    });
+    $.ajax({
+        type: "GET",
+        url: "/interface/current",
+        success: function(data) {
+            var option = new Option(data, data, true, true);
+            $("#interface").append(option).trigger("change");
+        }
+    });
     $("#ports-table").tabulator({
         layout:"fitColumns",
         columns:[
