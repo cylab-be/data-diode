@@ -6,7 +6,7 @@ before_install:
   - sudo apt update
   - sudo apt install -y iptables-persistent
 before_script:
-  - cd laravel-test
+  - cd src
   - composer install --dev
   - cp env.travis .env
   - touch storage/app/db.sqlite
