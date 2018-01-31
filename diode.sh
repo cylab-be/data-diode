@@ -19,7 +19,6 @@ cd data-diode/src
 composer install
 cp .env.example .env
 touch storage/app/db.sqlite
-touch database/database.sqlite
 php artisan key:generate
 php artisan migrate
 chown -R www-data:www-data .
