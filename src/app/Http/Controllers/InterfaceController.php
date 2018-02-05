@@ -8,17 +8,17 @@ use App\NetworkInterface;
 
 class InterfaceController extends Controller
 {
-    
+
     public function __construct()
     {
-        $this->middleware("auth");
+        $this->middleware(["auth", "default-password"]);
     }
-    
+
     public function current()
     {
         return response()->json(NetworkInterface::getCurrentInterface(), 200);
     }
-    
+
     public function retrieveAll()
     {
         return response()->json(NetworkInterface::getAllInterfaces(), 200);

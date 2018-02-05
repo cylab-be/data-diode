@@ -11,17 +11,17 @@ use App\Http\Requests\EditRuleRequest;
 
 class RuleController extends Controller
 {
-    
+
     public function __construct()
     {
-        $this->middleware("auth");
+        $this->middleware(["auth", "default-password"]);
     }
-    
+
     public function create(CreateRuleRequest $request)
     {
         return response()->json(Rule::create($request->all()), 201);
     }
-    
+
     public function retrieveAll()
     {
         return RuleResource::collection(Rule::all());
