@@ -15,9 +15,9 @@ class CreateDefaultUser extends Migration
     public function up()
     {
         User::create(array(
-            "email" => "admin@admin",
+            "email" => env('DEFAULT_ADMIN_LOGIN', 'admin@admin'),
             "name" => "Admin",
-            "password" => Hash::make("admin")
+            "password" => Hash::make(env('DEFAULT_ADMIN_PASSWORD', 'admin'))
         ));
     }
 
