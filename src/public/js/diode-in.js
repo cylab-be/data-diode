@@ -32,7 +32,7 @@ var addRuleQueue = [
   {
       title: "Output port",
       input: "number",
-      confirmButtonText: "Next",
+      confirmButtonText: "OK",
       showCancelButton: true,
       inputValidator: validatePort
   }
