@@ -11,23 +11,16 @@
     {{Html::script("lib/toastr/toastr.min.js")}}
     {{Html::script("lib/sweetalert/sweetalert2.all.min.js")}}
     {{Html::style("lib/toastr/toastr.min.css")}}
-    {{Html::style("lib/select2/select2.min.css")}}
-    {{Html::script("lib/select2/select2.min.js")}}
-    {{Html::script("js/configuration.js")}}
+    {{Html::script("js/common.js")}}
+    @if (env("DIODE_IN", true))
+      {{Html::script("js/diode-in.js")}}
+    @else
+      {{Html::script("js/diode-out.js")}}
+    @endif
 @endsection
 
 @section("content")
     <div class="container">
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <div class="panel panel-default">
-                    <div class="panel-heading">Input interface</div>
-                    <div class="panel-body">
-                        <select id="interface"></select>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <div class="panel panel-default">

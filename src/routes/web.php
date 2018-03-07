@@ -40,7 +40,3 @@ Route::get('rule', 'RuleController@retrieveAll');
 Route::get('rule/{rule}', 'RuleController@retrieve');
 Route::put('rule/{rule}', "RuleController@update");
 Route::delete("rule/{rule}", "RuleController@delete");
-
-Route::get("interface/current", "InterfaceController@current");
-Route::get("interface", "InterfaceController@retrieveAll");
-Route::post("interface/edit", "InterfaceController@edit");

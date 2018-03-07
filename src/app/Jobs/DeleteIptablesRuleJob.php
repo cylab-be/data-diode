@@ -9,12 +9,11 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Symfony\Component\Process\Process;
 use App\Rule;
-use App\NetworkInterface;
 
 class DeleteIptablesRuleJob extends ChangeIptablesRuleJob
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    
+
     /**
      * Create a new job instance.
      *
@@ -23,7 +22,7 @@ class DeleteIptablesRuleJob extends ChangeIptablesRuleJob
     public function __construct(Rule $rule)
     {
         $this->process = new Process("sudo " . base_path("app/Scripts") . "/datadiode.sh remove "
-            . NetworkInterface::getCurrentInterface() . " " . $rule->input_port . " "
+            . env("INPUT_INTERFACE", "lo") . " " . $rule->input_port . " "
             . $rule->destination . " " . $rule->output_port);
     }
 }

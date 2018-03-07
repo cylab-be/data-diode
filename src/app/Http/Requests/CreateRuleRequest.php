@@ -23,10 +23,17 @@ class CreateRuleRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        if (env("DIODE_IN", true)) {
+            return [
+            "input_port" => "required|integer|unique:rule|between:1,65535",
+            "output_port" => "required|integer|unique:rule|between:1,65535"
+            ];
+        } else {
+            return [
             "input_port" => "required|integer|unique:rule|between:1,65535",
             "output_port" => "required|integer|unique:rule|between:1,65535",
             "destination" => "required|ip"
-        ];
+            ];
+        }
     }
 }

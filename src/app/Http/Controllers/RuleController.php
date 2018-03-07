@@ -19,7 +19,17 @@ class RuleController extends Controller
 
     public function create(CreateRuleRequest $request)
     {
-        return response()->json(Rule::create($request->all()), 201);
+        $rule = null;
+        if (env("DIODE_IN", true)) {
+            $rule = Rule::create([
+            "input_port" => $request->input("input_port"),
+            "output_port" => $request->input("output_port"),
+            "destination" => env("DIODE_OUT_IP")
+            ]);
+        } else {
+            $rule = Rule::create($request->all());
+        }
+        return response()->json($rule, 201);
     }
 
     public function retrieveAll()
@@ -34,8 +44,11 @@ class RuleController extends Controller
 
     public function update(EditRuleRequest $request, Rule $rule)
     {
-        $rule->update($request->all());
-        return response()->json($rule, 200);
+        if (env("DIODE_IN", true)) {
+        } else {
+            $rule->update($request->all());
+            return response()->json($rule, 200);
+        }
     }
 
     public function delete(Rule $rule)

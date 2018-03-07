@@ -24,10 +24,17 @@ class EditRuleRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        if (env("DIODE_IN", true)) {
+            return [
+            "input_port" => "required|integer|between:1,65535|unique:rule,input_port," . $this->rule->id,
+            "output_port" => "required|integer|between:1,65535|unique:rule,output_port," . $this->rule->id
+            ];
+        } else {
+            return [
             "input_port" => "required|integer|between:1,65535|unique:rule,input_port," . $this->rule->id,
             "output_port" => "required|integer|between:1,65535|unique:rule,output_port," . $this->rule->id,
             "destination" => "required|ip"
-        ];
+            ];
+        }
     }
 }
