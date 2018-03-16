@@ -19,9 +19,8 @@ case $1 in
         && ip6tables-save > /etc/iptables/rules.v6
         exit $?
         ;;
-    "flush")
-        iptables -t nat -F
-        exit $?
+    "disablenat")
+        iptables -t nat -D POSTROUTING -o $interface -j MASQUERADE
         ;;
     "nat")
         iptables -t nat -A POSTROUTING -o $interface -j MASQUERADE
@@ -34,6 +33,7 @@ case $1 in
         exit $?
         ;;
     *)
+        echo "Invalid option"
         exit 1
         ;;
 esac

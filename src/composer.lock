@@ -4,9 +4,68 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "7eb4d862dcfe7411ee12f799c1a6dc00",
-    "content-hash": "31acdb52c981a47b6ebe120c9e89abbb",
+    "hash": "1bafc6f7058c21a7c27553afce4a21ba",
+    "content-hash": "2560c2fd7bfdaf39094593eb816f259a",
     "packages": [
+        {
+            "name": "appstract/laravel-options",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/appstract/laravel-options.git",
+                "reference": "fa742fab6299640e9c445f9cd49bd1f6b8dba14c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/appstract/laravel-options/zipball/fa742fab6299640e9c445f9cd49bd1f6b8dba14c",
+                "reference": "fa742fab6299640e9c445f9cd49bd1f6b8dba14c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "5.*"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Appstract\\Options\\OptionsServiceProvider"
+                    ],
+                    "aliases": {
+                        "Option": "Appstract\\Options\\OptionFacade"
+                    }
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "Appstract\\Options\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Gijs Jorissen",
+                    "email": "hello@appstract.team",
+                    "homepage": "https://appstract.team",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Global options loaded from the database",
+            "homepage": "https://github.com/appstract/laravel-options",
+            "keywords": [
+                "appstract",
+                "laravel-options"
+            ],
+            "time": "2018-01-22 15:30:14"
+        },
         {
             "name": "dnoegel/php-xdg-base-dir",
             "version": "0.1",

@@ -42,16 +42,20 @@ class ConfigRefresh extends Command
      */
     public function handle()
     {
-        $this->refreshIptables();
-        $this->refreshArp();
+        $this->refreshMasquerade();
+        $this->refreshRules();
+        //$this->refreshArp();
     }
 
-    private function refreshIptables()
+    private function refreshMasquerade()
     {
-        $flushProcess = new Process("sudo " . base_path("app/Scripts") . "/datadiode.sh flush");
-        $flushProcess->run();
-        if (!$flushProcess->isSuccessful()) {
-            throw new ProcessFailedException($flushProcess);
+        if(option_exists("PREVIOUS_OUTPUT_INTERFACE")) {
+          $disableNatProcess = new Process("sudo " . base_path("app/Scripts")
+            . "/datadiode.sh disablenat " . option("PREVIOUS_OUTPUT_INTERFACE", "lo"));
+          $disableNatProcess->run();
+          if (!$disableNatProcess->isSuccessful()) {
+              throw new ProcessFailedException($disableNatProcess);
+          }
         }
         $enableNatProcess = new Process("sudo " . base_path("app/Scripts")
           . "/datadiode.sh nat " . env("OUTPUT_INTERFACE", "lo"));
@@ -59,17 +63,25 @@ class ConfigRefresh extends Command
         if (!$enableNatProcess->isSuccessful()) {
             throw new ProcessFailedException($enableNatProcess);
         }
-        foreach (Rule::all() as $rule) {
-            CreateIptablesRuleJob::dispatch($rule);
-            if (env("DIODE_IN", true)) {
-                $rule->destination = env("DIODE_OUT_IP");
-                $rule->save();
-            }
-        }
+        option(['PREVIOUS_OUTPUT_INTERFACE' => env("OUTPUT_INTERFACE", "lo")]);
+    }
+
+    private function refreshRules()
+    {
+      //TODO fix this
+      /*
+      foreach (Rule::all() as $rule) {
+          CreateIptablesRuleJob::dispatch($rule);
+          if (env("DIODE_IN", true)) {
+              $rule->destination = env("DIODE_OUT_IP");
+              $rule->save();
+          }
+      }*/
     }
 
     private function refreshArp()
     {
+      //TODO fix this
         $arpProcess = new Process("sudo " . base_path("app/Scripts") . "/datadiode.sh arp "
           . env("DIODE_OUT_MAC") . " " . env("DIODE_OUT_IP"));
         $arpProcess->run();
