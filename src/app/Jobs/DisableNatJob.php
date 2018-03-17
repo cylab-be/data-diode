@@ -8,9 +8,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Symfony\Component\Process\Process;
-use App\Rule;
 
-class CreateIptablesRuleJob extends ChangeIptablesRuleJob
+class DisableNatJob extends ChangeIptablesRuleJob
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -19,10 +18,9 @@ class CreateIptablesRuleJob extends ChangeIptablesRuleJob
      *
      * @return void
      */
-    public function __construct(Rule $rule)
+    public function __construct()
     {
-        $this->process = new Process("sudo " . base_path("app/Scripts") . "/datadiode.sh add "
-            . option("INPUT_INTERFACE") . " " . $rule->input_port . " "
-            . $rule->destination . " " . $rule->output_port);
+        $this->process = new Process("sudo " . base_path("app/Scripts")
+        . "/datadiode.sh disablenat " . option("OUTPUT_INTERFACE", "lo"));
     }
 }

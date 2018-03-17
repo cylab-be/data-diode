@@ -22,7 +22,7 @@ class DeleteIptablesRuleJob extends ChangeIptablesRuleJob
     public function __construct(Rule $rule)
     {
         $this->process = new Process("sudo " . base_path("app/Scripts") . "/datadiode.sh remove "
-            . env("INPUT_INTERFACE", "lo") . " " . $rule->input_port . " "
+            . option("INPUT_INTERFACE") . " " . $rule->input_port . " "
             . $rule->destination . " " . $rule->output_port);
     }
 }

@@ -7,6 +7,8 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Jobs\CreateIptablesRuleJob;
 use App\Jobs\DeleteIptablesRuleJob;
+use App\Jobs\DisableNatJob;
+use App\Jobs\EnableNatJob;
 use App\Rule;
 
 class ConfigRefresh extends Command
@@ -49,34 +51,27 @@ class ConfigRefresh extends Command
 
     private function refreshMasquerade()
     {
-        if(option_exists("PREVIOUS_OUTPUT_INTERFACE")) {
-          $disableNatProcess = new Process("sudo " . base_path("app/Scripts")
-            . "/datadiode.sh disablenat " . option("PREVIOUS_OUTPUT_INTERFACE", "lo"));
-          $disableNatProcess->run();
-          if (!$disableNatProcess->isSuccessful()) {
-              throw new ProcessFailedException($disableNatProcess);
-          }
+        if (option_exists("OUTPUT_INTERFACE")) {
+            DisableNatJob::dispatch();
         }
-        $enableNatProcess = new Process("sudo " . base_path("app/Scripts")
-          . "/datadiode.sh nat " . env("OUTPUT_INTERFACE", "lo"));
-        $enableNatProcess->run();
-        if (!$enableNatProcess->isSuccessful()) {
-            throw new ProcessFailedException($enableNatProcess);
-        }
-        option(['PREVIOUS_OUTPUT_INTERFACE' => env("OUTPUT_INTERFACE", "lo")]);
+        option(['OUTPUT_INTERFACE' => env("OUTPUT_INTERFACE", "lo")]);
+        EnableNatJob::dispatch();
     }
 
     private function refreshRules()
     {
-      //TODO fix this
-      /*
-      foreach (Rule::all() as $rule) {
-          CreateIptablesRuleJob::dispatch($rule);
-          if (env("DIODE_IN", true)) {
-              $rule->destination = env("DIODE_OUT_IP");
-              $rule->save();
-          }
-      }*/
+        $rules = Rule::all();
+        foreach ($rules as $rule) {
+            DeleteIptablesRuleJob::dispatch($rule);
+        }
+        option(["INPUT_INTERFACE" => env("INPUT_INTERFACE", "lo")]);
+        foreach ($rules as $rule) {
+            CreateIptablesRuleJob::dispatch($rule);
+            if (env("DIODE_IN", true)) {
+                $rule->destination = env("DIODE_OUT_IP", "127.0.0.1");
+                $rule->save();
+            }
+        }
     }
 
     private function refreshArp()
