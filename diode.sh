@@ -21,11 +21,9 @@ cp .env.example .env
 touch storage/app/db.sqlite
 php artisan key:generate
 php artisan migrate
+php artisan config:refresh
 chown -R www-data:www-data .
 sed -i -e "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g" /etc/sysctl.conf
 sysctl -p /etc/sysctl.conf
-iptables -t nat -A POSTROUTING -o enp0s9 -j MASQUERADE
-iptables-save > /etc/iptables/rules.v4
-ip6tables-save > /etc/iptables/rules.v6
 echo "www-data ALL=NOPASSWD: /var/www/data-diode/src/app/Scripts/datadiode.sh" | EDITOR="tee -a" visudo
 systemctl restart apache2

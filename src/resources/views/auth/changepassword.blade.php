@@ -22,7 +22,7 @@
                         {{ csrf_field() }}
 
                         <div class="form-group{{ $errors->has('current-password') ? ' has-error' : '' }}">
-                            <label for="new-password" class="col-md-4 control-label">Current Password</label>
+                            <label for="current-password" class="col-md-4 control-label">Current Password</label>
 
                             <div class="col-md-6">
                                 <input id="current-password" type="password" class="form-control" name="current-password" required>

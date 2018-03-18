@@ -1,3 +1,4 @@
+//TODO improve error messages
 $(function() {
     $("#ports-table").tabulator({
         layout:"fitColumns",
@@ -17,6 +18,26 @@ $(function() {
         swal.queue(addRuleQueue).then(function(result){
             addRule(result);
         });
+    });
+    $("#network-configuration").validate({
+        errorElement: "span",
+        errorClass: "help-block",
+        wrapper: "strong",
+        showErrors: function(errorMap, errorList) {
+            $("#network-configuration > .has-error").each(function(index) {
+                $(this).removeClass("has-error");
+            });
+            errorList.forEach(function(error) {
+                $(error.element).parent().parent().addClass("has-error");
+            });
+            this.defaultShowErrors();
+        },
+        rules: {
+            test: "required"
+        },
+        submitHandler: function(form) {
+            console.log($(form).serialize());
+        }
     });
 });
 

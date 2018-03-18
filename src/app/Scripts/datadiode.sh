@@ -26,6 +26,26 @@ case $1 in
         iptables -t nat -A POSTROUTING -o $interface -j MASQUERADE
         exit $?
         ;;
+    "networking")
+        shift
+        scriptdir=$(cd "$(dirname "$0")" && pwd)
+        case $1 in
+            "change")
+                shift
+                awk -f $scriptdir/Network-Interfaces-Script/changeInterfaces.awk /etc/network/interfaces "$@"
+                exit $?
+            ;;
+            "read")
+                shift
+                awk -f $scriptdir/Network-Interfaces-Script/readInterfaces.awk /etc/network/interfaces "$@"
+                exit $?
+            ;;
+            *)
+                echo "Invalid networking option"
+                exit 1
+            ;;
+        esac
+        ;;
     "arp")
         ip neighbor flush all \
         && echo "$mac $ip" > /etc/ethers \
