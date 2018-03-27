@@ -4,12 +4,12 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Jobs\CreateIptablesRuleJob;
 use App\Jobs\DeleteIptablesRuleJob;
 use App\Jobs\DisableNatJob;
 use App\Jobs\EnableNatJob;
 use App\Rule;
+use App\NetworkConfiguration;
 
 class ConfigRefresh extends Command
 {
@@ -44,9 +44,16 @@ class ConfigRefresh extends Command
      */
     public function handle()
     {
+        $this->refreshConfig();
         $this->refreshMasquerade();
         $this->refreshRules();
         //$this->refreshArp();
+    }
+
+    //TODO files must exist for simlinks
+    private function refreshConfig() {
+        NetworkConfiguration::getInput()->saveInput();
+        NetworkConfiguration::getOutput()->saveOutput();
     }
 
     private function refreshMasquerade()
@@ -79,9 +86,6 @@ class ConfigRefresh extends Command
       //TODO fix this
         $arpProcess = new Process("sudo " . base_path("app/Scripts") . "/datadiode.sh arp "
           . env("DIODE_OUT_MAC") . " " . env("DIODE_OUT_IP"));
-        $arpProcess->run();
-        if (!$arpProcess->isSuccessful()) {
-            throw new ProcessFailedException($arpProcess);
-        }
+        $arpProcess->mustRun();
     }
 }
