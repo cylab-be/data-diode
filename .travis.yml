@@ -10,6 +10,8 @@ before_script:
   - composer install --dev
   - cp env.travis .env
   - touch storage/app/db.sqlite
+  - touch storage/app/input
+  - touch storage/app/output
   - php artisan key:generate
   - php artisan migrate
   - php artisan config:refresh
