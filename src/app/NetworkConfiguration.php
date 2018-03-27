@@ -34,7 +34,7 @@ class NetworkConfiguration
 
     public function getOption($key)
     {
-        if(!array_key_exists($key)) {
+        if (!array_key_exists($key)) {
             throw new Exception("The given key : $key is not set");
         }
         return $this->options[$key];
@@ -49,10 +49,10 @@ class NetworkConfiguration
     {
         Storage::put($fileName, "auto " . $interface);
         Storage::append($fileName, "iface " . $interface . " inet ". $this->mode);
-        if($this->mode == "static") {
+        if ($this->mode == "static") {
             foreach ($this->options as $key => $value) {
                 $valueString;
-                if(is_array($value)) {
+                if (is_array($value)) {
                     $valueString = implode(" ", $value);
                 } else {
                     $valueString = $value;
@@ -76,12 +76,12 @@ class NetworkConfiguration
     {
         $config = new NetworkConfiguration();
         foreach (preg_split("(\\r\\n|\\n)", Storage::get($fileName)) as $line) {
-            if($line !== "") {
+            if ($line !== "") {
                 $words = explode(" ", $line);
-                if($words[0] === "iface") {
+                if ($words[0] === "iface") {
                     $config->mode = $words[3];
                 } else {
-                    if($words[0] !== "auto") {
+                    if ($words[0] !== "auto") {
                         $key = $words[0];
                         array_shift($words);
                         $config->setOption($key, count($words) == 1 ? $words[0] : $words);

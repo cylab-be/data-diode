@@ -22,9 +22,9 @@ class RuleController extends Controller
         $rule = null;
         if (env("DIODE_IN", true)) {
             $rule = Rule::create([
-            "input_port" => $request->input("input_port"),
-            "output_port" => $request->input("output_port"),
-            "destination" => env("DIODE_OUT_IP")
+                "input_port" => $request->input("input_port"),
+                "output_port" => $request->input("output_port"),
+                "destination" => env("DIODE_OUT_IP")
             ]);
         } else {
             $rule = Rule::create($request->all());
@@ -45,10 +45,15 @@ class RuleController extends Controller
     public function update(EditRuleRequest $request, Rule $rule)
     {
         if (env("DIODE_IN", true)) {
+            $rule->update([
+                "input_port" => $request->input("input_port"),
+                "output_port" => $request->input("output_port"),
+                "destination" => env("DIODE_OUT_IP")
+            ]);
         } else {
             $rule->update($request->all());
-            return response()->json($rule, 200);
         }
+        return response()->json($rule, 200);
     }
 
     public function delete(Rule $rule)

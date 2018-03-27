@@ -51,7 +51,8 @@ class ConfigRefresh extends Command
     }
 
     //TODO files must exist for simlinks
-    private function refreshConfig() {
+    private function refreshConfig()
+    {
         NetworkConfiguration::getInput()->saveInput();
         NetworkConfiguration::getOutput()->saveOutput();
     }
