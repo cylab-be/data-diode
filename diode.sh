@@ -19,9 +19,11 @@ cd data-diode/src
 composer install
 cp .env.example .env
 touch storage/app/db.sqlite
+ln -s /var/www/data-diode/src/storage/app/input /etc/network/interfaces.d/diode-input.cfg
+ln -s /var/www/data-diode/src/storage/app/output /etc/network/interfaces.d/diode-output.cfg
 php artisan key:generate
 php artisan migrate
-php artisan config:refresh
+php artisan config:reset
 chown -R www-data:www-data .
 sed -i -e "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g" /etc/sysctl.conf
 sysctl -p /etc/sysctl.conf

@@ -28,7 +28,7 @@ case $1 in
         ;;
     "restartnetwork")
         shift
-        false
+        systemctl restart networking
         exit $?
         ;;
     "arp")

@@ -20,11 +20,13 @@ class NetworkConfiguration
     public function setStatic()
     {
         $this->mode = "static";
+        return $this;
     }
 
     public function setDHCP()
     {
         $this->mode = "dhcp";
+        return $this;
     }
 
     public function getMode()
@@ -43,6 +45,7 @@ class NetworkConfiguration
     public function setOption($key, $value)
     {
         $this->options[$key] = $value;
+        return $this;
     }
 
     private function save($fileName, $interface)
@@ -60,6 +63,7 @@ class NetworkConfiguration
                 Storage::append($fileName, $key . " " . $valueString);
             }
         }
+        Storage::append($fileName, "");
     }
 
     public function saveInput()

@@ -31,6 +31,8 @@ Vagrant.configure("2") do |config|
   config.vm.define "dev" do |dev|
     dev.vm.box = "ubuntu/xenial64"
     dev.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+    dev.vm.network "private_network", ip: "0.0.0.0", auto_config: false
+    dev.vm.network "private_network", ip: "0.0.0.0", auto_config: false
     dev.vm.provision "shell", path: "dev.sh"
     dev.vm.synced_folder "./", "/var/www/data-diode", owner: "www-data", group: "www-data"
   end

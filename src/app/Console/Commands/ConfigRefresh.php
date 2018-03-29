@@ -3,11 +3,13 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Process;
 use App\Jobs\CreateIptablesRuleJob;
 use App\Jobs\DeleteIptablesRuleJob;
 use App\Jobs\DisableNatJob;
 use App\Jobs\EnableNatJob;
+use App\Jobs\RestartNetworkJob;
 use App\Rule;
 use App\NetworkConfiguration;
 
@@ -18,14 +20,14 @@ class ConfigRefresh extends Command
      *
      * @var string
      */
-    protected $signature = 'config:refresh';
+    protected $signature = 'config:reset';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Updates the rules in iptables according to .env';
+    protected $description = 'Updates the network configuration based on .env values';
 
     /**
      * Create a new command instance.
@@ -53,8 +55,32 @@ class ConfigRefresh extends Command
     //TODO files must exist for simlinks
     private function refreshConfig()
     {
-        NetworkConfiguration::getInput()->saveInput();
-        NetworkConfiguration::getOutput()->saveOutput();
+        $internalConfig = new NetworkConfiguration();
+        if (env("INTERNAL_DHCP", true)) {
+            $internalConfig->setDHCP();
+        } else {
+            $internalConfig->setStatic()
+            ->setOption("address", env("INTERNAL_IP"))
+            ->setOption("netmask", env("INTERNAL_NETMASK"))
+            ->setOption("network", env("INTERNAL_NETWORK"));
+        }
+        $externalConfig = new NetworkConfiguration();
+        if (env("EXTERNAL_DEFAULT_DHCP", true)) {
+            $externalConfig->setDHCP();
+        } else {
+            $externalConfig->setStatic()
+            ->setOption("address", env("EXTERNAL_DEFAULT_IP"))
+            ->setOption("netmask", env("EXTERNAL_DEFAULT_NETMASK"))
+            ->setOption("network", env("EXTERNAL_DEFAULT_NETWORK"));
+        }
+        if (env("DIODE_IN", true)) {
+            $internalConfig->saveOutput();
+            $externalConfig->saveInput();
+        } else {
+            $internalConfig->saveInput();
+            $externalConfig->saveOutput();
+        }
+        RestartNetworkJob::dispatch();
     }
 
     private function refreshMasquerade()
