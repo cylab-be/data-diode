@@ -49,7 +49,7 @@ class ConfigRefresh extends Command
         $this->refreshConfig();
         $this->refreshMasquerade();
         $this->refreshRules();
-        if(!env("CONFIG_DRY_RUN", false)) {
+        if (!env("CONFIG_DRY_RUN", false)) {
             RestartNetworkJob::dispatch();
         }
     }

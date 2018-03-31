@@ -1,4 +1,3 @@
-//TODO improve error messages
 $(function() {
     $("#ports-table").tabulator({
         layout:"fitColumns",
@@ -48,9 +47,7 @@ function deleteRow(row){
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
-        error: function() {
-            toastr.error("Operation failed !");
-        },
+        error: displayError,
         success: function() {
             $("#ports-table").tabulator("deleteRow", row);
             toastr.success("Successfully deleted !");
@@ -81,9 +78,7 @@ function addRule(values){
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
         data: addRuleData(values),
-        error: function() {
-            toastr.error("Operation failed !");
-        },
+        error: displayError,
         success: function(data) {
             $("#ports-table").tabulator("addRow", Object.assign({id: data.id}, addRuleData(values)));
             toastr.success("Successfully added !");
@@ -99,11 +94,13 @@ function editRule(cell){
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
         data: editRuleData(cell),
-        error: function() {
-            toastr.error("Operation failed !");
-        },
+        error: displayError,
         success: function(){
             toastr.success("Successfully edited !");
         }
     });
+}
+
+function displayError(xhr, status, error) {
+    toastr.error(JSON.parse(xhr.responseText).message);
 }
