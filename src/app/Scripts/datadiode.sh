@@ -3,8 +3,6 @@ interface=$2
 input_port=$3
 destination=$4
 output_port=$5
-mac=$2
-ip=$3
 case $1 in
     "add")
         iptables -t nat -A PREROUTING -i $interface -p udp --dport $input_port -j DNAT --to $destination:$output_port
@@ -33,12 +31,6 @@ case $1 in
     "restartnetwork")
         shift
         /etc/init.d/networking restart
-        exit $?
-        ;;
-    "arp")
-        ip neighbor flush all \
-        && echo "$mac $ip" > /etc/ethers \
-        && arp -f /etc/ethers
         exit $?
         ;;
     *)
