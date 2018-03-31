@@ -49,7 +49,7 @@ class ConfigRefresh extends Command
         $this->refreshConfig();
         $this->refreshMasquerade();
         $this->refreshRules();
-        //$this->refreshArp();
+        RestartNetworkJob::dispatch();
     }
 
     private function refreshConfig()
@@ -62,6 +62,10 @@ class ConfigRefresh extends Command
             ->setOption("address", env("INTERNAL_IP"))
             ->setOption("netmask", env("INTERNAL_NETMASK"))
             ->setOption("network", env("INTERNAL_NETWORK"));
+        }
+        if (env("DIODE_IN", true)) {
+            $internalConfig->setOption("up", "arp -s " . env("DIODE_OUT_IP", "127.0.0.1")
+                . " " . env("DIODE_OUT_MAC"));
         }
         $externalConfig = new NetworkConfiguration();
         if (env("EXTERNAL_DEFAULT_DHCP", true)) {
@@ -79,7 +83,6 @@ class ConfigRefresh extends Command
             $internalConfig->saveInput();
             $externalConfig->saveOutput();
         }
-        RestartNetworkJob::dispatch();
     }
 
     private function refreshMasquerade()
@@ -105,13 +108,5 @@ class ConfigRefresh extends Command
                 $rule->save();
             }
         }
-    }
-
-    private function refreshArp()
-    {
-      //TODO fix this
-        $arpProcess = new Process("sudo " . base_path("app/Scripts") . "/datadiode.sh arp "
-          . env("DIODE_OUT_MAC") . " " . env("DIODE_OUT_IP"));
-        $arpProcess->mustRun();
     }
 }
