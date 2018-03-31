@@ -36,7 +36,7 @@ class NetworkConfiguration
 
     public function getOption($key)
     {
-        if (!array_key_exists($key)) {
+        if (!array_key_exists($key, $this->options)) {
             throw new Exception("The given key : $key is not set");
         }
         return $this->options[$key];
@@ -74,6 +74,13 @@ class NetworkConfiguration
     public function saveOutput()
     {
         $this->save("output", env("OUTPUT_INTERFACE", "lo"));
+    }
+
+    public function toArray()
+    {
+        $array = $this->options;
+        $array["mode"] = $this->mode;
+        return $array;
     }
 
     private static function get($fileName)

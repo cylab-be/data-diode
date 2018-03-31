@@ -38,20 +38,68 @@ $(function() {
             this.defaultShowErrors();
         },
         rules: {
-            ip: {
-                required: true,
-                ip: true
+            mode: {
+                required: true
             },
-            netmask:  {
-                required: true,
-                netmask: true
+            ip: {
+                required: isFieldRequired,
+                ip: isFieldRequired
+            },
+            netmask: {
+                required: isFieldRequired,
+                netmask: isFieldRequired
+            }
+        },
+        errorPlacement: function(error, element) {
+            if ( element.is(":radio") ) {
+                error.appendTo( element.parent() );
+            } else {
+                error.insertAfter( element );
             }
         },
         submitHandler: function(form) {
-            console.log($(form).serialize());
+            $.ajax({
+                type: "PUT",
+                url: "/network/update",
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: networkValues(),
+                error: displayError,
+                success: function() {
+                    toastr.success("Successfully updated !");
+                }
+            });
         }
     });
+    $.ajax({
+        type: "GET",
+        url: "/network",
+        success: function(data) {
+            $("#" + data.mode).prop("checked", true);
+            $("#ip").val(data.address);
+            $("#netmask").val(data.netmask);
+        }
+    })
 });
+
+function isFieldRequired(event) {
+    return $("#static").prop("checked");
+}
+
+function networkValues(){
+    if($("#dhcp").prop("checked")) {
+        return {
+            mode: "dhcp"
+        };
+    } else {
+        return {
+            mode: "static",
+            ip: $("#ip").val(),
+            netmask: $("#netmask").val()
+        };
+    }
+}
 
 function deleteRow(row){
     $.ajax({

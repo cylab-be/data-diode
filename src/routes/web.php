@@ -40,3 +40,6 @@ Route::get('rule', 'RuleController@retrieveAll');
 Route::get('rule/{rule}', 'RuleController@retrieve');
 Route::put('rule/{rule}', "RuleController@update");
 Route::delete("rule/{rule}", "RuleController@delete");
+
+Route::get("network", "NetworkController@get");
+Route::put("network/update", "NetworkController@update");

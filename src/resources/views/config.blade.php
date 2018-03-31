@@ -49,6 +49,13 @@
                                 <div class="panel-body">
                                     <form id="network-configuration" class="form-horizontal">
                                         <div class="form-group">
+                                            <label class="col-md-4 control-label">Mode</label>
+                                            <div class="col-md-6 inline">
+                                                <input id="dhcp" name="mode" type="radio" value="dhcp">DHCP
+                                                <input id="static" name="mode" type="radio" value="static">Static
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
                                             <label for="ip" class="col-md-4 control-label">IP Address</label>
                                             <div class="col-md-6">
                                                 <input id="ip" type="text" class="form-control" name="ip">
