@@ -52,7 +52,6 @@ class ConfigRefresh extends Command
         //$this->refreshArp();
     }
 
-    //TODO files must exist for simlinks
     private function refreshConfig()
     {
         $internalConfig = new NetworkConfiguration();

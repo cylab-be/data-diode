@@ -26,9 +26,13 @@ case $1 in
         iptables -t nat -A POSTROUTING -o $interface -j MASQUERADE
         exit $?
         ;;
+    "fluship")
+        ip addr flush $interface
+        exit $?
+        ;;
     "restartnetwork")
         shift
-        systemctl restart networking
+        /etc/init.d/networking restart
         exit $?
         ;;
     "arp")

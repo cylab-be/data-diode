@@ -21,6 +21,12 @@ class RestartNetworkJob implements ShouldQueue
     public function handle()
     {
         $process = new Process("sudo " . base_path("app/Scripts")
+          . "/datadiode.sh fluship " . env("INPUT_INTERFACE", "lo"));
+        $process->mustRun();
+        $process = new Process("sudo " . base_path("app/Scripts")
+          . "/datadiode.sh fluship " . env("OUTPUT_INTERFACE", "lo"));
+        $process->mustRun();
+        $process = new Process("sudo " . base_path("app/Scripts")
           . "/datadiode.sh restartnetwork");
         $process->mustRun();
     }

@@ -17,7 +17,7 @@ cd /var/www
 git clone https://github.com/RUCD/data-diode.git
 cd data-diode/src
 composer install
-cp .env.example .env
+cp /vagrant/vagrant/env/.env.out .env
 touch storage/app/db.sqlite
 ln -s /var/www/data-diode/src/storage/app/input /etc/network/interfaces.d/diode-input.cfg
 ln -s /var/www/data-diode/src/storage/app/output /etc/network/interfaces.d/diode-output.cfg
