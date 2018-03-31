@@ -35,7 +35,7 @@
                                 <div class="panel-heading">Port Forwarding</div>
                                 <div class="panel-body">
                                     <div id="ports-table"></div>
-                                    <button id="add-rule">Add Rule</button>
+                                    <button id="add-rule" class="btn btn-primary">Add Rule</button>
                                 </div>
                             </div>
                         </div>
@@ -49,9 +49,15 @@
                                 <div class="panel-body">
                                     <form id="network-configuration" class="form-horizontal">
                                         <div class="form-group">
-                                            <label for="test" class="col-md-4 control-label">Test</label>
+                                            <label for="ip" class="col-md-4 control-label">IP Address</label>
                                             <div class="col-md-6">
-                                                <input id="test" type="text" class="form-control" name="test">
+                                                <input id="ip" type="text" class="form-control" name="ip">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="netmask" class="col-md-4 control-label">Subnet Mask</label>
+                                            <div class="col-md-6">
+                                                <input id="netmask" type="text" class="form-control" name="netmask">
                                             </div>
                                         </div>
                                         <div class="form-group">

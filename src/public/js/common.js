@@ -18,21 +18,34 @@ $(function() {
             addRule(result);
         });
     });
+    $.validator.addMethod('ip', function(value) {
+        return value.match("^(?!0)(?!.*\\.$)((1?\\d?\\d|25[0-5]|2[0-4]\\d)(\\.|$)){4}$");
+    }, 'Invalid IP address');
+    $.validator.addMethod('netmask', function(value) {
+        return value.match("^(((128|192|224|240|248|252|254)\\.0\\.0\\.0)|(255\\.(0|128|192|224|240|248|252|254)\\.0\\.0)|(255\\.255\\.(0|128|192|224|240|248|252|254)\\.0)|(255\\.255\\.255\\.(0|128|192|224|240|248|252|254)))$");
+    }, 'Invalid subnet mask');
     $("#network-configuration").validate({
         errorElement: "span",
         errorClass: "help-block",
         wrapper: "strong",
+        success: function(label, element){
+            $(element).parent().parent().removeClass("has-error");
+        },
         showErrors: function(errorMap, errorList) {
-            $("#network-configuration > .has-error").each(function(index) {
-                $(this).removeClass("has-error");
-            });
             errorList.forEach(function(error) {
                 $(error.element).parent().parent().addClass("has-error");
             });
             this.defaultShowErrors();
         },
         rules: {
-            test: "required"
+            ip: {
+                required: true,
+                ip: true
+            },
+            netmask:  {
+                required: true,
+                netmask: true
+            }
         },
         submitHandler: function(form) {
             console.log($(form).serialize());

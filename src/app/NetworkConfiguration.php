@@ -80,6 +80,7 @@ class NetworkConfiguration
     {
         $config = new NetworkConfiguration();
         foreach (preg_split("(\\r\\n|\\n)", Storage::get($fileName)) as $line) {
+            trim($line);
             if ($line !== "") {
                 $words = explode(" ", $line);
                 if ($words[0] === "iface") {

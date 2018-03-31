@@ -2,7 +2,7 @@ var columns = [
   {title:"ID", field:"id", visible: false},
   {title:"Input Port", field:"input_port", editor: "input", validator: ["unique", "required", "integer", "min:1", "max:65535"]},
   {title:"Ouput Port", field:"output_port", editor: "input", validator: ["unique", "required", "integer", "min:1", "max:65535"]},
-  {title:"Destination address", field:"destination", editor: "input", validator: ["required", "regex:^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"]},
+  {title:"Destination address", field:"destination", editor: "input", validator: ["required", "regex:^(?!0)(?!.*\\.$)((1?\\d?\\d|25[0-5]|2[0-4]\\d)(\\.|$)){4}$"]},
   {formatter: "buttonCross", align: "center", cellClick: function(e, cell){
       swal.resetDefaults();
       swal({
@@ -51,7 +51,7 @@ function validateIP(value){
         if(!value){
             reject("Destination address is needed");
         } else {
-            if(!value.match("^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")){
+            if(!value.match("^(?!0)(?!.*\\.$)((1?\\d?\\d|25[0-5]|2[0-4]\\d)(\\.|$)){4}$")){
                 reject("This is not a valid IP address");
             } else {
                 resolve();

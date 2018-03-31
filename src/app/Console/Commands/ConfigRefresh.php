@@ -62,8 +62,7 @@ class ConfigRefresh extends Command
         } else {
             $internalConfig->setStatic()
             ->setOption("address", env("INTERNAL_IP"))
-            ->setOption("netmask", env("INTERNAL_NETMASK"))
-            ->setOption("network", env("INTERNAL_NETWORK"));
+            ->setOption("netmask", env("INTERNAL_NETMASK"));
         }
         if (env("DIODE_IN", true)) {
             $internalConfig->setOption("up", "arp -s " . env("DIODE_OUT_IP", "127.0.0.1")
@@ -75,8 +74,7 @@ class ConfigRefresh extends Command
         } else {
             $externalConfig->setStatic()
             ->setOption("address", env("EXTERNAL_DEFAULT_IP"))
-            ->setOption("netmask", env("EXTERNAL_DEFAULT_NETMASK"))
-            ->setOption("network", env("EXTERNAL_DEFAULT_NETWORK"));
+            ->setOption("netmask", env("EXTERNAL_DEFAULT_NETMASK"));
         }
         if (env("DIODE_IN", true)) {
             $internalConfig->saveOutput();
