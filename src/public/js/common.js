@@ -29,11 +29,19 @@ $(function() {
         errorClass: "help-block",
         wrapper: "strong",
         success: function(label, element){
-            $(element).parent().parent().removeClass("has-error");
+            if($(element).is(":radio")) {
+                $(element).parent().parent().parent().parent().removeClass("has-error");
+            } else {
+                $(element).parent().parent().removeClass("has-error");
+            }
         },
         showErrors: function(errorMap, errorList) {
             errorList.forEach(function(error) {
-                $(error.element).parent().parent().addClass("has-error");
+                if($(error.element).is(":radio")){
+                    $(error.element).parent().parent().parent().parent().addClass("has-error");
+                } else {
+                    $(error.element).parent().parent().addClass("has-error");
+                }
             });
             this.defaultShowErrors();
         },
@@ -52,12 +60,13 @@ $(function() {
         },
         errorPlacement: function(error, element) {
             if ( element.is(":radio") ) {
-                error.appendTo( element.parent() );
+                error.appendTo(element.parent().parent().parent());
             } else {
                 error.insertAfter( element );
             }
         },
         submitHandler: function(form) {
+            $("#save-network").prop("disabled", true);
             $.ajax({
                 type: "PUT",
                 url: "/network/update",
@@ -65,8 +74,12 @@ $(function() {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 data: networkValues(),
-                error: displayError,
+                error: function (xhr, status, error) {
+                    $("#save-network").prop("disabled", false);
+                    displayError(xhr, status, error);
+                },
                 success: function() {
+                    $("#save-network").prop("disabled", false);
                     toastr.success("Successfully updated !");
                 }
             });

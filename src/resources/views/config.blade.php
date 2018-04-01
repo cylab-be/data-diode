@@ -50,9 +50,15 @@
                                     <form id="network-configuration" class="form-horizontal">
                                         <div class="form-group">
                                             <label class="col-md-4 control-label">Mode</label>
-                                            <div class="col-md-6 inline">
-                                                <input id="dhcp" name="mode" type="radio" value="dhcp">DHCP
-                                                <input id="static" name="mode" type="radio" value="static">Static
+                                            <div class="col-md-6">
+                                                <div class="radio">
+                                                    <label>
+                                                        <input id="dhcp" name="mode" type="radio" value="dhcp"> DHCP
+                                                    </label>
+                                                    <label>
+                                                        <input id="static" name="mode" type="radio" value="static"> Static
+                                                    </label>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -69,7 +75,7 @@
                                         </div>
                                         <div class="form-group">
                                             <div class="col-md-6 col-md-offset-4">
-                                                <button type="submit" class="btn btn-primary">
+                                                <button id="save-network" type="submit" class="btn btn-primary">
                                                     Save
                                                 </button>
                                             </div>
