@@ -6,6 +6,10 @@ use Closure;
 use Hash;
 use Auth;
 
+/**
+ * Middleware that checks if the user has already changed their password.
+ * This will redirect the user to the change password page if not.
+ */
 class CheckDefaultPassword
 {
     /**

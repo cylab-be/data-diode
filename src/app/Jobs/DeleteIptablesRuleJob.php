@@ -10,6 +10,9 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Symfony\Component\Process\Process;
 use App\Rule;
 
+/**
+ * Deletes a NAT rule in iptables
+ */
 class DeleteIptablesRuleJob extends ChangeIptablesRuleJob
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;

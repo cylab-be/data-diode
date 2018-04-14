@@ -4,6 +4,9 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Request used when the user creates a new NAT rule
+ */
 class CreateRuleRequest extends FormRequest
 {
     /**

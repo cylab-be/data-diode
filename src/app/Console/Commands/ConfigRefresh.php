@@ -13,6 +13,9 @@ use App\Jobs\RestartNetworkJob;
 use App\Rule;
 use App\NetworkConfiguration;
 
+/**
+ * Command to apply the configuration in .env
+ */
 class ConfigRefresh extends Command
 {
     /**

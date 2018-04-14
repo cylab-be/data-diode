@@ -5,6 +5,9 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rule;
 
+/**
+ * Rule used when the user modifies an existing NAT rule
+ */
 class EditRuleRequest extends FormRequest
 {
     /**

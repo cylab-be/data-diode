@@ -9,6 +9,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Symfony\Component\Process\Process;
 
+/**
+ * Enables NATing in iptables
+ */
 class EnableNatJob extends ChangeIptablesRuleJob
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;

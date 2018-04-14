@@ -4,6 +4,9 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 
+/**
+ * Defines a Rule for netmask validation
+ */
 class Netmask implements Rule
 {
     /**

@@ -4,6 +4,9 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\Resource;
 
+/**
+ * Rule resource used to create json of rule objects
+ */
 class Rule extends Resource
 {
     /**

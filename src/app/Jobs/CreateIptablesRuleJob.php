@@ -10,6 +10,9 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Symfony\Component\Process\Process;
 use App\Rule;
 
+/**
+ * Creates a new NAT rule in iptables
+ */
 class CreateIptablesRuleJob extends ChangeIptablesRuleJob
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;

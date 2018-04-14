@@ -10,6 +10,10 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Symfony\Component\Process\Process;
 use App\Rule;
 
+/**
+ * Base abstract class for iptables commands
+ * @var [type]
+ */
 abstract class ChangeIptablesRuleJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;

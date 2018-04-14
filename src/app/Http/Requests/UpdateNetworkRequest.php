@@ -5,6 +5,9 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\Netmask;
 
+/**
+ * Request used when the user changes the network configuration of the server
+ */
 class UpdateNetworkRequest extends FormRequest
 {
     /**
