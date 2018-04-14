@@ -1,112 +1,86 @@
 # Data Diode
 
-## Installation
+## Installation (Ubuntu Server 16.04)
 
-### Install a LAMP server
-
+Install all the required packages.
 ```bash
-sudo apt install lamp-server^
-sudo apt install php-pdo php-mbstring php-tokenizer php-xml
+apt install -y apache2 php libapache2-mod-php php-pdo php-mbstring php-tokenizer php-xml composer zip unzip iptables-persistent php-sqlite3
 ```
-And depending on the DBMS you are planning to use 
+Once everything is installed, you need to configure apache2.
+First, disable the default site.
 ```bash
-sudo apt install php-mysql
-#or
-sudo apt install php-sqlite
+sudo a2dissite 000-default.conf
 ```
-
-If you are planning to use sqlite you need to create the database file
-```bash
-sudo touch /var/www/data-diode/laravel-test/database/database.sqlite
-```
-
-### Install composer
-
-```bash
-sudo apt install composer zip unzip
-```
-
-### Configure apache
-
-Assuming you will install the data diode in the `/var/www/data-diode` directory, create a new file `/etc/apache2/sites-available/data-diode.conf` Which will contain :
+Then create a new configuration in `/etc/apache2/sites-available/data-diode.conf`.
 ```xml
-<Directory /var/www/data-diode/laravel-test/public>
+<Directory /var/www/data-diode/src/public>
         AllowOverride All
 </Directory>
 <VirtualHost *:80>
-        DocumentRoot /var/www/data-diode/laravel-test/public
+        DocumentRoot /var/www/data-diode/src/public
 </VirtualHost>
 ```
-We can now enable the new configuration file
+And enable it. You also need to have apache rewrite module enabled.
 ```bash
 sudo a2ensite data-diode
-```
-And if you are not planning to use the default apache website
-```bash
-sudo a2dissite 000-default
-```
-You also need to have apache rewrite module enabled
-```bash
 sudo a2enmod rewrite
 ```
 
-### Install the data diode
-
-Go to `/var/www/` and clone the project.
+Now you need to clone the project from github.
 ```bash
+cd /var/www
 sudo git clone https://github.com/RUCD/data-diode.git
 ```
-Then install dependencies and configure it as you want.
+
+You now need to install required php libraries. To do so, simple use.
 ```bash
-cd data-diode/laravel-test
+cd data-diode/src
 sudo composer install
+```
+You need to create the file for the sqlite database.
+```bash
+sudo touch storage/app/db.sqlite
+```
+The configuration of the network interfaces is possible within the data-diode webUI or the configuration file. To make this work, you need to create links.
+```bash
+sudo ln -s /var/www/data-diode/src/storage/app/input /etc/network/interfaces.d/diode-input.cfg
+sudo ln -s /var/www/data-diode/src/storage/app/output /etc/network/interfaces.d/diode-output.cfg
+```
+
+Generate a private key for the cookie encryption and initialize the database.
+```bash
 sudo php artisan key:generate
-sudo cp .env.example .env
-vi .env
+sudo php artisan migrate
 ```
-Once this is done change the ownership to apache
+
+As the user that runs apache is not root (by default), you know need to change the ownership of the files.
 ```bash
-sudo chown -R www-data:www-data /var/www/data-diode
+sudo chown -R www-data:www-data .
 ```
-Finally restart apache
+
+For the NAT functionalities to work properly, you need to enable ip forwarding.
 ```bash
-sudo systemctl restart apache2
+sudo sed -i -e "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g" /etc/sysctl.conf
+sudo sysctl -p /etc/sysctl.conf
 ```
 
-### Authorize apache to use iptables
-
-This project uses a script which is using iptables and iptables-persistent. So they need to be installed and apache needs to be able to run them as root.
-
-```bash
-sudo apt install iptables-persistent
-```
-
-Give apache the ability to use sudo
+You need to make www-data to be able to execute a script as root by adding the following line in sudoers file : `www-data ALL=NOPASSWD: /var/www/data-diode/src/app/Scripts/datadiode.sh`.
 ```bash
 sudo visudo
 ```
-and add
-
-```
-www-data ALL=NOPASSWD: /var/www/data-diode/laravel-test/app/Scripts/datadiode.sh
-```
-
-### Enable IP forwarding
-
-To properly transfer packets, you need to enable IP forwarding.
+Finally restart apache server.
 ```bash
-vi /etc/sysctl.conf
+systemctl restart apache2
 ```
-Uncomment and/or set `ip_forwarding = 1`
 
-Then enable NATing on iptables and save its state (as root)
+## Configuration
+
+You can start by copying the default configuration file `.env`.
 ```bash
-iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-iptables-save > /etc/iptables/rules.v4
-ip6tables-save > /etc/iptables/rules.v6
+cp .env.example .env
 ```
-Where eth0 is the output NIC
-
-### Done
-
-At this point the data diode should be working
+Then you simply need to edit values in that file. Once you finished editing the configuration you need to apply the configuration.
+Be aware that this will override network configuration made in the webUI. This is useful in case the IP configuration is wrong and make the webUI unavailable.
+```bash
+php artisan config:reset
+```
