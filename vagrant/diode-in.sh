@@ -19,8 +19,6 @@ cd data-diode/src
 composer install
 cp /vagrant/vagrant/env/.env.in .env
 touch storage/app/db.sqlite
-ln -s /var/www/data-diode/src/storage/app/input /etc/network/interfaces.d/diode-input.cfg
-ln -s /var/www/data-diode/src/storage/app/output /etc/network/interfaces.d/diode-output.cfg
 php artisan key:generate
 php artisan migrate
 php artisan config:reset

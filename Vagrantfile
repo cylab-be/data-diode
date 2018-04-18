@@ -9,19 +9,17 @@ Vagrant.configure("2") do |config|
   config.vm.define "diodein" do |diodein|
     diodein.vm.box = "ubuntu/xenial64"
     diodein.vm.network "forwarded_port", guest: 80, host: 8081, host_ip: "127.0.0.1"
-    diodein.vm.network "private_network", ip: "0.0.0.0", auto_config: false
-    diodein.vm.network "private_network", ip: "0.0.0.0", auto_config: false
+    diodein.vm.network "private_network", ip: "192.168.100.11"
+    diodein.vm.network "private_network", ip: "192.168.101.1"
     diodein.vm.provision "shell", path: "vagrant/diode-in.sh"
-    diodein.vm.provision "shell", path: "vagrant/restart-networking.sh", run: "always"
   end
 
   config.vm.define "diodeout" do |diodeout|
     diodeout.vm.box = "ubuntu/xenial64"
     diodeout.vm.network "forwarded_port", guest: 80, host: 8082, host_ip: "127.0.0.1"
-    diodeout.vm.network "private_network", ip: "0.0.0.0", auto_config: false, mac: "AABBCCDDEEFF"
-    diodeout.vm.network "private_network", ip: "0.0.0.0", auto_config: false
+    diodeout.vm.network "private_network", ip: "192.168.101.2", mac: "AABBCCDDEEFF"
+    diodeout.vm.network "private_network", ip: "192.168.102.1"
     diodeout.vm.provision "shell", path: "vagrant/diode-out.sh"
-    diodeout.vm.provision "shell", path: "vagrant/restart-networking.sh", run: "always"
   end
 
   config.vm.define "secure" do |secure|
