@@ -4,6 +4,13 @@
 
 Developement takes place at https://gitlab.cylab.be/cylab/data-diode
 
+## Packet forwarding
+
+Can be achieved by
+
+iptables -t nat -A PREROUTING -i $interface -p udp --dport $input_port -j DNAT --to $destination:$output_port
+iptables -t nat -A POSTROUTING -o $interface -j MASQUERADE
+
 ## Far End Fault (FEF)
 
 Far End Fault (FEF) is a part of the IEEE 802.3u standard (Fast Ethernet). When a media converter stops receiving a signal, it will stop emiting as wel , thus bringing the connection down in both directions.
