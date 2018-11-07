@@ -8,8 +8,19 @@ Developement takes place at https://gitlab.cylab.be/cylab/data-diode
 
 Can be achieved by
 
+sudo nano /etc/sysctl.conf
+net.ipv4.ip_forward=1
+and 
+sudo sysctl -p
+
 iptables -t nat -A PREROUTING -i $interface -p udp --dport $input_port -j DNAT --to $destination:$output_port
 iptables -t nat -A POSTROUTING -o $interface -j MASQUERADE
+
+Attention:
+
+* MASQUERADE is required, otherwize the packet may be considered as a martian by the next router (diode out): https://en.wikipedia.org/wiki/Martian_packet
+* the nat table is checked only once when connection is established! For UDP packets, conntrack keeps a timeout => after adding rules, you may need to reboot the router: https://serverfault.com/a/875734
+
 
 ## Far End Fault (FEF)
 
