@@ -6,20 +6,25 @@ Developement takes place at https://gitlab.cylab.be/cylab/data-diode
 
 ## Packet forwarding
 
-Can be achieved by
+Can be achieved by modifying ```/etc/sysctl.conf```
 
-sudo nano /etc/sysctl.conf
+```
 net.ipv4.ip_forward=1
-and 
-sudo sysctl -p
+```
 
+and  then running ```sudo sysctl -p```
+
+For the forwarding rules:
+
+```
 iptables -t nat -A PREROUTING -i $interface -p udp --dport $input_port -j DNAT --to $destination:$output_port
 iptables -t nat -A POSTROUTING -o $interface -j MASQUERADE
+```
 
-Attention:
+Tricks:
 
-* MASQUERADE is required, otherwize the packet may be considered as a martian by the next router (diode out): https://en.wikipedia.org/wiki/Martian_packet
-* the nat table is checked only once when connection is established! For UDP packets, conntrack keeps a timeout => after adding rules, you may need to reboot the router: https://serverfault.com/a/875734
+* MASQUERADE is required, otherwize the packet may be considered as  'martian' by the next router (diode out): https://en.wikipedia.org/wiki/Martian_packet
+* the nat table is checked only once when a connection is established! For UDP packets, conntrack keeps a timeout => after adding rules, you may need to reboot the router (this way, the flow of UDP packets is considered as a new connection, and the nat table is checked): https://serverfault.com/a/875734
 
 
 ## Far End Fault (FEF)
