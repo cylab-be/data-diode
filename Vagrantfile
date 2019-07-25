@@ -1,4 +1,8 @@
 Vagrant.configure("2") do |config|
+  if Vagrant.has_plugin?("vagrant-proxyconf")
+    config.proxy.http = "http://10.67.1.60:3128/"
+    config.proxy.https = "http://10.67.1.60:3128/"
+  end
 
   config.vm.define "unsecure" do |unsecure|
     unsecure.vm.box = "ubuntu/xenial64"
@@ -15,27 +19,27 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.define "diodeout" do |diodeout|
-    diodeout.vm.box = "ubuntu/xenial64"
-    diodeout.vm.network "forwarded_port", guest: 80, host: 8082, host_ip: "127.0.0.1"
-    diodeout.vm.network "private_network", ip: "192.168.101.2", mac: "AABBCCDDEEFF"
-    diodeout.vm.network "private_network", ip: "192.168.102.1"
-    diodeout.vm.provision "shell", path: "vagrant/diode-out.sh"
-  end
+   diodeout.vm.box = "ubuntu/xenial64"
+   diodeout.vm.network "forwarded_port", guest: 80, host: 8082, host_ip: "127.0.0.1"
+   diodeout.vm.network "private_network", ip: "192.168.101.2", mac: "AABBCCDDEEFF"
+   diodeout.vm.network "private_network", ip: "192.168.102.1"
+   diodeout.vm.provision "shell", path: "vagrant/diode-out.sh"
+ end
 
-  config.vm.define "secure" do |secure|
-    secure.vm.box = "ubuntu/xenial64"
-    secure.vm.network "private_network", ip: "192.168.102.10"
-    secure.vm.provision "shell", path: "vagrant/secure.sh"
-  end
+# config.vm.define "secure" do |secure|
+#   secure.vm.box = "ubuntu/xenial64"
+#   secure.vm.network "private_network", ip: "192.168.102.10"
+#   secure.vm.provision "shell", path: "vagrant/secure.sh"
+# end
 
-  config.vm.define "dev" do |dev|
-    dev.vm.box = "ubuntu/xenial64"
-    dev.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
-    dev.vm.network "private_network", ip: "0.0.0.0", auto_config: false
-    dev.vm.network "private_network", ip: "0.0.0.0", auto_config: false
-    dev.vm.provision "shell", path: "vagrant/dev.sh"
-    dev.vm.provision "shell", path: "vagrant/restart-networking.sh", run: "always"
-    dev.vm.synced_folder "./", "/var/www/data-diode", owner: "www-data", group: "www-data"
-  end
+# config.vm.define "dev" do |dev|
+#   dev.vm.box = "ubuntu/xenial64"
+#   dev.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+#   dev.vm.network "private_network", ip: "0.0.0.0", auto_config: false
+#   dev.vm.network "private_network", ip: "0.0.0.0", auto_config: false
+#   dev.vm.provision "shell", path: "vagrant/dev.sh"
+#   dev.vm.provision "shell", path: "vagrant/restart-networking.sh", run: "always"
+#   dev.vm.synced_folder "./", "/var/www/data-diode", owner: "www-data", group: "www-data"
+# end
 
 end

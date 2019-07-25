@@ -14,7 +14,7 @@ EOF
 a2enmod rewrite
 a2ensite data-diode
 cd /var/www
-git clone https://github.com/RUCD/data-diode.git
+git clone https://gitlab.cylab.be/cylab/data-diode.git
 cd data-diode/src
 composer install
 cp /vagrant/vagrant/env/.env.in .env
