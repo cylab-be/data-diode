@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
     diodein.vm.network "private_network", ip: "192.168.100.11"
     diodein.vm.network "private_network", ip: "192.168.101.1"
     diodein.vm.provision "shell", path: "vagrant/diode-in.sh"
-  end
+ end
 
   config.vm.define "diodeout" do |diodeout|
    diodeout.vm.box = "ubuntu/xenial64"
@@ -24,13 +24,13 @@ Vagrant.configure("2") do |config|
    diodeout.vm.network "private_network", ip: "192.168.101.2", mac: "AABBCCDDEEFF"
    diodeout.vm.network "private_network", ip: "192.168.102.1"
    diodeout.vm.provision "shell", path: "vagrant/diode-out.sh"
- end
+end
 
-# config.vm.define "secure" do |secure|
-#   secure.vm.box = "ubuntu/xenial64"
-#   secure.vm.network "private_network", ip: "192.168.102.10"
-#   secure.vm.provision "shell", path: "vagrant/secure.sh"
-# end
+ config.vm.define "secure" do |secure|
+   secure.vm.box = "ubuntu/xenial64"
+   secure.vm.network "private_network", ip: "192.168.102.10"
+   secure.vm.provision "shell", path: "vagrant/secure.sh"
+end
 
 # config.vm.define "dev" do |dev|
 #   dev.vm.box = "ubuntu/xenial64"
