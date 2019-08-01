@@ -63,3 +63,4 @@ sudo echo '<VirtualHost *:80>
 sudo rm -rf /var/www/html
 sudo service apache2 restart
 
+sudo echo "01 01 * * * tar -zcvf ~/mirror-dependencies.tar.gz /var/spool/apt-mirror/mirror/archive.ubuntu.com/ubuntu" >> /etc/crontab

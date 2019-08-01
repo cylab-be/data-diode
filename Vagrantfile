@@ -6,6 +6,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "mirror" do |mirror|
     mirror.vm.box = "ubuntu/xenial64"
+    mirror.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
     mirror.vm.network "private_network", ip: "192.168.100.10"
     mirror.vm.provision "shell", path: "vagrant/mirror.sh"
   end
