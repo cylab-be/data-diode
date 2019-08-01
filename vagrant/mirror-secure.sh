@@ -9,4 +9,4 @@ deb http://192.168.100.10/ubuntu/ xenial-updates main restricted universe multiv
 deb http://192.168.100.10/ubuntu/ xenial-backports main restricted universe multiverse
 deb http://192.168.100.10/ubuntu/ xenial-proposed main restricted universe multiverse" >> /etc/apt/sources.list
 
-sudo apt-get update && sudo apt-get upgrade -y
+#sudo apt-get update && sudo apt-get upgrade -y

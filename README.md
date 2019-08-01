@@ -4,40 +4,21 @@
 
 Developement takes place at https://gitlab.cylab.be/cylab/data-diode
 
-## Packet forwarding
+## APT-Mirror
 
-Can be achieved by modifying ```/etc/sysctl.conf```
+Vagrantfile creates two machines: a machine for the apt-mirror and a machine in the "secure" server.
 
-```
-net.ipv4.ip_forward=1
-```
+The file mirror.sh install all requirements to obtain a apt-mirror:
 
-and  then running ```sudo sysctl -p```
+- Install apache2 and apt-mirror
+- Link the apt dependencies folder to the /var/www/ubuntu folder
+- Set a rule to update mirror every day
+- Create a new file mirror.lists and add all dependencies for ubuntu 16.04 (+/- 200GB)
+- Set the apache server to be the apt-mirror server and restart apache
+- Add a line to crontab to compress all dependencies.
 
-For the forwarding rules:
+The goal is to have an apt-mirror in unsecure side of the data-diode. The dependencies will be transfer through the data diode (compressed archive) and used to create another apt-mirror in the secure side of the data-diode.
 
-```
-iptables -t nat -A PREROUTING -i $interface -p udp --dport $input_port -j DNAT --to $destination:$output_port
-iptables -t nat -A POSTROUTING -o $interface -j MASQUERADE
-```
+It is not possible to directly create a mirror in the secure side of the data diode because of the one-side flow.
 
-Tricks:
-
-* MASQUERADE is required, otherwize the packet may be considered as  'martian' by the next router (diode out): https://en.wikipedia.org/wiki/Martian_packet
-* the nat table is checked only once when a connection is established! For UDP packets, conntrack keeps a timeout => after adding rules, you may need to reboot the router (this way, the flow of UDP packets is considered as a new connection, and the nat table is checked): https://serverfault.com/a/875734
-
-
-## Far End Fault (FEF)
-
-Far End Fault (FEF) is a part of the IEEE 802.3u standard (Fast Ethernet). When a media converter stops receiving a signal, it will stop emiting as wel , thus bringing the connection down in both directions.
-
-This is not desirable for a data diode.
-
-* https://www.etherwan.com/support/featured-articles/link-fault-pass-through
-* https://store.moxa.com/a/know/article/using-fiber-media-converters-with-copper-networks?no=DC20130626134707746
-
-This mechanism is implemented by most modern media converters. However, some media converters have a dip switch that allows to turn this feature off:
-
-* https://www.transition.com/products/media-converters/sgetf10xx-110-series/#
-
-According to some sources, this function may also be auto-disabled when different media converters are used: https://store.moxa.com/a/know/article/using-fiber-media-converters-with-copper-networks?no=DC20130626134707746
+The file mirror-secure.sh is for a machine in the secure network. This file configure Apt to use the apt-mirror in the secure side of the data diode.
