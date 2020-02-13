@@ -29,6 +29,7 @@ touch storage/app/db.sqlite
 php artisan key:generate
 php artisan migrate
 php artisan config:reset
+nohup php artisan queue:work database --timeout=0 & # launch the queue for the ftp server job
 cp -r /vagrant/BlindFTP_0.37 ..
 chown -R www-data:www-data . ../BlindFTP_0.37
 sed -i -e "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g" /etc/sysctl.conf

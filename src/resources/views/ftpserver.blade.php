@@ -22,9 +22,10 @@
 
 @section("content")
     <div class="container">
-        <div class="tab-v1">
-            <button type="button" class="btn btn-primary on" style="{{ $onStyle }}">ON</button>
-            <button type="button" class="btn btn-primary off" style="{{ $offStyle }}">OFF</button>
+        <div class="text-center">
+            <button type="button" class="btn btn-primary on" style="{{ $onStyle }}">START THE SERVER</button>
+            <button type="button" class="btn btn-primary off" style="{{ $offStyle }}">STOP THE SERVER</button>
+            <br/><br/>
             <p class="state">{{ $serverState }}</p>
         </div>
     </div>

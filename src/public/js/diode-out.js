@@ -75,3 +75,59 @@ function editRuleData(cell){
       destination: cell.getRow().row.data.destination
   };
 }
+
+$(function(){
+    $('.on').on('click', function() {
+        var button = $(this)
+        if(!button.hasClass('disabled')) {
+            button.addClass('disabled').html('TURNING ON... <span class="fa fa-spinner fa-pulse"></span>')
+            $.ajax({
+                type: "POST",
+                url: "/ftpserver",
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    command: 'on'
+                },
+                error: displayError,
+                success: function(response){
+                    button.removeClass('disabled')
+                    $('.state').text(response['serverState'])
+                    $('.on').css('display', response['onStyle'])
+                    $('.off').css('display', response['offStyle'])
+                }
+            })
+        }
+    })
+})
+
+$(function(){
+    $('.off').on('click', function() {
+        var button = $(this)
+        if(!button.hasClass('disabled')) {
+            button.addClass('disabled').html('TURNING OFF... <span class="fa fa-spinner fa-pulse"></span>')
+            $.ajax({
+                type: "POST",
+                url: "/ftpserver",
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    command: 'off'
+                },
+                error: displayError,
+                success: function(response){
+                    button.removeClass('disabled')
+                    $('.state').text(response['serverState'])
+                    $('.on').css('display', response['onStyle'])
+                    $('.off').css('display', response['offStyle'])
+                }
+            })
+        }
+    })
+})
+
+$(function(){
+    $('.on, .off').css('width', '25%')
+})

@@ -53,7 +53,7 @@ class BlindftpServerController extends Controller
             FileServer::create();
         } else {
             $fileServer = FileServer::find(1);
-            $serverState = self::isActive($fileServer) ? "ON [" . $fileServer->pid ."]" : "OFF";
+            $serverState = self::isActive($fileServer) ? "ACTIVE WITH PID = " . $fileServer->pid : "OFF";
             $onStyle = self::isActive($fileServer) ? "display:none" : "";
             $offStyle = self::isActive($fileServer) ? "" : "display:none";
             $serverState = "SERVER " . $serverState;
@@ -87,9 +87,9 @@ class BlindftpServerController extends Controller
                     sleep(1);
                     // TODO: afficher erreur apres un certain nombre de tours de boucle
                 }
-                $serverState = "ON [" . $fileServer->pid ."]";
+                $serverState = "ACTIVE WITH PID = " . $fileServer->pid;
                 $onStyle = "none";
-            }            
+            }
         }
         if ($request->command == 'off') {
             if (self::isActive($fileServer)) {                
