@@ -186,7 +186,7 @@ $(function(){
             button.addClass('disabled').html('TURNING ON... <span class="fa fa-spinner fa-pulse"></span>')
             $.ajax({
                 type: "POST",
-                url: "/server",
+                url: "/ftpserver",
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
@@ -212,7 +212,7 @@ $(function(){
             button.addClass('disabled').html('TURNING OFF... <span class="fa fa-spinner fa-pulse"></span>')
             $.ajax({
                 type: "POST",
-                url: "/server",
+                url: "/ftpserver",
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
