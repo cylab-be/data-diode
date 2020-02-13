@@ -14,10 +14,12 @@ EOF
 a2enmod rewrite
 a2ensite data-diode
 cd /var/www
+# BEGIN: Temporary removal and checkout to ftp-plugin until it is merged to master
+rm -rf data-diode
 git clone https://github.com/RUCD/data-diode.git
-# BEGIN: Temporary checkout to ftp-plugin until it is merged to master
 cd data-diode
 git checkout ftp-plugin
+git pull
 cd ..
 # END
 cd data-diode/src
