@@ -15,6 +15,7 @@ a2enmod rewrite
 a2ensite data-diode
 cd /var/www
 git clone https://github.com/RUCD/data-diode.git
+git checkout ftp-plugin
 cd data-diode/src
 composer install
 cp /vagrant/vagrant/env/.env.out .env
