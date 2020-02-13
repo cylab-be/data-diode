@@ -45,6 +45,6 @@ Route::get("network", "NetworkController@get");
 Route::put("network/update", "NetworkController@update");
 
 if (!env('DIODE_IN', false)) {
-    Route::get('/ftpserver", "BlindftpServerController@index');
-    Route::post('/ftpserver", "BlindftpServerController@toggle');
+    Route::get('/ftpserver', 'BlindftpServerController@index');
+    Route::post('/ftpserver', 'BlindftpServerController@toggle');
 }
