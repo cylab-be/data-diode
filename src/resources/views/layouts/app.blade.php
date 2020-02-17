@@ -84,6 +84,10 @@
 
         @yield('content')
     </div>
-
+    <script>
+        const app = new Vue({
+            el: '#app'
+        });
+    </script>
 </body>
 </html>

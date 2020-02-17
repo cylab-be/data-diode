@@ -33,6 +33,7 @@
                 <input id="uploadfolder" name="files[]" type="file" value="Input" multiple directory webkitdirectory moxdirectory>
                 <input type="submit" value="Upload folder">
             </form>
+            <file-form/>
         </div>
     </div>
 @endsection
