@@ -43,6 +43,11 @@ return [
 
     'disks' => [
 
+        'diode_local' => [
+            'driver' => 'local',
+            'root' => storage_path('app').'/files',
+        ],
+
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app'),

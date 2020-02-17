@@ -47,4 +47,8 @@ Route::put("network/update", "NetworkController@update");
 if (!env('DIODE_IN', false)) {
     Route::get('/ftpserver', 'BlindftpServerController@index');
     Route::post('/ftpserver', 'BlindftpServerController@toggle');
+    Route::get('/storage', 'StorageController@listView');
+    Route::get('/storage/{path}', 'StorageController@listView')->where('path', '(.*)'); // The "where" method permits the usage of a slash in the path variable
+} else {
+
 }
