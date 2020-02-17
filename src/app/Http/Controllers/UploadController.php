@@ -37,7 +37,7 @@ class UploadController extends Controller
      * @return mixed
      */
     public function uploadFile(Request $request) {
-        $file = $request->file('image');
+        $file = $request->file('input_file');
         $fileName = $file->getClientOriginalName();
         $path = $file->storeAs('files', $fileName);
         return view('uploaded', ['fileName'=>$fileName]);
