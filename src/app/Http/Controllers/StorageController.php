@@ -26,8 +26,8 @@ class StorageController extends Controller {
      *
      * @return mixed the view
      */
-    function listView( String $path = '.') {
-        $content = $this->storageService->list( $request, $path );
+    public function listView( String $path = '.' ) {
+        $content = $this->storageService->list($path );
         $dirPath = $content['info']['dirPath'];
         if ($dirPath != '.') {
             $dirPath = substr($dirPath, 0, 1) == '/' ? $dirPath : '/' . $dirPath;
