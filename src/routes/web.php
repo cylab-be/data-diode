@@ -50,5 +50,6 @@ if (!env('DIODE_IN', false)) {
     Route::get('/storage', 'StorageController@listView');
     Route::get('/storage/{path}', 'StorageController@listView')->where('path', '(.*)'); // The "where" method permits the usage of a slash in the path variable
 } else {
-
+    Route::get("/upload", "FileUploadController@index");
+    Route::post("/upload", "FileUploadController@uploadFile");
 }
