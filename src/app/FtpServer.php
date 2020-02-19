@@ -20,5 +20,5 @@ class FileServer extends Model
      *
      * @var array
      */
-    protected $fillable = ["pid"];
+    protected $fillable = ["pid", "name"];
 }

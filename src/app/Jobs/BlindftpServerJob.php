@@ -14,6 +14,9 @@ class BlindftpServerJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    protected $dbName;
+    protected $command;
+
     /**
      * Create a new job instance.
      *
@@ -21,7 +24,21 @@ class BlindftpServerJob implements ShouldQueue
      */
     public function __construct()
     {
-        //
+        if (!env('DIODE_IN', false)) {
+            // DIODE OUT
+            $this->dbName = 'ftpserver';
+            $this->command = "sudo " . 
+                "python /var/www/data-diode/BlindFTP_0.37/bftp.py " . 
+                "-r /var/www/data-diode/src/storage/app/files " . 
+                "-a " . env("INTERNAL_IP") . " &";
+        } else {
+            // DIODE IN
+            $this->dbName = 'ftpclient';
+            $this->command = "sudo " . 
+                "python /var/www/data-diode/BlindFTP_0.37/bftp.py " . 
+                "-s /var/www/data-diode/src/storage/app/files " . 
+                "-a " . env("DIODE_OUT_IP") . " -b -P 5 &";
+        }
     }
 
     /**
@@ -31,17 +48,22 @@ class BlindftpServerJob implements ShouldQueue
      */
     public function handle()
     {
-        $command = "sudo " . 
-        "python /var/www/data-diode/BlindFTP_0.37/bftp.py " . 
-        "-r /var/www/data-diode/src/storage/app/files " . 
-        "-a " . env("INTERNAL_IP") . " &";
-        $process = new Process($command);        
+        
+        $process = new Process($this->command);
         $process->disableOutput();
         $process->start();
-        // $process->start(); $pid = $process->getPid(); // -> I think this does not return the pid of the process but the one that launches it        
-        $pid_process = new Process("PID=`ps auxw | grep bftp.py | grep -v grep | awk '{ print $2 }'` && echo \$PID");        
+        // $process->start(); $pid = $process->getPid(); // -> I think this does not return the pid of the process but the one that launches it
+        $pid_process = new Process("PID=`ps auxw | grep bftp.py | grep -v grep | awk '{ print $2 }'` && echo \$PID");
         $pid_process->mustRun();
-        $fileServer = FileServer::find(1);
+        // $fileServer = FileServer::find(1);
+        $count = FileServer::where('name', '=', $this->dbName)->count();
+        if ($count == 0) {
+            // TODO
+        } else if  ($count == 1) {
+            $fileServer = FileServer::where('name', '=', $this->dbName)->firstOrFail();
+        } else {
+            // Should be impossible, name is unique
+        }
         $fileServer->pid = intval($pid_process->getOutput());
         $fileServer->save();
     }

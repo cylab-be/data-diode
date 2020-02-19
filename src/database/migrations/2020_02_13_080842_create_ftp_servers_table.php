@@ -16,7 +16,8 @@ class CreateFtpServersTable extends Migration
         Schema::dropIfExists('file_servers');
         Schema::create('file_servers', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer("pid")->default(0)->unique();
+            $table->text('name')->unique();
+            $table->integer('pid')->default(0)->unique();
             $table->timestamps();
         });
     }

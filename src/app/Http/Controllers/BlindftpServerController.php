@@ -13,6 +13,8 @@ use App\Jobs\BlindftpServerJob;
  */
 class BlindftpServerController extends Controller
 {
+    protected $dbName;
+    protected $showedName;
     /**
      * Create a new controller instance.
      *
@@ -21,6 +23,13 @@ class BlindftpServerController extends Controller
     public function __construct()
     {
         $this->middleware(["auth", "default-password"]);
+        if (!env('DIODE_IN', false)) {
+            $this->dbName = 'ftpserver';
+            $this->showedName = 'SERVER';
+        } else {
+            $this->dbName = 'ftpclient';
+            $this->showedName = 'CLIENT';
+        }
     }
 
     /**
@@ -38,27 +47,27 @@ class BlindftpServerController extends Controller
     /**
      * Get the view showing the state of the server (ON/OFF) and one of the two
      * buttons (start/stop) depending in the state of the server. Also create
-     * a database entry fot the BlindFTP server if it's not already done
+     * a database entry for the BlindFTP server if it's not already done
      * 
      * @return mixed the view 
      */
     public function index()
     {        
-        $servers = FileServer::all();
-        $serverState = "NO FTP SERVER REGISTERED IN THE DATABASE. A NEW FTP SERVER HAS BEEN ADDED.";
         $onStyle = "display:none";
         $offStyle = "display:none";
-        $count = count($servers);
+
+        $count = FileServer::where('name', '=', $this->dbName)->count();
         if ($count == 0) {
-            FileServer::create();
-        } else {
-            $fileServer = FileServer::find(1);
-            $serverState = self::isActive($fileServer) ? "ACTIVE WITH PID = " . $fileServer->pid : "OFF";
-            $onStyle = self::isActive($fileServer) ? "display:none" : "";
-            $offStyle = self::isActive($fileServer) ? "" : "display:none";
-            $serverState = "SERVER " . $serverState;
+            FileServer::create(array('name' => $this->dbName));
         }
-        return view('ftpserver', ['serverState'=>$serverState, 'onStyle'=>$onStyle, 'offStyle'=>$offStyle]);
+
+        $fileServer = FileServer::where('name', '=', $this->dbName)->firstOrFail();
+        $serverState = self::isActive($fileServer) ? "ACTIVE WITH PID = " . $fileServer->pid : "OFF";
+        $onStyle = self::isActive($fileServer) ? "display:none" : "";
+        $offStyle = self::isActive($fileServer) ? "" : "display:none";
+        $serverState = $this->showedName . " " . $serverState;
+
+        return view('ftpview', ['serverState'=>$serverState, 'onStyle'=>$onStyle, 'offStyle'=>$offStyle]);
     }
 
     /**
@@ -75,7 +84,7 @@ class BlindftpServerController extends Controller
         $serverState = "";
         $onStyle = "";
         $offStyle = "";
-        $fileServer = FileServer::find(1);
+        $fileServer = FileServer::where('name', '=', $this->dbName)->firstOrFail();
         if ($request->command == 'on') {
             if (!self::isActive($fileServer)) {                
                 BlindftpServerJob::dispatch()->onConnection('database')->onQueue('async');
@@ -83,7 +92,7 @@ class BlindftpServerController extends Controller
                     // The fileServer data is retrieved from the DB because
                     // its pid attribute is updated by an async process run
                     // by a worker from  the laravel queue.
-                    $fileServer = FileServer::find(1);
+                    $fileServer = FileServer::where('name', '=', $this->dbName)->firstOrFail();
                     sleep(1);
                     // TODO: afficher erreur apres un certain nombre de tours de boucle
                 }
@@ -105,7 +114,7 @@ class BlindftpServerController extends Controller
             }
         }
         $fileServer->save();
-        $serverState = "SERVER " . $serverState;
-        return response()->json(['serverState'=>$serverState, 'onStyle'=>$onStyle, 'offStyle'=>$offStyle]);
+        $serverState = $this->showedName . " " . $serverState;
+        return response()->json(['showedName' => $this->showedName, 'serverState'=>$serverState, 'onStyle'=>$onStyle, 'offStyle'=>$offStyle]);
     }
 }
