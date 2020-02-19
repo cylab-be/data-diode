@@ -27,6 +27,8 @@
             <button type="button" class="btn btn-primary off" style="{{ $offStyle }}">STOP THE {{ $showedName }}</button>
             <br/><br/>
             <p class="state">{{ $serverState }}</p>
+            <br/><br/>
+            <p>{{ $logInfo }}</p>
         </div>
     </div>
 @endsection

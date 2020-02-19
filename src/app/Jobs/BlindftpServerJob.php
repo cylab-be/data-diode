@@ -27,17 +27,19 @@ class BlindftpServerJob implements ShouldQueue
         if (!env('DIODE_IN', false)) {
             // DIODE OUT
             $this->dbName = 'ftpserver';
-            $this->command = "sudo " . 
+            $this->command = "sudo sh -c '" . 
                 "python /var/www/data-diode/BlindFTP_0.37/bftp.py " . 
                 "-r /var/www/data-diode/src/storage/app/files " . 
-                "-a " . env("INTERNAL_IP") . " &";
+                "-a " . env("INTERNAL_IP") . " " . 
+                ">> /var/www/data-diode/src/storage/app/bftp-diodeout.log'";
         } else {
             // DIODE IN
             $this->dbName = 'ftpclient';
-            $this->command = "sudo " . 
+            $this->command = "sudo sh -c '" . 
                 "python /var/www/data-diode/BlindFTP_0.37/bftp.py " . 
                 "-s /var/www/data-diode/src/storage/app/files " . 
-                "-a " . env("DIODE_OUT_IP") . " -b -P 5 &";
+                "-a " . env("DIODE_OUT_IP") . " -b -P 5 " . 
+                ">> /var/www/data-diode/src/storage/app/bftp-diodein.log'";
         }
     }
 

@@ -15,6 +15,9 @@ class BlindftpServerController extends Controller
 {
     protected $dbName;
     protected $showedName;
+    protected $killCommand;
+    protected $catCommand;
+    
     /**
      * Create a new controller instance.
      *
@@ -24,11 +27,17 @@ class BlindftpServerController extends Controller
     {
         $this->middleware(["auth", "default-password"]);
         if (!env('DIODE_IN', false)) {
+            // DIODE OUT
             $this->dbName = 'ftpserver';
             $this->showedName = 'SERVER';
+            $this->killCommand = 'sudo kill -15 ';
+            $this->catCommand = 'cat /var/www/data-diode/src/storage/app/bftp-diodeout.log';
         } else {
+            // DIODE IN
             $this->dbName = 'ftpclient';
             $this->showedName = 'CLIENT';
+            $this->killCommand = 'sudo kill -9 ';
+            $this->catCommand = 'cat /var/www/data-diode/src/storage/app/bftp-diodein.log';
         }
     }
 
@@ -39,7 +48,7 @@ class BlindftpServerController extends Controller
      * @return boolean true if the server is active from the point of vue of the database,
      * meaning its pid attribute is different than 0, false otherwise
      */
-    public function isActive(FileServer $server)
+    private function isActive(FileServer $server)
     {
         return $server->pid != 0;
     }
@@ -67,7 +76,17 @@ class BlindftpServerController extends Controller
         $offStyle = self::isActive($fileServer) ? "" : "display:none";
         $serverState = $this->showedName . " " . $serverState;
 
-        return view('ftpview', ['showedName' => $this->showedName, 'serverState'=>$serverState, 'onStyle'=>$onStyle, 'offStyle'=>$offStyle]);
+        $catProcess = new Process($this->catCommand);
+        $catProcess->mustRun();
+        $logInfo = $catProcess->getOutput();
+
+        return view('ftpview', [
+            'showedName' => $this->showedName,
+            'serverState' => $serverState,
+            'onStyle' => $onStyle,
+            'offStyle' => $offStyle,
+            'logInfo' => $logInfo,
+        ]);
     }
 
     /**
@@ -104,7 +123,7 @@ class BlindftpServerController extends Controller
             if (self::isActive($fileServer)) {                
                 $serverState = "OFF";
                 $offStyle = "none";
-                $process = new Process("sudo kill -15 " . $fileServer->pid);
+                $process = new Process($this->killCommand . $fileServer->pid);
                 try  {
                     $process->mustRun();
                 } catch (ProcessFailedException $exception) {
