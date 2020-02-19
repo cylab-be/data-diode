@@ -44,6 +44,7 @@ Route::delete("rule/{rule}", "RuleController@delete");
 Route::get("network", "NetworkController@get");
 Route::put("network/update", "NetworkController@update");
 
+// BlindFTP Server Routes...
 if (!env('DIODE_IN', false)) {
     Route::get('/ftpserver', 'BlindftpServerController@index');
     Route::post('/ftpserver', 'BlindftpServerController@toggle');

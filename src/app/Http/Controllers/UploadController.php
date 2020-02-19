@@ -22,14 +22,13 @@ class UploadController extends Controller
      * Gets the view for the file upload page
      * @return mixed the view
      */
-    public function index(Request $request)
+    public function index()
     {
         return view("upload");
     }
 
     /**
-     * Add the file in the diode_local filesystem,
-     * transmits it through the data diode
+     * Add the file in the diode_local filesystem
      * 
      * @param Resquest $request
      * 
