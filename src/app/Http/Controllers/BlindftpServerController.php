@@ -67,7 +67,7 @@ class BlindftpServerController extends Controller
         $offStyle = self::isActive($fileServer) ? "" : "display:none";
         $serverState = $this->showedName . " " . $serverState;
 
-        return view('ftpview', ['serverState'=>$serverState, 'onStyle'=>$onStyle, 'offStyle'=>$offStyle]);
+        return view('ftpview', ['showedName' => $this->showedName, 'serverState'=>$serverState, 'onStyle'=>$onStyle, 'offStyle'=>$offStyle]);
     }
 
     /**
@@ -115,6 +115,6 @@ class BlindftpServerController extends Controller
         }
         $fileServer->save();
         $serverState = $this->showedName . " " . $serverState;
-        return response()->json(['showedName' => $this->showedName, 'serverState'=>$serverState, 'onStyle'=>$onStyle, 'offStyle'=>$offStyle]);
+        return response()->json(['serverState'=>$serverState, 'onStyle'=>$onStyle, 'offStyle'=>$offStyle]);
     }
 }
