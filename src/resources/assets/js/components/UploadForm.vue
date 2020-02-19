@@ -8,8 +8,8 @@
         </h4>
         <kendo-upload ref="upload"
                     name="files"
-                    :async-save-url="'custom-save-url'"
-                    :async-remove-url="upload_url"
+                    :async-save-url="upload_url"
+                    :async-remove-url="'custom-remove-url'"
                     :async-chunk-size="11000"
                     :directory="folder_only"
                     :directory-drop="folder_only">
@@ -40,7 +40,7 @@ export default {
             formData.append('input_file_full_path', fileEntry.data("files")[0].name);
             formData.append("input_file", fileEntry.data("files")[0].rawFile);
             // POST
-            axios.post( module.upload_url,
+            axios.post( url,
                 formData,
                 {
                     headers: {
