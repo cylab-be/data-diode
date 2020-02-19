@@ -31,13 +31,19 @@ class BlindftpServerController extends Controller
             $this->dbName = 'ftpserver';
             $this->showedName = 'SERVER';
             $this->killCommand = 'sudo kill -15 ';
-            $this->catCommand = 'cat /var/www/data-diode/src/storage/app/bftp-diodeout.log';
+            $this->catCommand = 'if [ -f /var/www/data-diode/src/storage/app/bftp-diodeout.log ]; ' . 
+                'then cat /var/www/data-diode/src/storage/app/bftp-diodeout.log; ' . 
+                'else echo "There is currently no log info."; ' . 
+                'fi;';
         } else {
             // DIODE IN
             $this->dbName = 'ftpclient';
             $this->showedName = 'CLIENT';
             $this->killCommand = 'sudo kill -9 ';
-            $this->catCommand = 'cat /var/www/data-diode/src/storage/app/bftp-diodein.log';
+            $this->catCommand = 'if [ -f /var/www/data-diode/src/storage/app/bftp-diodein.log ]; ' . 
+            'then cat /var/www/data-diode/src/storage/app/bftp-diodeout.log; ' . 
+            'else echo "There is currently no log info."; ' . 
+            'fi;';
         }
     }
 
