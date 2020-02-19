@@ -28,7 +28,7 @@ class UploadController extends Controller
     }
 
     /**
-     * Add the file in the /files storage directory,
+     * Add the file in the diode_local filesystem,
      * transmits it through the data diode
      * 
      * @param Resquest $request
@@ -40,10 +40,6 @@ class UploadController extends Controller
         // $fileName = $file->getClientOriginalName();
         $fileName = $request->input_file_full_path;
         $path = $file->storeAs('files', $fileName);
-        $process = new Process("sudo " .
-            "python /home/vagrant/BlindFTP_0.37/bftp.py " .
-            "-e /var/www/data-diode/src/storage/app/files/".$fileName. " " .
-            "-a ". env("DIODE_OUT_IP") . " &");
     }
 
 }

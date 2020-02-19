@@ -23,12 +23,12 @@
 @section("content")
     <div class="container">
         <div class="tab-v1">
-        <div class="row">
+            <div class="row">
                 <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <upload-form folder_only></upload-form>
+                    <upload-form upload_url="/upload" folder_only></upload-form>
                 </div>
                 <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <upload-form></upload-form>
+                    <upload-form upload_url="/upload"></upload-form>
                 </div>
             </div>
         </div>

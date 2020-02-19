@@ -9,7 +9,7 @@
         <kendo-upload ref="upload"
                     name="files"
                     :async-save-url="'custom-save-url'"
-                    :async-remove-url="'custom-remove-url'"
+                    :async-remove-url="upload_url"
                     :async-chunk-size="11000"
                     :directory="folder_only"
                     :directory-drop="folder_only">
@@ -25,7 +25,8 @@ Vue.use(UploadInstaller);
 
 export default {
     props: {
-        folder_only: Boolean
+        folder_only: Boolean,
+        upload_url: String,
     },
     mounted: function () {
 
@@ -39,7 +40,7 @@ export default {
             formData.append('input_file_full_path', fileEntry.data("files")[0].name);
             formData.append("input_file", fileEntry.data("files")[0].rawFile);
             // POST
-            axios.post( '/upload/file',
+            axios.post( module.upload_url,
                 formData,
                 {
                     headers: {
@@ -73,7 +74,7 @@ export default {
 }
 </script>
 
-  <style>
+<style>
     #dirformdiv {padding: 10px;}
     .example-wrapper { min-height: 280px; align-content: flex-start; }
     .example-wrapper p, .example-col p { margin: 0 0 10px; }
@@ -83,4 +84,4 @@ export default {
     .event-log { margin: 0; padding: 0; max-height: 100px; overflow-y: auto; list-style-type: none; border: 1px solid rgba(0,0,0,.08); background-color: #fff; }
     .event-log li {margin: 0; padding: .3em; line-height: 1.2em; border-bottom: 1px solid rgba(0,0,0,.08); }
     .event-log li:last-child { margin-bottom: -1px;}
-  </style>
+</style>
