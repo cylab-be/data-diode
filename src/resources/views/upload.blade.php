@@ -23,17 +23,14 @@
 @section("content")
     <div class="container">
         <div class="tab-v1">
-            <?php
-                echo Form::open(array('url' => '/upload','files'=>'true'));
-                echo Form::file('image');
-                echo Form::submit('Upload File');
-                echo Form::close();
-            ?>
-            <form action="/upload" enctype="multipart/form-data" method="post">
-                <input id="uploadfolder" name="files[]" type="file" value="Input" multiple directory webkitdirectory moxdirectory>
-                <input type="submit" value="Upload folder">
-            </form>
-            <file-form/>
+        <div class="row">
+                <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                    <upload-form folder_only></upload-form>
+                </div>
+                <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                    <upload-form></upload-form>
+                </div>
+            </div>
         </div>
     </div>
 @endsection

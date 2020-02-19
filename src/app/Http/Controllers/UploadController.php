@@ -29,18 +29,21 @@ class UploadController extends Controller
 
     /**
      * Add the file in the /files storage directory,
-     * transmits it through the data diode and shows
-     * the user that the upload worked
+     * transmits it through the data diode
      * 
      * @param Resquest $request
      * 
-     * @return mixed
+     * @return 
      */
     public function uploadFile(Request $request) {
         $file = $request->file('input_file');
-        $fileName = $file->getClientOriginalName();
+        // $fileName = $file->getClientOriginalName();
+        $fileName = $request->input_file_full_path;
         $path = $file->storeAs('files', $fileName);
-        return view('uploaded', ['fileName'=>$fileName]);
+        $process = new Process("sudo " .
+            "python /home/vagrant/BlindFTP_0.37/bftp.py " .
+            "-e /var/www/data-diode/src/storage/app/files/".$fileName. " " .
+            "-a ". env("DIODE_OUT_IP") . " &");
     }
 
 }

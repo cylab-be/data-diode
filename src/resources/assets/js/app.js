@@ -14,4 +14,4 @@ window.Vue = require('vue');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('file-form', require('./components/FileForm.vue'));
+Vue.component('upload-form', require('./components/UploadForm.vue'));
