@@ -41,7 +41,7 @@ class BlindftpServerController extends Controller
             $this->showedName = 'CLIENT';
             $this->killCommand = 'sudo kill -9 ';
             $this->catCommand = 'if [ -f /var/www/data-diode/src/storage/app/bftp-diodein.log ]; ' . 
-            'then cat /var/www/data-diode/src/storage/app/bftp-diodeout.log; ' . 
+            'then cat /var/www/data-diode/src/storage/app/bftp-diodein.log; ' . 
             'else echo "There is currently no log info."; ' . 
             'fi;';
         }
