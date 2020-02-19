@@ -115,6 +115,6 @@ class BlindftpServerController extends Controller
         }
         $fileServer->save();
         $serverState = $this->showedName . " " . $serverState;
-        return response()->json(['serverState'=>$serverState, 'onStyle'=>$onStyle, 'offStyle'=>$offStyle]);
+        return response()->json(['showedName' => $this->showedName, 'serverState'=>$serverState, 'onStyle'=>$onStyle, 'offStyle'=>$offStyle]);
     }
 }

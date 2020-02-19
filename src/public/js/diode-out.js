@@ -92,7 +92,7 @@ $(function(){
                 },
                 error: displayError,
                 success: function(response){
-                    button.removeClass('disabled').html('START THE SERVER')
+                    button.removeClass('disabled').html('START THE ' + response['showedName'])
                     $('.state').text(response['serverState'])
                     $('.on').css('display', response['onStyle'])
                     $('.off').css('display', response['offStyle'])
@@ -118,7 +118,7 @@ $(function(){
                 },
                 error: displayError,
                 success: function(response){
-                    button.removeClass('disabled').html('STOP THE SERVER')
+                    button.removeClass('disabled').html('STOP THE ' + response['showedName'])
                     $('.state').text(response['serverState'])
                     $('.on').css('display', response['onStyle'])
                     $('.off').css('display', response['offStyle'])

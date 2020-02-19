@@ -13,6 +13,8 @@
 
         <!-- Styles -->
         <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/kendo-ui.css') }}" rel="stylesheet">
+        
         <!-- Scripts -->
         <script src="{{ asset('js/app.js') }}"></script>
     @show
