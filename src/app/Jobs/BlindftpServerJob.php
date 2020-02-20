@@ -38,7 +38,7 @@ class BlindftpServerJob implements ShouldQueue
             $this->command = "sudo sh -c '" . 
                 "python /var/www/data-diode/BlindFTP_0.37/bftp.py " . 
                 "-s /var/www/data-diode/src/storage/app/files " . 
-                "-a " . env("DIODE_OUT_IP") . " -b -P 5 " . 
+                "-a " . env("DIODE_OUT_IP") . " -b -P 5 -x" . 
                 ">> /var/www/data-diode/src/storage/app/bftp-diodein.log'";
         }
     }

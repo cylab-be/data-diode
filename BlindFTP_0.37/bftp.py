@@ -999,8 +999,7 @@ def envoyer(fichier_source, fichier_dest, limiteur_debit=None, num_session=None,
     limiteur_debit : pour limiter le débit d'envoi
     num_session    : numéro de session
     num_paquet_session : compteur de paquets
-    """
-
+    """    
     msg = "Envoi du fichier %s..." % fichier_source
     Console.Print_temp(msg,NL=True)
     logging.info(msg)
@@ -1040,6 +1039,7 @@ def envoyer(fichier_source, fichier_dest, limiteur_debit=None, num_session=None,
     debug("nb_paquets = %d" % nb_paquets)
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     reste_a_envoyer = taille_fichier
+
     try:
         f = open(fichier_source, 'rb')
         if limiteur_debit == None:
@@ -1133,6 +1133,22 @@ def synchro_arbo(repertoire):
         monaff=TraitEncours.TraitEnCours()
         monaff.StartIte()
         while (not(AllFileSendMax) or options.boucle):
+            # DIODE BEGIN
+            if (options.expurge_repertoire):
+                print ("%s - Suppression des dossiers vides" %mtime2str(time.time()))
+                for root, dirs, files in os.walk(repertoire, topdown=False):                
+                    for name in dirs:
+                        try:
+                            if len(os.listdir( os.path.join(root, name) )) == 0: #check whether the directory is empty
+                                print( "Deleting", os.path.join(root, name) )
+                                try:
+                                    os.rmdir( os.path.join(root, name) )
+                                except:
+                                    print( "FAILED :", os.path.join(root, name) )
+                                    pass
+                        except:
+                            pass
+            # DIODE END
             print ("%s - Scrutation arborescence" %mtime2str(time.time()))
             Dscrutation = xfl.DirTree()
             if MODE_DEBUG:
@@ -1309,7 +1325,13 @@ def synchro_arbo(repertoire):
                             if (envoyer(fullpathfichier, f, limiteur_debit, crc=int(DRef.dict[f].get(ATTR_CRC))) != -1):
                                 DRef.dict[f].set(ATTR_LASTSEND, str(time.time()))
                                 DRef.dict[f].set(ATTR_NBSEND, str(int(DRef.dict[f].get(ATTR_NBSEND)) + 1))
-                                if int(DRef.dict[f].get(ATTR_NBSEND)) > MinFileRedundancy:
+                                # DIODE BEGIN
+                                if (options.expurge_repertoire):
+                                    if (int(DRef.dict[f].get(ATTR_NBSEND)) == MinFileRedundancy):
+                                        print("%s - Suppression %s" %(mtime2str(time.time()), str(fullpathfichier)))
+                                        os.remove(str(fullpathfichier))
+                                # DIODE END
+                                if int(DRef.dict[f].get(ATTR_NBSEND)) > MinFileRedundancy:                                    
                                     LastFileSendMax=True
                                     if (FileLessRedundancy == 0): AllFileSendMax=True
                                 else:
@@ -1422,7 +1444,10 @@ def analyse_options():
         help="Pause entre 2 boucles (en secondes)", type="int", default=300)
     parseur.add_option("-c", "--continue", action="store_true", dest="reprise",\
         default=False, help="Fichier de reprise a chaud")
-
+    # DIODE BEGIN
+    parseur.add_option("-x", "--expurge", action="store_true", dest="expurge_repertoire",\
+        default=False, help="Supprimer les fichiers et dossiers envoyés (ne pas utiliser avec -S)")
+    # DIODE END
 
     # on parse les options de ligne de commande:
     (options, args) = parseur.parse_args(sys.argv[1:])
