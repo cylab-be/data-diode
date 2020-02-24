@@ -33,7 +33,7 @@ Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 Route::get("password/change", "ChangePasswordController@get")->name('password.change');
 Route::post("password/change", "ChangePasswordController@post");
 
-Route::get("/", "ConfigurationController@index");
+Route::get("/config", "ConfigurationController@index");
 
 Route::post('rule', 'RuleController@create');
 Route::get('rule', 'RuleController@retrieveAll');
@@ -50,9 +50,11 @@ if (!env('DIODE_IN', false)) {
     Route::post('/ftpserver', 'BlindftpServerController@toggle');
     Route::get('/storage', 'StorageController@listView');
     Route::get('/storage/{path}', 'StorageController@listView')->where('path', '(.*)'); // The "where" method permits the usage of a slash in the path variable
+    Route::get("/", "MainPageController@indexOut");
 } else {
     Route::get('/ftpclient', 'BlindftpServerController@index');
     Route::post('/ftpclient', 'BlindftpServerController@toggle');
     Route::get("/upload", "UploadController@index");
     Route::post("/upload", "UploadController@uploadFile");
+    Route::get("/", "MainPageController@indexIn");
 }
