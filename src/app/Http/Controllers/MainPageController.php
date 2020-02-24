@@ -38,7 +38,7 @@ class MainPageController extends Controller
                     'url'=> '/ftpserver',
                 ],
                 [   'name'=> 'STORAGE',
-                    'icon'=> 'fa-file-upload',
+                    'icon'=> 'fa-box-open',
                     'url'=> '/storage',
                 ],
             ];            
