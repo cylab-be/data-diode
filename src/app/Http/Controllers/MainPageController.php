@@ -6,43 +6,63 @@ use Illuminate\Http\Request;
 
 class MainPageController extends Controller
 {
-    public function indexIn() {
-        $routes = [
-            [
-                'name'=> 'CONFIG',
-                'icon'=> 'fa-cogs',
-                'url'=> '/config',
-            ],
-            [
-                'name'=> 'FTP CLIENT',
-                'icon'=> 'fa-toggle-on',
-                'url'=> '/ftpclient',
-            ],
-            [   'name'=> 'UPLOAD',
-                'icon'=> 'fa-file-upload',
-                'url'=> '/upload',
-            ],
-        ];
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware(["auth", "default-password"]);
+    }
+
+    /**
+     * Get the view for the main page
+     *
+     * @return mixed the view
+     */
+    public function index()
+    {
+        $routes = [];
+        if (!env('DIODE_IN', false)) {
+            // DIODE OUT
+            $routes = [
+                [
+                    'name'=> 'CONFIG',
+                    'icon'=> 'fa-cogs',
+                    'url'=> '/config',
+                ],
+                [
+                    'name'=> 'FTP SERVER',
+                    'icon'=> 'fa-toggle-on',
+                    'url'=> '/ftpserver',
+                ],
+                [   'name'=> 'STORAGE',
+                    'icon'=> 'fa-file-upload',
+                    'url'=> '/storage',
+                ],
+            ];            
+        } else {
+            // DIODE IN
+            $routes = [
+                [
+                    'name'=> 'CONFIG',
+                    'icon'=> 'fa-cogs',
+                    'url'=> '/config',
+                ],
+                [
+                    'name'=> 'FTP CLIENT',
+                    'icon'=> 'fa-toggle-on',
+                    'url'=> '/ftpclient',
+                ],
+                [   'name'=> 'UPLOAD',
+                    'icon'=> 'fa-file-upload',
+                    'url'=> '/upload',
+                ],
+            ];
+        }
+
         return view('main', ['routes' => $routes]);
     }
 
-    public function indexOut() {
-        $routes = [
-            [
-                'name'=> 'CONFIG',
-                'icon'=> 'fa-cogs',
-                'url'=> '/config',
-            ],
-            [
-                'name'=> 'FTP SERVER',
-                'icon'=> 'fa-toggle-on',
-                'url'=> '/ftpserver',
-            ],
-            [   'name'=> 'STORAGE',
-                'icon'=> 'fa-file-upload',
-                'url'=> '/storage',
-            ],
-        ];
-        return view('main', ['routes' => $routes]);
-    }
 }
