@@ -6,6 +6,7 @@ use Symfony\Component\Process\Process;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use App\Jobs\BlindftpServerJob;
+use Artisan;
 
 /**
  * Controller used to restart the BLindFTP program and read its output.
@@ -61,17 +62,6 @@ class BlindftpServerController extends Controller
     }
 
     /**
-     * Get the pids corresponding the BlindFTP running processes.
-     * 
-     * @return string the pids.
-     */
-    private function getPids() {
-        $pidsProcess = new Process($this->pidCommand);
-        $pidsProcess->mustRun();
-        return $pidsProcess->getOutput();
-    }
-
-    /**
      * Get the view showing the state (ON/OFF) of the server or the client.
      * 
      * @return mixed the view.
@@ -89,27 +79,16 @@ class BlindftpServerController extends Controller
 
     /**
      * Restart the server or the client (kills its processes launch it. Also notifies 
-     * the vue of all  the changes that have been made.
+     * the vue of all  the changes that have been made. All that using a command
+     * defined by App\Console\Commands\RestartBlindftp.php.
      * 
      * @param Request the request.
      * 
-     * @return mixed The json response containing data about the state of the server 
-     * or the client.
+     * @return mixed an empty json response.
      */
     public function restart(Request $request)
     {
-        $pids = self::getPids();
-
-        $killProcess = new Process($this->killCommand . $pids);
-        $killProcess->mustRun();
-        
-        BlindftpServerJob::dispatch()->onConnection('database')->onQueue('async');
-
-        while (empty($pids)) {
-            $pids = self::getPids();
-            sleep(1);
-            // TODO: show error after a certain number of loops
-        }
+        Artisan::call('bftp:restart');
 
         return response()->json([]);
     }

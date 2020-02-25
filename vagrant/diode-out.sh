@@ -36,3 +36,4 @@ sed -i -e "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g" /etc/sysctl.conf
 sysctl -p /etc/sysctl.conf
 echo "www-data ALL=NOPASSWD: /var/www/data-diode/src/app/Scripts/datadiode.sh, /var/www/data-diode/BlindFTP_0.37, /bin/kill" | EDITOR="tee -a" visudo
 systemctl restart apache2
+php artisan bftp:restart
