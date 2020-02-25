@@ -3,7 +3,12 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Symfony\Component\Process\Process;
+use App\Jobs\BlindftpServerJob;
 
+/**
+ * Command to restart the BLindFTP program
+ */
 class RestartBlindftp extends Command
 {
     /**

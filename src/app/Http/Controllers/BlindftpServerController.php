@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Symfony\Component\Process\Process;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use App\Jobs\BlindftpServerJob;
 use Artisan;
 
 /**
