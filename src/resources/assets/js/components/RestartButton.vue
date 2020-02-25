@@ -34,7 +34,7 @@ export default {
                     button.removeClass('disabled').html('RESTART THE ' + (me.diodein ? 'CLIENT' : 'SERVER'))
                 })
                 .catch(function(error) {
-                    toastr.error(error)
+                    toastr.error(error.message)
                 })
         },
     }

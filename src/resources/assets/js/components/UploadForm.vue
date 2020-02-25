@@ -62,7 +62,7 @@ export default {
                 module.onRequestSuccess.call(module, e, fileEntry);
             })
             .catch(function(error){
-                // console.log(error);
+                toastr.error(error.message)
             });
         };
 

@@ -13,26 +13,11 @@ use Artisan;
 class BlindftpServerController extends Controller
 {
     /**
-     * The command to kill the BlindFTP program (whithout the pids).
-     * 
-     * @var string
-     */
-    protected $killCommand;
-
-    /**
      * The command to read the output of the BlindFTP program.
      * 
      * @var string
      */
     protected $catCommand;
-
-    /**
-     * The command to get the pids of the the BlindFTP program running 
-     * processes.
-     * 
-     * @var string
-     */
-    protected $pidCommand;
     
     /**
      * Create a new controller instance.
@@ -42,17 +27,14 @@ class BlindftpServerController extends Controller
     public function __construct()
     {
         $this->middleware(["auth", "default-password"]);
-        $this->pidCommand = "PID=`ps auxw | grep bftp.py | grep -v grep | awk '{ print $2 }'` && echo \$PID";
         if (!env('DIODE_IN', false)) {
             // DIODE OUT
-            $this->killCommand = 'sudo kill -15 ';
             $this->catCommand = 'if [ -f /var/www/data-diode/src/storage/app/bftp-diodeout.log ]; ' . 
                 'then cat /var/www/data-diode/src/storage/app/bftp-diodeout.log; ' . 
                 'else echo "There is currently no log info."; ' . 
                 'fi;';
         } else {
             // DIODE IN
-            $this->killCommand = 'sudo kill -9 ';
             $this->catCommand = 'if [ -f /var/www/data-diode/src/storage/app/bftp-diodein.log ]; ' . 
             'then cat /var/www/data-diode/src/storage/app/bftp-diodein.log; ' . 
             'else echo "There is currently no log info."; ' . 

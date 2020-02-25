@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Illuminate\Console\Command;
 use Symfony\Component\Process\Process;
 use App\Jobs\BlindftpServerJob;
@@ -51,7 +52,7 @@ class RestartBlindftp extends Command
         $this->pidCommand = "PID=`ps auxw | grep bftp.py | grep -v grep | awk '{ print $2 }'` && echo \$PID";
         if (!env('DIODE_IN', false)) {
             // DIODE OUT
-            $this->killCommand = 'sudo kill -15 ';
+            $this->killCommand = 'sudo kill -9 ';
         } else {
             // DIODE IN
             $this->killCommand = 'sudo kill -9 ';
