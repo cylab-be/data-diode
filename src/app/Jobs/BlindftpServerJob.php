@@ -76,8 +76,7 @@ class BlindftpServerJob implements ShouldQueue
      * @return void
      */
     public function handle()
-    {
-        
+    {        
         $process = new Process($this->command);
         $process->disableOutput();
         $process->start();

@@ -26,11 +26,12 @@ export default {
         }
     },
     mounted() {
-        this.state = this.serverState
+        var me = this
+        this.state = me.serverState
     },
     methods: {
         restartServer() {
-            var me = this;
+            var me = this
             var button = $('.btn')
             if(!button.hasClass('disabled')) {
                 button.addClass('disabled').html('RESTARTING... <span class="fa fa-spinner fa-pulse"></span>')
