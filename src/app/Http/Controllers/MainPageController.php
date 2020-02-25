@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+/**
+ * Controller used to show all the options of the web interface.
+ */
 class MainPageController extends Controller
 {
     /**
@@ -17,9 +20,9 @@ class MainPageController extends Controller
     }
 
     /**
-     * Get the view for the main page
+     * Get the view for the main page.
      *
-     * @return mixed the view
+     * @return mixed the view.
      */
     public function index()
     {

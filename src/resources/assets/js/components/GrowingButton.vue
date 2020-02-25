@@ -18,7 +18,7 @@
     </div>
 </template>
 
-<script type="application/javascript"> 
+<script> 
 export default {
     props: {
         route: String,

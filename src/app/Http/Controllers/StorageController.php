@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\StorageService;
 
+/**
+ * Controller used to browse the data sent by the diode in.
+ */
 class StorageController extends Controller {
  
     private $storageService;
@@ -12,7 +15,7 @@ class StorageController extends Controller {
     /**
      * ApiController constructor.
      *
-     * @param StorageService $storageService
+     * @param StorageService the storage service.
      */
     public function __construct( StorageService $storageService ) {
         $this->middleware(["auth", "default-password"]);
@@ -20,11 +23,11 @@ class StorageController extends Controller {
     }
  
     /**
-     * List of directory content into a view
+     * List of directory content into a view.
      *
-     * @param Sring $path the directory path to get its content
+     * @param Sring $path the directory path to get its content.
      *
-     * @return mixed the view
+     * @return mixed the view.
      */
     public function listView( String $path = '.' ) {
         $content = $this->storageService->list($path );

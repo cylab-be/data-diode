@@ -5,18 +5,33 @@ namespace App\Http\Controllers;
 use Symfony\Component\Process\Process;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use App\FileServer;
 use App\Jobs\BlindftpServerJob;
 
 /**
- * Controller used for getting and updating the state of the BLindFTP server
+ * Controller used to restart the BLindFTP program and read its output.
  */
 class BlindftpServerController extends Controller
 {
-    protected $dbName;
-    // protected $showedName;
+    /**
+     * The command to kill the BlindFTP program (whithout the pids).
+     * 
+     * @var string
+     */
     protected $killCommand;
+
+    /**
+     * The command to read the output of the BlindFTP program.
+     * 
+     * @var string
+     */
     protected $catCommand;
+
+    /**
+     * The command to get the pids of the the BlindFTP program running 
+     * processes.
+     * 
+     * @var string
+     */
     protected $pidCommand;
     
     /**
@@ -30,8 +45,6 @@ class BlindftpServerController extends Controller
         $this->pidCommand = "PID=`ps auxw | grep bftp.py | grep -v grep | awk '{ print $2 }'` && echo \$PID";
         if (!env('DIODE_IN', false)) {
             // DIODE OUT
-            $this->dbName = 'ftpserver';
-            // $this->showedName = 'SERVER';
             $this->killCommand = 'sudo kill -15 ';
             $this->catCommand = 'if [ -f /var/www/data-diode/src/storage/app/bftp-diodeout.log ]; ' . 
                 'then cat /var/www/data-diode/src/storage/app/bftp-diodeout.log; ' . 
@@ -39,8 +52,6 @@ class BlindftpServerController extends Controller
                 'fi;';
         } else {
             // DIODE IN
-            $this->dbName = 'ftpclient';
-            // $this->showedName = 'CLIENT';
             $this->killCommand = 'sudo kill -9 ';
             $this->catCommand = 'if [ -f /var/www/data-diode/src/storage/app/bftp-diodein.log ]; ' . 
             'then cat /var/www/data-diode/src/storage/app/bftp-diodein.log; ' . 
@@ -50,105 +61,9 @@ class BlindftpServerController extends Controller
     }
 
     /**
-     * Inform about the state of the BlindFTP server
+     * Get the pids corresponding the BlindFTP running processes.
      * 
-     * @param FileServer $server: the server object retrived from the database
-     * @return boolean true if the server is active from the point of vue of the database,
-     * meaning its pid attribute is different than 0, false otherwise
-     */
-    private function isActive(FileServer $server)
-    {
-        return $server->pid != 0;
-    }
-
-    /**
-     * Get the view showing the state of the server (ON/OFF) and one of the two
-     * buttons (start/stop) depending in the state of the server. Also create
-     * a database entry for the BlindFTP server if it's not already done
-     * 
-     * @return mixed the view 
-     */
-    public function oldIndex()
-    {        
-        $onStyle = "display:none";
-        $offStyle = "display:none";
-
-        $count = FileServer::where('name', '=', $this->dbName)->count();
-        if ($count == 0) {
-            FileServer::create(array('name' => $this->dbName));
-        }
-
-        $fileServer = FileServer::where('name', '=', $this->dbName)->firstOrFail();
-        $serverState = self::isActive($fileServer) ? "ACTIVE WITH PID = " . $fileServer->pid : "OFF";
-        $onStyle = self::isActive($fileServer) ? "display:none" : "";
-        $offStyle = self::isActive($fileServer) ? "" : "display:none";
-        $serverState = $this->showedName . " " . $serverState;
-
-        $catProcess = new Process($this->catCommand);
-        $catProcess->mustRun();
-        $logInfo = $catProcess->getOutput();
-
-        return view('ftpview', [
-            'showedName' => $this->showedName,
-            'serverState' => $serverState,
-            'onStyle' => $onStyle,
-            'offStyle' => $offStyle,
-            'logInfo' => $logInfo,
-        ]);
-    }
-
-    /**
-     * Invert the state of the server (kills its process if it is on and replace its 
-     * pid in the database by 0, or replace its pid in the database by the pid of the
-     * server that was launched just after launching it. Also notifies the vue of all
-     * the changes that have been made
-     * 
-     * @return mixed The json response containing data about the state of the server and which button
-     * (ON/OFF) to show
-     */
-    public function oldToggle(Request $request)
-    {        
-        $serverState = "";
-        $onStyle = "";
-        $offStyle = "";
-        $fileServer = FileServer::where('name', '=', $this->dbName)->firstOrFail();
-        if ($request->command == 'on') {
-            if (!self::isActive($fileServer)) {                
-                BlindftpServerJob::dispatch()->onConnection('database')->onQueue('async');
-                while ($fileServer->pid == 0) {
-                    // The fileServer data is retrieved from the DB because
-                    // its pid attribute is updated by an async process run
-                    // by a worker from  the laravel queue.
-                    $fileServer = FileServer::where('name', '=', $this->dbName)->firstOrFail();
-                    sleep(1);
-                    // TODO: afficher erreur apres un certain nombre de tours de boucle
-                }
-                $serverState = "ACTIVE WITH PID = " . $fileServer->pid;
-                $onStyle = "none";
-            }
-        }
-        if ($request->command == 'off') {
-            if (self::isActive($fileServer)) {                
-                $serverState = "OFF";
-                $offStyle = "none";
-                $process = new Process($this->killCommand . $fileServer->pid);
-                try  {
-                    $process->mustRun();
-                } catch (ProcessFailedException $exception) {
-                    // TODO: show to user that server's process has already been killed
-                }
-                $fileServer->pid = 0;
-            }
-        }
-        $fileServer->save();
-        $serverState = $this->showedName . " " . $serverState;
-        return response()->json(['showedName' => $this->showedName, 'serverState'=>$serverState, 'onStyle'=>$onStyle, 'offStyle'=>$offStyle]);
-    }
-
-    /**
-     * Get the pids corresponding the BlindFTP running processes
-     * 
-     * @return String the pids
+     * @return string the pids.
      */
     private function getPids() {
         $pidsProcess = new Process($this->pidCommand);
@@ -157,9 +72,9 @@ class BlindftpServerController extends Controller
     }
 
     /**
-     * Get the view showing the state (ON/OFF) of the server or the client
+     * Get the view showing the state (ON/OFF) of the server or the client.
      * 
-     * @return mixed the view 
+     * @return mixed the view.
      */
     public function index()
     {        
@@ -174,12 +89,12 @@ class BlindftpServerController extends Controller
 
     /**
      * Restart the server or the client (kills its processes launch it. Also notifies 
-     * the vue of all  the changes that have been made
+     * the vue of all  the changes that have been made.
      * 
-     * @param Request the request
+     * @param Request the request.
      * 
      * @return mixed The json response containing data about the state of the server 
-     * or the client
+     * or the client.
      */
     public function restart(Request $request)
     {
@@ -195,7 +110,7 @@ class BlindftpServerController extends Controller
             sleep(1);
             // TODO: show error after a certain number of loops
         }
-        
+
         return response()->json([]);
     }
 

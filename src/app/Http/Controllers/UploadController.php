@@ -19,8 +19,8 @@ class UploadController extends Controller
     }
 
     /**
-     * Gets the view for the file upload page
-     * @return mixed the view
+     * Gets the view for the file upload page.
+     * @return mixed the view.
      */
     public function index()
     {
@@ -28,9 +28,9 @@ class UploadController extends Controller
     }
 
     /**
-     * Add the file in the diode_local filesystem
+     * Add the file in the 'diode_local' filesystem.
      * 
-     * @param Resquest $request
+     * @param Resquest the request.
      * 
      * @return 
      */
