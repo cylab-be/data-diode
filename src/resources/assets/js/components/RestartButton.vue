@@ -5,7 +5,7 @@
             class="btn btn-primary"
             v-on:click="restartServer"
         >
-            RESTART THE FTP {{ diodein ? 'CLIENT' : 'SERVER' }} (NOW )
+            RESTART THE FTP {{ diodein ? 'CLIENT' : 'SERVER' }}
         </button>
         <br/>
     </div>
