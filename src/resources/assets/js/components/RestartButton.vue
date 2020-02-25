@@ -46,7 +46,7 @@ export default {
                     this.state = response.serverState
                 })
                 .catch(function(error) {
-                    toastr.error(error);
+                    toastr.error(error)
                 })
         }
     }
