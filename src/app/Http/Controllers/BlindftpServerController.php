@@ -163,14 +163,11 @@ class BlindftpServerController extends Controller
      */
     public function index()
     {        
-        $serverState = empty(self::getPids()) ? 'ON' : 'OFF';
-
         $catProcess = new Process($this->catCommand);
         $catProcess->mustRun();
         $logInfo = $catProcess->getOutput();
 
         return view('ftpview', [
-            'serverState' => $serverState,
             'logInfo' => $logInfo,
         ]);
     }    
@@ -198,12 +195,8 @@ class BlindftpServerController extends Controller
             sleep(1);
             // TODO: show error after a certain number of loops
         }
-
-        $serverState = empty($pids) ? 'ON' : 'OFF';
-
-        return response()->json([
-            'serverState'=>$serverState,
-        ]);
+        
+        return response()->json([]);
     }
 
 }

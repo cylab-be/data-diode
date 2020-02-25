@@ -5,12 +5,9 @@
             class="btn btn-primary"
             v-on:click="restartServer"
         >
-            RESTART THE {{ diodein ? 'CLIENT' : 'SERVER' }}
+            RESTART THE FTP {{ diodein ? 'CLIENT' : 'SERVER' }} (NOW )
         </button>
         <br/>
-        <p>
-            {{ diodein ? 'CLIENT' : 'SERVER' }} {{ state }}
-        </p>
     </div>
 </template>
 
@@ -18,16 +15,6 @@
 export default {
     props: {
         diodein: Boolean,
-        serverState: String,
-    },
-    data() {
-        return {
-            state: '',
-        }
-    },
-    mounted() {
-        var me = this
-        this.state = me.serverState
     },
     methods: {
         restartServer() {
@@ -45,7 +32,6 @@ export default {
             axios(options)
                 .then(function(response) {
                     button.removeClass('disabled').html('RESTART THE ' + (me.diodein ? 'CLIENT' : 'SERVER'))
-                    me.state = response.serverState
                 })
                 .catch(function(error) {
                     toastr.error(error)

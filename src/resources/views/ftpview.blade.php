@@ -24,9 +24,9 @@
     <div class="container">
         <div class="text-center">
             @if (env("DIODE_IN", true))
-            <restart-button diodein server-state="{{ $serverState }}"></restart-button>
+            <restart-button diodein></restart-button>
             @else
-            <restart-button server-state="{{ $serverState }}"></restart-button>
+            <restart-button></restart-button>
             @endif
             <br/><br/>
             <p>{{ $logInfo }}</p>

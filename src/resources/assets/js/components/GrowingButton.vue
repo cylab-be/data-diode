@@ -6,8 +6,7 @@
                 v-on:mouseover="grow"
                 v-on:mouseleave="shrink"
                 v-on:click="redirectRoute"
-            >
-            </div>
+            ></div>
             <div :style="iconContainer">
                 <i 
                     :class="'fa ' + icon"
