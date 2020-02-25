@@ -48,7 +48,7 @@ class BlindftpServerJob implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function oldHandle()
     {
         
         $process = new Process($this->command);
@@ -68,5 +68,18 @@ class BlindftpServerJob implements ShouldQueue
         }
         $fileServer->pid = intval($pid_process->getOutput());
         $fileServer->save();
+    }
+
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    public function handle()
+    {
+        
+        $process = new Process($this->command);
+        $process->disableOutput();
+        $process->start();
     }
 }

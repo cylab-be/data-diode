@@ -14,9 +14,10 @@ use App\Jobs\BlindftpServerJob;
 class BlindftpServerController extends Controller
 {
     protected $dbName;
-    protected $showedName;
+    // protected $showedName;
     protected $killCommand;
     protected $catCommand;
+    protected $pidCommand;
     
     /**
      * Create a new controller instance.
@@ -26,10 +27,11 @@ class BlindftpServerController extends Controller
     public function __construct()
     {
         $this->middleware(["auth", "default-password"]);
+        $this->pidCommand = "PID=`ps auxw | grep bftp.py | grep -v grep | awk '{ print $2 }'` && echo \$PID";
         if (!env('DIODE_IN', false)) {
             // DIODE OUT
             $this->dbName = 'ftpserver';
-            $this->showedName = 'SERVER';
+            // $this->showedName = 'SERVER';
             $this->killCommand = 'sudo kill -15 ';
             $this->catCommand = 'if [ -f /var/www/data-diode/src/storage/app/bftp-diodeout.log ]; ' . 
                 'then cat /var/www/data-diode/src/storage/app/bftp-diodeout.log; ' . 
@@ -38,7 +40,7 @@ class BlindftpServerController extends Controller
         } else {
             // DIODE IN
             $this->dbName = 'ftpclient';
-            $this->showedName = 'CLIENT';
+            // $this->showedName = 'CLIENT';
             $this->killCommand = 'sudo kill -9 ';
             $this->catCommand = 'if [ -f /var/www/data-diode/src/storage/app/bftp-diodein.log ]; ' . 
             'then cat /var/www/data-diode/src/storage/app/bftp-diodein.log; ' . 
@@ -66,7 +68,7 @@ class BlindftpServerController extends Controller
      * 
      * @return mixed the view 
      */
-    public function index()
+    public function oldIndex()
     {        
         $onStyle = "display:none";
         $offStyle = "display:none";
@@ -104,7 +106,7 @@ class BlindftpServerController extends Controller
      * @return mixed The json response containing data about the state of the server and which button
      * (ON/OFF) to show
      */
-    public function toggle(Request $request)
+    public function oldToggle(Request $request)
     {        
         $serverState = "";
         $onStyle = "";
@@ -142,4 +144,66 @@ class BlindftpServerController extends Controller
         $serverState = $this->showedName . " " . $serverState;
         return response()->json(['showedName' => $this->showedName, 'serverState'=>$serverState, 'onStyle'=>$onStyle, 'offStyle'=>$offStyle]);
     }
+
+    /**
+     * Get the pids corresponding the BlindFTP running processes
+     * 
+     * @return String the pids
+     */
+    private function getPids() {
+        $pidsProcess = new Process($this->pidCommand);
+        $pidsProcess->mustRun();
+        return $pidsProcess->getOutput();
+    }
+
+    /**
+     * Get the view showing the state (ON/OFF) of the server or the client
+     * 
+     * @return mixed the view 
+     */
+    public function index()
+    {        
+        $serverState = empty(self::getPids()) ? 'ON' : 'OFF';
+
+        $catProcess = new Process($this->catCommand);
+        $catProcess->mustRun();
+        $logInfo = $catProcess->getOutput();
+
+        return view('ftpview', [
+            'serverState' => $serverState,
+            'logInfo' => $logInfo,
+        ]);
+    }    
+
+    /**
+     * Restart the server or the client (kills its processes launch it. Also notifies 
+     * the vue of all  the changes that have been made
+     * 
+     * @param Request the request
+     * 
+     * @return mixed The json response containing data about the state of the server 
+     * or the client
+     */
+    public function restart(Request $request)
+    {
+        $killProcess = new Process($this->killCommand . $pids);
+        $killProcess->mustRun();
+
+        $pids = self::getPids();
+        
+        BlindftpServerJob::dispatch()->onConnection('database')->onQueue('async');
+
+        while (empty($pids)) {
+            $pids = self::getPids();
+            sleep(1);
+            // TODO: show error after a certain number of loops
+        }
+
+        $serverState = empty($pids) ? 'ON' : 'OFF';
+
+        return response()->json([
+            'serverState'=>$serverState,
+        ]);
+    }
+
 }

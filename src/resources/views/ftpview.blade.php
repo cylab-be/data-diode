@@ -23,10 +23,17 @@
 @section("content")
     <div class="container">
         <div class="text-center">
-            <button type="button" class="btn btn-primary on" style="{{ $onStyle }}">START THE {{ $showedName }}</button>
+            <!--button type="button" class="btn btn-primary on" style="{{ $onStyle }}">START THE {{ $showedName }}</button>
             <button type="button" class="btn btn-primary off" style="{{ $offStyle }}">STOP THE {{ $showedName }}</button>
             <br/><br/>
             <p class="state">{{ $serverState }}</p>
+            <br/><br/>
+            <p>{{ $logInfo }}</p-->
+            @if (env("DIODE_IN", true))
+            <restart-button diodein server-state="{{ $serverState }}"></restart-button>
+            @else
+            <restart-button server-state="{{ $serverState }}"></restart-button>
+            @endif
             <br/><br/>
             <p>{{ $logInfo }}</p>
         </div>

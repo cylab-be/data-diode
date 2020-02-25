@@ -44,17 +44,20 @@ Route::delete("rule/{rule}", "RuleController@delete");
 Route::get("network", "NetworkController@get");
 Route::put("network/update", "NetworkController@update");
 
-// BlindFTP Server Routes...
+// BlindFTP Server/Client Routes...
 if (!env('DIODE_IN', false)) {
+    // DIODE OUT
     Route::get('/ftpserver', 'BlindftpServerController@index');
-    Route::post('/ftpserver', 'BlindftpServerController@toggle');
+    Route::post('/ftpserver', 'BlindftpServerController@restart');
     Route::get('/storage', 'StorageController@listView');
     Route::get('/storage/{path}', 'StorageController@listView')->where('path', '(.*)'); // The "where" method permits the usage of a slash in the path variable
 } else {
+    // DIODE IN
     Route::get('/ftpclient', 'BlindftpServerController@index');
-    Route::post('/ftpclient', 'BlindftpServerController@toggle');
-    Route::get("/upload", "UploadController@index");
-    Route::post("/upload", "UploadController@uploadFile");    
+    Route::post('/ftpclient', 'BlindftpServerController@restart');
+    Route::get('/upload', 'UploadController@index');
+    Route::post('/upload', 'UploadController@uploadFile');    
 }
 
-Route::get("/", "MainPageController@index");
+// Main Route...
+Route::get('/', 'MainPageController@index');

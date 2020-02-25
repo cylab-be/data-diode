@@ -16,3 +16,4 @@ window.Vue = require('vue');
 
 Vue.component('upload-form', require('./components/UploadForm.vue'));
 Vue.component('growing-button', require('./components/GrowingButton.vue'));
+Vue.component('restart-button', require('./components/RestartButton.vue'));
