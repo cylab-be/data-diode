@@ -17,7 +17,7 @@
     </div>
 </template>
 
-<script>
+<script type="application/javascript"> 
 import '@progress/kendo-ui';
 import { Upload, UploadInstaller } from '@progress/kendo-upload-vue-wrapper';
 
