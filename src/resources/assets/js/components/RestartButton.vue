@@ -48,5 +48,5 @@ export default {
     }
     p, .btn {
         width: 25%;
-    }    
+    }
 </style>
