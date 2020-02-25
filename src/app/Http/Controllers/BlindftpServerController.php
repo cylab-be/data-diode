@@ -186,10 +186,10 @@ class BlindftpServerController extends Controller
      */
     public function restart(Request $request)
     {
+        $pids = self::getPids();
+
         $killProcess = new Process($this->killCommand . $pids);
         $killProcess->mustRun();
-
-        $pids = self::getPids();
         
         BlindftpServerJob::dispatch()->onConnection('database')->onQueue('async');
 

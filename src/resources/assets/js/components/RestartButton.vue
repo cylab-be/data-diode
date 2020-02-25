@@ -48,7 +48,7 @@ export default {
                 .catch(function(error) {
                     toastr.error(error)
                 })
-        }
+        },
     }
 }
 </script>
