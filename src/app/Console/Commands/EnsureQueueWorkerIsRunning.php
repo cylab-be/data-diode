@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Symfony\Component\Process\Process;
 
 /**
  * This code is a modified version taken from:
@@ -37,8 +38,10 @@ class EnsureQueueWorkerIsRunning extends Command
         if (! $pid = $this->getLastWorkerPID()) {
             return false;
         }
-        $process = exec("ps -p {$pid} -opid=,command=");
-        $processIsQueueWorker = str_contains($process, 'queue:work');
+        $process = new Process("ps -p {$pid} -opid=,command=");
+        $process->mustRun();
+        $output = $process->getOutput();
+        $processIsQueueWorker = str_contains($output, 'queue:work');
 
         return $processIsQueueWorker;
     }
@@ -69,7 +72,9 @@ class EnsureQueueWorkerIsRunning extends Command
     private function startWorker(): int
     {
         $command = 'sudo php ' . base_path('artisan') . ' queue:work database --timeout=0 > /dev/null & echo $!';
-        $pid = exec($command);
+        $process = new Process($command);
+        $process->mustRun();
+        $pid = $process->getPid();
 
         return $pid;
     }
