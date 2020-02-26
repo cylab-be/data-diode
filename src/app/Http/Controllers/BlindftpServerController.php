@@ -43,7 +43,7 @@ class BlindftpServerController extends Controller
     }
 
     /**
-     * Get the view showing the state (ON/OFF) of the server or the client.
+     * Get the view showing the button to restart the server or the client.
      * 
      * @return mixed the view.
      */
@@ -62,6 +62,9 @@ class BlindftpServerController extends Controller
      * Restart the server or the client (kills its processes launch it. Also notifies 
      * the vue of all  the changes that have been made. All that using a command
      * defined by App\Console\Commands\RestartBlindftp.php.
+     * After that, it ensures that a queue worker is running to launch the BlindFTP 
+     * program, otherwise it launches a worker via a command defined by 
+     * App\Console\Commands\EnsureQueueWorkerIsRunning.php.
      * 
      * @param Request the request.
      * 
@@ -70,6 +73,7 @@ class BlindftpServerController extends Controller
     public function restart(Request $request)
     {
         Artisan::call('bftp:restart');
+        Artisan::call('queue:checkup');
 
         return response()->json([]);
     }
