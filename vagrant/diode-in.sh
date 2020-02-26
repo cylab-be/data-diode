@@ -15,12 +15,20 @@ a2enmod rewrite
 a2ensite data-diode
 cd /var/www
 # BEGIN: Temporary removal and checkout to ftp-plugin until it is merged to master
+# OLD:
+# git clone https://github.com/RUCD/data-diode.git
+# NEW:
 rm -rf data-diode
-git clone https://github.com/RUCD/data-diode.git
-cd data-diode
-git checkout ftp-plugin
-git pull
-cd ..
+        # BEGIN: Temporary usage of local files instead of repository until it is pushed to ftp-plugin
+        # OLD: 
+        # git clone https://github.com/RUCD/data-diode.git
+        # cd data-diode
+        # git checkout ftp-plugin
+        # git pull
+        # cd ..
+        # NEW:
+        mkdir data-diode
+        cp /vagrant/* data-diode/
 # END
 cd data-diode/src
 composer install
