@@ -12,7 +12,7 @@ use Illuminate\Console\Command;
 class EnsureQueueWorkerIsRunning extends Command
 {
     protected $signature = 'queue:checkup';
-    
+
     protected $description = 'Ensure that the queue worker is running.';
 
     protected $pidFile;
@@ -68,7 +68,7 @@ class EnsureQueueWorkerIsRunning extends Command
      */
     private function startWorker(): int
     {
-        $command = 'php ' . base_path('artisan') . ' queue:work database --timeout=0 > /dev/null';
+        $command = 'php ' . base_path('artisan') . ' queue:work database --timeout=0 > /dev/null & echo $!';
         $pid = exec($command);
 
         return $pid;
