@@ -31,7 +31,7 @@ php artisan migrate
 php artisan config:reset
 cp -r /vagrant/BlindFTP_0.37 ..
 php artisan bftp:restart
-php artisan queue:checkup # launch the queue for the ftp server job -> before the chown because it creates /var/www/data-diode/src/storage/app/queue.pid
+# php artisan queue:checkup # launch the queue for the ftp server job -> before the chown because it creates /var/www/data-diode/src/storage/app/queue.pid
 chown -R www-data:www-data . ../BlindFTP_0.37
 sed -i -e "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g" /etc/sysctl.conf
 sysctl -p /etc/sysctl.conf

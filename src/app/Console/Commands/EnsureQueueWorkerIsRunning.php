@@ -38,10 +38,8 @@ class EnsureQueueWorkerIsRunning extends Command
         if (! $pid = $this->getLastWorkerPID()) {
             return false;
         }
-        $process = new Process("ps -p {$pid} -opid=,command=");
-        $process->mustRun();
-        $output = $process->getOutput();
-        $processIsQueueWorker = str_contains($output, 'queue:work');
+        $process = exec("ps -p {$pid} -opid=,command=");
+        $processIsQueueWorker = str_contains($process, 'queue:work');
 
         return $processIsQueueWorker;
     }
@@ -72,9 +70,7 @@ class EnsureQueueWorkerIsRunning extends Command
     private function startWorker(): int
     {
         $command = 'sudo php ' . base_path('artisan') . ' queue:work database --timeout=0 > /dev/null & echo $!';
-        $process = new Process($command);
-        $process->mustRun();
-        $pid = $process->getPid();
+        $pid = exec($command);
 
         return $pid;
     }
