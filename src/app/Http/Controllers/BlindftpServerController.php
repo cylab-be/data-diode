@@ -72,8 +72,8 @@ class BlindftpServerController extends Controller
      */
     public function restart(Request $request)
     {
-        Artisan::call('bftp:restart');
-        Artisan::call('queue:checkup');
+        exec('sudo php ' . base_path('artisan') . ' bftp:restart'); // Artisan::call('bftp:restart');
+        exec('sudo php ' . base_path('artisan') . ' queue:checkup'); // Artisan::call('queue:checkup');
 
         return response()->json([]);
     }
