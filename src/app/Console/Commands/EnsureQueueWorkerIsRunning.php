@@ -68,7 +68,7 @@ class EnsureQueueWorkerIsRunning extends Command
      */
     private function startWorker(): int
     {
-        $command = 'php ' . base_path('artisan') . ' queue:work database --timeout=0 > /dev/null & echo $!';
+        $command = 'sudo php ' . base_path('artisan') . ' queue:work database --timeout=0 > /dev/null & echo $!';
         $pid = exec($command);
 
         return $pid;

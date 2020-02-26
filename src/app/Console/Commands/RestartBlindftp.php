@@ -82,12 +82,14 @@ class RestartBlindftp extends Command
         $killProcess = new Process($this->killCommand . $pids);
         $killProcess->mustRun();
         
+        $this->comment('BlindFTP is being (re)started.');
         BlindftpServerJob::dispatch()->onConnection('database')->onQueue('async');
 
         while (empty($pids)) {
             $pids = self::getPids();
             sleep(1);
             // TODO: show error after a certain number of loops
-        }        
+        }
+        $this->comment('BlindFTP is running.');
     }
 }
