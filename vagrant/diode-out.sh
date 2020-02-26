@@ -28,7 +28,7 @@ rm -rf data-diode
         # cd ..
         # NEW:
         mkdir data-diode
-        cp /vagrant/* data-diode/
+        cp -r /vagrant/* data-diode/
 # END
 cd data-diode/src
 composer install
