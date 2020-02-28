@@ -22,15 +22,10 @@
 
 @section("content")
     <div class="container">
-        <div class="tab-v1">
-            <div class="row">
-                <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <upload-form upload_url="/upload" folder_only></upload-form>
-                </div>
-                <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <upload-form upload_url="/upload"></upload-form>
-                </div>
-            </div>
-        </div>
+    <div class="tab-v1">
+        <upload-form-toggler upload_url="/upload" style="width:40em;margin:auto;"></upload-form-toggler>
     </div>
+    <script>
+        document.body.style.backgroundColor = '#ccc';
+    </script>
 @endsection

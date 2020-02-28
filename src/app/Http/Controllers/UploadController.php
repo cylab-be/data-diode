@@ -30,15 +30,19 @@ class UploadController extends Controller
     /**
      * Add the file in the 'diode_local' filesystem.
      * 
-     * @param Resquest the request.
+     * @param Resquest the request containing the file(s) to upload.
      * 
      * @return 
      */
     public function uploadFile(Request $request) {
-        $file = $request->file('input_file');
-        // $fileName = $file->getClientOriginalName();
-        $fileName = $request->input_file_full_path;
-        $path = $file->storeAs('files', $fileName);
+        $i = 0;
+        while ($request->hasFile('input_file_' . $i)) {
+            $file = $request->file('input_file_' . $i);
+            $fileName = $request['input_file_full_path_' . $i];
+            $path = $file->storeAs('files', $fileName);
+            $i++;
+        }
+        return response()->json(['nbUploads'=>$i]);
     }
 
 }

@@ -135,4 +135,7 @@
             // $( '.card-folder-root' ).css('display', 'inline-block')
         })
     </script>
+    <script>
+        document.body.style.backgroundColor = '#222';
+    </script>
 @endsection

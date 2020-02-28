@@ -1,20 +1,22 @@
 <template>
     <div :style="root">
         <div :style="square">
-            <div 
+            <button 
                 :style="content" 
                 v-on:mouseover="grow"
                 v-on:mouseleave="shrink"
                 v-on:click="redirectRoute"
-            ></div>
+            ></button>
             <div :style="iconContainer">
                 <i 
                     :class="'fa ' + icon"
                     :style="iconStyle"
                 ></i>
             </div>
-        </div>        
-        <slot></slot>
+        </div>
+        <div :style="nameStyle">    
+            <slot></slot>
+        </div>
     </div>
 </template>
 
@@ -67,6 +69,9 @@ export default {
                 fontSize: '4em',
                 margin: 'auto',
                 marginTop: '0.25em',
+           },
+           nameStyle: {
+               color: 'inherit',
            }
         }
     },
@@ -81,6 +86,7 @@ export default {
         grow() {
             var me = this;
             me.content.backgroundColor = '#0050d4'
+            me.nameStyle.color='white'
             me.content.color = '#ffffff'
             if (me.incInterval !== null) {
                 clearInterval(me.incInterval)
@@ -110,6 +116,7 @@ export default {
             var me = this;
             me.content.backgroundColor = '#007bff'
             me.content.color = '#eeeeee'
+            me.nameStyle.color='inherit'
             if (me.incInterval !== null) {
                 clearInterval(me.incInterval)
             }
