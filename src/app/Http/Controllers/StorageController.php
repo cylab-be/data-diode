@@ -44,4 +44,27 @@ class StorageController extends Controller {
         ]);
     }
 
+    /**
+     * Gets the view for the file upload page.
+     * @return mixed the view.
+     */
+    public function uploadIndex()
+    {
+        return view("upload");
+    }
+
+    /**
+     * Upload file(s).
+     * 
+     * @param Resquest the request containing the file(s) to upload.
+     * 
+     * @return mixed a json containing the number of files that have been uploaded.
+     */
+    public function upload(Request $request) 
+    {
+        $nb = $this->storageService->upload($request);
+        return response()->json(['nbUploads' => $nb]);
+    }
+
+
 }

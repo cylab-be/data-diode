@@ -78,8 +78,11 @@
             <div
                 :style="productStyle"
                 v-for="(file, index) in showedFiles" :key="index"
-            >                
-                <span style="padding-left:10%;">{{ file }}</span>
+            >
+                <div :style="showedStyles[index]"></div>             
+                <span style="padding-left:10%;grid-column:1;grid-row:1;">
+                    {{ file }}
+                </span>                
                 <div :style="index == showedFiles.length - 1 ? {} : {borderBottom: 'solid grey thin'}"></div>
             </div>
         </div>
@@ -101,6 +104,7 @@ export default {
         return {
             dropZoneBackgroundColor: '#8f8f8f',
             showedFiles: [],
+            showedStyles: [],
             barProgress: 0,
             productStyle: {
                 //textAlign:'center',
@@ -109,45 +113,68 @@ export default {
                 //borderWidth: 'thin',
                 //borderStyle: 'solid',
                 //padding: '1%',                
-                color: 'inherit',                
+                color: 'inherit',
+                display: 'grid',
             },
             index: 0,
             nbFilesUploaded: 0,
         }
     },
-    methods: {        
+    methods: {
         dropZoneColorOn() {
             this.dropZoneBackgroundColor = '#666'
         },
         dropZoneColorOff() {
             this.dropZoneBackgroundColor = '#8f8f8f'
         },
+        resetShowedStyles() {
+            this.showedStyles.forEach(style => {
+                style.width = '0%'
+            })
+        },
         onUpload(e) {
             var upload = this.$refs.upload.kendoWidget();
             upload.disable();
-            var me = this;
+            var me = this;            
             me.showedFiles = []
+            me.resetShowedStyles()
             for (var i = 0; i < e.files.length; i++) {
                 var file = e.files[i].rawFile;
                 if (file) {                    
                     if (e.files.length <= 10) {
                         var filename = file.name.length > 20 ? file.name.slice(0, 14) + '...' + file.name.slice(file.name.length - 3, file.name.length) : file.name
                         me.showedFiles.push(filename)
+                        me.showedStyles.push({
+                            backgroundColor: '#007bff',
+                            opacity: '0.5',
+                            whiteSpace: 'nowrap',
+                            gridColumn: '1',
+                            gridRow: '1',
+                            width: '0%',
+                        })
                     } else {
                         if (i < 10) {
                             var filename = file.name.length > 20 ? file.name.slice(0, 14) + '...' + file.name.slice(file.name.length - 3, file.name.length) : file.name
                             me.showedFiles.push(filename)
+                            me.showedStyles.push({
+                                backgroundColor: '#007bff',
+                                opacity: '0.5',
+                                whiteSpace: 'nowrap',
+                                gridColumn: '1',
+                                gridRow: '1',
+                                width: '0%',
+                            })
                         }
                         if (i == 9) {
                             me.showedFiles[9] += ' + ' + (e.files.length - 10) + ' files...'
                         }
-                    }                        
+                    }                    
                 }
             }
         },
         onSelect(e) {
             var me = this;
-            me.productStyle.color = 'inherit'
+            me.productStyle.color = '#000'
             me.showedFiles = [];
             me.barProgress = 0 + '%';
             me.nbFilesUploaded = 0;
@@ -184,7 +211,7 @@ export default {
             const files = fileEntry.data("files")
             
             const firstPass = (self) => {
-                return new Promise(function(resolve, reject) {                    
+                return new Promise(function(resolve, reject) {          
                     let formData = new FormData();
                     formData.append('input_file_full_path_' + 0, files[self.index].name);
                     formData.append("input_file_" + 0, files[self.index].rawFile);
@@ -198,17 +225,22 @@ export default {
                             onUploadProgress: function( progressEvent ) {
                                 var donePerc = 100 * (self.index - 1) / files.length
                                 var doingPerc = (progressEvent.loaded / progressEvent.total) * 95 * 1 / files.length
-                                self.barProgress = parseInt(donePerc + doingPerc) + '%';
+                                self.barProgress = (donePerc + doingPerc) + '%';
+                                if (self.index - 1 < files.length) {
+                                    self.showedStyles[self.index - 1].width = ((progressEvent.loaded / progressEvent.total) * 95) + '%'
+                                }
                             }.bind(this),
                         }
                     )
                     .then(function(response){
                         self.nbFilesUploaded += 1
-                        self.barProgress = parseInt( 100 * self.index / files.length ) + '%';
+                        if (self.index - 1 < files.length) {
+                            self.showedStyles[self.index - 1].width = '100%'
+                        }
+                        self.barProgress = ( 100 * self.index / files.length ) + '%';                        
                         var e = { target: { responseText: '{"uploaded":true}', statusText: "OK", status: 200 } };
                         if (self.nbFilesUploaded == files.length) {
                             module.onRequestSuccess.call(module, e, fileEntry);
-                            self.productStyle.color = '#007bff';                 
                             upload.enable();
                             toastr.success('Successfully uploaded ' + files.length + ' file' + (files.length > 1 ? 's' : '') + '!');
                         }
@@ -241,16 +273,21 @@ export default {
                             onUploadProgress: function( progressEvent ) {
                                 var donePerc = 100 * (self.index - 1) / files.length
                                 var doingPerc = (progressEvent.loaded / progressEvent.total) * 95 * 1 / files.length
-                                self.barProgress = parseInt(donePerc + doingPerc) + '%';
+                                self.barProgress = (donePerc + doingPerc) + '%';
+                                if (self.index - 1 < files.length) {
+                                    self.showedStyles[self.index - 1].width = ((progressEvent.loaded / progressEvent.total) * 95) + '%'
+                                }
                             }.bind(this),
                         }
                     )
                     .then(function(response){
                         self.nbFilesUploaded += 1
-                        self.barProgress = parseInt( 100 * self.index / files.length ) + '%';
+                        if (self.index - 1 < files.length) {
+                            self.showedStyles[self.index - 1].width = '100%'
+                        }
+                        self.barProgress = ( 100 * self.index / files.length ) + '%';                        
                         var e = { target: { responseText: '{"uploaded":true}', statusText: "OK", status: 200 } };
                         module.onRequestSuccess.call(module, e, fileEntry);                  
-                        self.productStyle.color = '#007bff'
                         upload.enable();
                         toastr.success('Successfully uploaded ' + files.length + ' file' + (files.length > 1 ? 's' : '') + '!');
                         resolve(self);
@@ -291,17 +328,26 @@ export default {
                             onUploadProgress: function( progressEvent ) {
                                 var donePerc = 100 * (self.index - j) / files.length
                                 var doingPerc = (progressEvent.loaded / progressEvent.total) * 95 * j / files.length
-                                self.barProgress = parseInt(donePerc + doingPerc) + '%';
+                                self.barProgress = (donePerc + doingPerc) + '%';
+                                if (self.index - j < files.length) {
+                                    var donePerc = 100 * (self.index - j - 9) / (files.length - 9)
+                                    var doingPerc = (progressEvent.loaded / progressEvent.total) * 95 * j / (files.length - 9)
+                                    self.showedStyles[9].width = (donePerc + doingPerc) + '%'
+                                }
                             }.bind(this),
                         }
                     )
                     .then(function(response){
                         self.nbFilesUploaded += j
-                        self.barProgress = parseInt( 100 * self.index / files.length ) + '%';
+                        if (self.index - j < files.length) {
+                            var donePerc = 100 * (self.index - j - 9) / (files.length - 9)
+                            var doingPerc = 100 * j / (files.length - 9)
+                            self.showedStyles[9].width = (donePerc + doingPerc) + '%'
+                        }
+                        self.barProgress = ( 100 * self.index / files.length ) + '%';
                         var e = { target: { responseText: '{"uploaded":true}', statusText: "OK", status: 200 } };
                         if (self.nbFilesUploaded == files.length) {
                             module.onRequestSuccess.call(module, e, fileEntry);
-                            self.productStyle.color = '#007bff'
                             upload.enable();
                             toastr.success('Successfully uploaded ' + files.length + ' file' + (files.length > 1 ? 's' : '') + '!');
                         }

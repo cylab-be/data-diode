@@ -183,4 +183,37 @@ class StorageService {
         );
     }
 
+    /**
+     * Upload file(s) in the 'diode_local' filesystem.
+     *
+     * @param Request the request.
+     *
+     * @return int the number of files that have been uploaded.
+     * @throws StorageException
+     */
+    public function upload( Request $request )
+    {
+        $i = 0;
+        while ($request->hasFile('input_file_' . $i)) {
+            $file = $request->file('input_file_' . $i);
+            $fullPath = $request['input_file_full_path_' . $i];
+            $this->uploadFile($file, $fullPath);
+            $i++;
+        }
+        return $i;
+    }
+    
+    /**
+     * Upload file.
+     *
+     * @param UploadedFile the file.
+     * @param string the path.
+     *
+     * @return string
+     */
+    private function uploadFile( $file, $path )
+    {        
+        $this->storage->putFileAs( '.', $file, $path );
+    }
+
 }

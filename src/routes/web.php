@@ -55,8 +55,8 @@ if (!env('DIODE_IN', false)) {
     // DIODE IN
     Route::get('/ftpclient', 'BlindftpServerController@index');
     Route::post('/ftpclient', 'BlindftpServerController@restart');
-    Route::get('/upload', 'UploadController@index');
-    Route::post('/upload', 'UploadController@uploadFile');    
+    Route::get('/upload', 'StorageController@uploadIndex');
+    Route::post('/upload', 'StorageController@upload');    
 }
 
 // Main Route...
