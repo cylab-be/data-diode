@@ -47,14 +47,10 @@ Route::put("network/update", "NetworkController@update");
 // BlindFTP Server/Client Routes...
 if (!env('DIODE_IN', false)) {
     // DIODE OUT
-    Route::get('/ftpserver', 'BlindftpServerController@index');
-    Route::post('/ftpserver', 'BlindftpServerController@restart');
     Route::get('/storage', 'StorageController@listView');
     Route::get('/storage/{path}', 'StorageController@listView')->where('path', '(.*)'); // The "where" method permits the usage of a slash in the path variable
 } else {
     // DIODE IN
-    Route::get('/ftpclient', 'BlindftpServerController@index');
-    Route::post('/ftpclient', 'BlindftpServerController@restart');
     Route::get('/upload', 'StorageController@uploadIndex');
     Route::post('/upload', 'StorageController@upload');    
 }

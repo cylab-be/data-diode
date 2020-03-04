@@ -35,11 +35,6 @@ class MainPageController extends Controller
                     'icon'=> 'fa-cogs',
                     'url'=> '/config',
                 ],
-                [
-                    'name'=> 'FTP SERVER',
-                    'icon'=> 'fa-toggle-on',
-                    'url'=> '/ftpserver',
-                ],
                 [   'name'=> 'STORAGE',
                     'icon'=> 'fa-box-open',
                     'url'=> '/storage',
@@ -52,11 +47,6 @@ class MainPageController extends Controller
                     'name'=> 'CONFIG',
                     'icon'=> 'fa-cogs',
                     'url'=> '/config',
-                ],
-                [
-                    'name'=> 'FTP CLIENT',
-                    'icon'=> 'fa-toggle-on',
-                    'url'=> '/ftpclient',
                 ],
                 [   'name'=> 'UPLOAD',
                     'icon'=> 'fa-file-upload',
