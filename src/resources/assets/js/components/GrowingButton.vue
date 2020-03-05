@@ -9,7 +9,7 @@
             ></button>
             <div :style="iconContainer">
                 <i 
-                    :class="'fa ' + icon"
+                    :class="icon"
                     :style="iconStyle"
                 ></i>
             </div>

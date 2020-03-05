@@ -18,3 +18,4 @@ Vue.component('upload-form', require('./components/UploadForm.vue'));
 Vue.component('upload-form-toggler', require('./components/UploadFormToggler.vue'));
 Vue.component('growing-button', require('./components/GrowingButton.vue'));
 Vue.component('restart-button', require('./components/RestartButton.vue'));
+Vue.component('python-pip', require('./components/PythonPip.vue'));

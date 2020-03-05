@@ -1,7 +1,7 @@
 #!/bin/bash
 export DEBIAN_FRONTEND=noninteractive
 apt update
-apt install -y apache2 php libapache2-mod-php php-pdo php-mbstring php-tokenizer php-xml composer zip unzip iptables-persistent php-sqlite3 python3-pip
+apt install -y apache2 php libapache2-mod-php php-pdo php-mbstring php-tokenizer php-xml composer zip unzip iptables-persistent php-sqlite3 python-pip python3-pip
 a2dissite 000-default.conf
 cat > /etc/apache2/sites-available/data-diode.conf << EOF
 <Directory /var/www/data-diode/src/public>
@@ -40,7 +40,12 @@ php artisan key:generate
 php artisan migrate
 php artisan config:reset
 cp -r /vagrant/BlindFTP_0.37 ..
-pip3 install supervisor
+
+#update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1 # to make pip act as pip3 (better than a simple alias)
+#pip install --upgrade pip
+pip3 install --upgrade pip
+pip3 install supervisor #pip install supervisor 
+
 chmod +x /etc/init.d/supervisord
 update-rc.d supervisord defaults
 service supervisord stop
@@ -49,4 +54,15 @@ chown -R www-data:www-data . ../BlindFTP_0.37 /etc/supervisord.conf
 sed -i -e "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g" /etc/sysctl.conf
 sysctl -p /etc/sysctl.conf
 echo "www-data ALL=NOPASSWD: /var/www/data-diode/src/app/Scripts/datadiode.sh, /usr/local/bin/supervisord" | EDITOR="tee -a" visudo
+
+cd /var/www/data-diode/src/storage/app/files/
+rm -rf py-mirror
+mkdir py-mirror
+cd py-mirror
+mkdir downloads
+pip3 install python-pypi-mirror
+pypi-mirror download -d downloads/ -p /usr/local/bin/pip3 -b numpy
+pypi-mirror create -d downloads -m simple
+chown -R www-data:www-data .
+
 systemctl restart apache2

@@ -40,7 +40,12 @@ php artisan key:generate
 php artisan migrate
 php artisan config:reset
 cp -r /vagrant/BlindFTP_0.37 ..
-pip3 install supervisor
+
+#update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1 # to make pip act as pip3 (better than a simple alias)
+#pip install --upgrade pip
+pip3 install --upgrade pip
+pip3 install supervisor #pip install supervisor 
+
 chmod +x /etc/init.d/supervisord
 update-rc.d supervisord defaults
 service supervisord stop
@@ -49,4 +54,21 @@ chown -R www-data:www-data . ../BlindFTP_0.37 /etc/supervisord.conf
 sed -i -e "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g" /etc/sysctl.conf
 sysctl -p /etc/sysctl.conf
 echo "www-data ALL=NOPASSWD: /var/www/data-diode/src/app/Scripts/datadiode.sh, /usr/local/bin/supervisord" | EDITOR="tee -a" visudo
+
+cat > /etc/apache2/sites-available/py-mirror.conf << EOF
+<VirtualHost *:8000>
+        DocumentRoot /var/www/data-diode/src/storage/app/files/py-mirror
+</VirtualHost>
+EOF
+sed -i '/Listen 8000/d' /etc/apache2/ports.conf # delete lines
+sed -i '/Listen 80/a Listen 8000' /etc/apache2/ports.conf # add a line under an existing one
+a2ensite py-mirror
+cd /var/www/data-diode/src/storage/app/files/
+rm -rf py-mirror
+mkdir py-mirror
+cd py-mirror
+mkdir downloads
+pip3 install python-pypi-mirror
+chown -R www-data:www-data .
+
 systemctl restart apache2

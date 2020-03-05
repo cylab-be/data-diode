@@ -44,7 +44,7 @@ Route::delete("rule/{rule}", "RuleController@delete");
 Route::get("network", "NetworkController@get");
 Route::put("network/update", "NetworkController@update");
 
-// BlindFTP Server/Client Routes...
+// BlindFTP Server/Client and Python Pip Routes...
 if (!env('DIODE_IN', false)) {
     // DIODE OUT
     Route::get('/storage', 'StorageController@listView');
@@ -52,7 +52,8 @@ if (!env('DIODE_IN', false)) {
 } else {
     // DIODE IN
     Route::get('/upload', 'StorageController@uploadIndex');
-    Route::post('/upload', 'StorageController@upload');    
+    Route::post('/upload', 'StorageController@upload');
+    Route::get("/pipin", "PythonPipController@index");
 }
 
 // Main Route...
