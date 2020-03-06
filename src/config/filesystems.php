@@ -45,7 +45,7 @@ return [
 
         'diode_local' => [
             'driver' => 'local',
-            'root' => storage_path('app/files').'/ftp',
+            'root' => storage_path('app/files'),
         ],
 
         'local' => [

@@ -43,8 +43,8 @@ cp -r /vagrant/BlindFTP_0.37 ..
 
 #update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1 # to make pip act as pip3 (better than a simple alias)
 #pip install --upgrade pip
-pip3 install --upgrade pip
-pip3 install supervisor #pip install supervisor 
+python3 -m pip install --upgrade pip
+python3 -m pip install supervisor #pip install supervisor 
 
 chmod +x /etc/init.d/supervisord
 update-rc.d supervisord defaults
@@ -68,7 +68,7 @@ rm -rf py-mirror
 mkdir py-mirror
 cd py-mirror
 mkdir downloads
-pip3 install python-pypi-mirror
+python3 -m pip install python-pypi-mirror
 chown -R www-data:www-data .
 
 systemctl restart apache2

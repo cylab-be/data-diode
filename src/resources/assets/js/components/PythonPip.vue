@@ -15,7 +15,7 @@
             v-on:click="installPackages"
             :disabled="cannotInstall || packageNames.length == 0"
         >
-            Install Packages
+            Download Packages
         </button>
         <div  
             style="width:100%;"          
@@ -56,8 +56,8 @@
             </div>            
         </div>
         <div  
-            style="width:100%;"          
-           v-for="(inst, index) in installedNames" :key="index"
+            style="width:100%;white-space:pre-wrap;"
+            v-for="(inst, index) in installedNames" :key="index"
         >
             <p>{{ inst }}</p>
         </div>
@@ -79,7 +79,9 @@ export default {
         addPackageName() {
             this.installedNames = []
             if (this.packageName.length == 0) {
-                toastr.error('This is not a valid name!')
+                toastr.error('The package name cannot be empty!')
+            } else if (/\s/g.test(this.packageName)) {
+                toastr.error('The package name cannot contain white spaces!')
             } else {
                 this.packageNames.push(this.packageName)
                 this.packageName = ''
@@ -118,34 +120,49 @@ export default {
                 
                 let i = 0
 
-                function sleep(ms) {
-                    return new Promise(resolve => setTimeout(resolve, ms));
-                }
-
-                function next(ms) {
-                    if (i == 0) {
-                        me.installedNames.push('Packages installation:')
-                    }
-                    me.installedNames.push('Installing ' + names[i] + '...')
-                    i++
-                    return sleep(ms).then(self => {                        
-                        if (i < names.length) {
-                            return next(ms)
-                        } else {
-                            return
-                        }
+                function send(name) {
+                    return new Promise((resolve, reject) => {
+                        axios.post('/pipin',
+                        {
+                            name: name,
+                        })
+                        .then(function(response){                            
+                            resolve(response)
+                        })
+                        .catch(function(error){
+                            reject(error)
+                        })
                     })
                 }
 
-                next(1000).then(() => {
+                function next(name) {
+                    if (i == 0) {
+                        me.installedNames.push('Packages installation:')
+                    }
+                    var name = names[i]
+                    me.installedNames.push('Installing ' + name + '...')
+                    return send(name).then(response => {
+                        me.installedNames.push(response.data.output)
+                        i++
+                        if (i < names.length) {
+                            return next(name)
+                        } else {
+                            return
+                        }
+                    }).catch(error => {
+                        toastr.error(error.message)
+                    })
+                }
+
+                next(names[i]).then(() => {
                     me.installedNames.push('Done.')
                     this.cannotAdd = false
                     this.cannotInstall = false
                 })
                 
             } else {
-                toastr.error('You need to specify at least one package.')
-            }            
+                toastr.error('You must specify at least one package.')
+            }
         },
     },
 }

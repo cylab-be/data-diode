@@ -247,7 +247,7 @@ export default {
                         resolve(self);
                     })
                     .catch(function(error){
-                        toastr.error(error);
+                        toastr.error(error.message);
                         upload.enable();
                         reject(error);
                     });
@@ -293,7 +293,7 @@ export default {
                         resolve(self);
                     })
                     .catch(function(error){
-                        toastr.error(error);
+                        toastr.error(error.message);
                         upload.enable();
                         reject(error);
                     });
@@ -354,7 +354,7 @@ export default {
                         resolve(self);
                     })
                     .catch(function(error){
-                        toastr.error(error);
+                        toastr.error(error.message);
                         upload.enable();
                         reject(error);
                     })
