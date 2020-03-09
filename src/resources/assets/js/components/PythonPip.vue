@@ -1,9 +1,15 @@
 <template>
     <div>
         <div>
-            <input v-model="packageName">
+            <input 
+                v-model="packageName"
+                ref="package"
+                v-on:keyup.enter="$refs.add.click()"
+            >
             <button
                 type="button"
+                ref="add"
+                :style="addButtonStyle"
                 v-on:click="addPackageName"
                 :disabled="cannotAdd"
             >
@@ -75,17 +81,19 @@ export default {
             cannotAdd: false,
         }
     },
+    mounted() {
+        this.$refs.package.focus()
+    },
     methods: {
         addPackageName() {
             this.installedNames = []
             if (this.packageName.length == 0) {
                 toastr.error('The package name cannot be empty!')
-            } else if (/\s/g.test(this.packageName)) {
-                toastr.error('The package name cannot contain white spaces!')
             } else {
                 this.packageNames.push(this.packageName)
                 this.packageName = ''
             }
+            this.$refs.package.focus()
         },
         deletePackageName(i) {
             this.packageNames.splice(i,  1)
@@ -140,7 +148,7 @@ export default {
                         me.installedNames.push('Packages installation:')
                     }
                     var name = names[i]
-                    me.installedNames.push('Installing ' + name + '...')
+                    me.installedNames.push('Downloading ' + name + '...')
                     return send(name).then(response => {
                         me.installedNames.push(response.data.output)
                         i++

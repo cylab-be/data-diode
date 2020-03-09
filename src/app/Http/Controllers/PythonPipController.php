@@ -22,7 +22,7 @@ class PythonPipController extends Controller
     }
 
     /**
-     * Get the view for page used to install new python modules.
+     * Get the view for page used to download new python modules.
      *
      * @return mixed the view.
      */
@@ -47,7 +47,7 @@ class PythonPipController extends Controller
         } else if (strlen(preg_replace('/\s+/', '', $request->name)) == 0) {
             return response()->json(['message' => 'You must specify a package name!'], 400);
         }
-        $name = preg_replace('/\s+/', '', $request->name);
+        $name = $request->name;
         $process = new Process('sudo -H ' . base_path('app/Scripts') . "/sendpip.sh '" . $name . "'");
         $process->setTimeout(0);
         $process->setIdleTimeout(120);
