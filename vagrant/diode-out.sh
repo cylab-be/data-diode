@@ -1,7 +1,7 @@
 #!/bin/bash
 export DEBIAN_FRONTEND=noninteractive
 apt update
-apt install -y apache2 php libapache2-mod-php php-pdo php-mbstring php-tokenizer php-xml composer zip unzip iptables-persistent php-sqlite3 python3-pip
+apt install -y apache2 php libapache2-mod-php php-pdo php-mbstring php-tokenizer php-xml composer zip unzip iptables-persistent php-sqlite3 python3-pip ntp
 a2dissite 000-default.conf
 cat > /etc/apache2/sites-available/data-diode.conf << EOF
 <Directory /var/www/data-diode/src/public>
@@ -53,10 +53,20 @@ service supervisord start
 
 python3 -m pip install python-pypi-mirror
 
-chown -R www-data:www-data . ../BlindFTP_0.37 /etc/supervisord.conf
+cat > /etc/ntp.conf << EOF
+statistics loopstats peerstats clockstats
+filegen loopstats file loopstats type day enable
+filegen peerstats file peerstats type day enable
+filegen clockstats file clockstats type day enable
+
+server 127.127.1.0
+fudge 127.127.1.0 stratum 1
+EOF
+
+chown -R www-data:www-data . ../BlindFTP_0.37 /etc/supervisord.conf /etc/ntp.conf ../fakeNTP
 sed -i -e "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g" /etc/sysctl.conf
 sysctl -p /etc/sysctl.conf
-echo "www-data ALL=NOPASSWD: /var/www/data-diode/src/app/Scripts/datadiode.sh, /usr/local/bin/supervisord" | EDITOR="tee -a" visudo
+echo "www-data ALL=NOPASSWD: /var/www/data-diode/src/app/Scripts/datadiode.sh, /usr/local/bin/supervisord, /usr/bin/python3, /var/www/data-diode/fakeNTP/sntp-serv.py" | EDITOR="tee -a" visudo
 
 cat > /etc/apache2/sites-available/py-mirror.conf << EOF
 <VirtualHost *:8000>
@@ -68,3 +78,11 @@ sed -i '/Listen 80/a Listen 8000' /etc/apache2/ports.conf # add a line under an 
 a2ensite py-mirror
 
 systemctl restart apache2
+
+# Ne fonctionne que si fait à la main sur la machine...
+systemctl stop time-sync.target systemd-timesyncd
+timedatectl set-ntp false
+timedatectl set-ntp true
+timedatectl set-ntp false
+
+systemctl restart ntp

@@ -23,7 +23,16 @@ numprocs=1
 redirect_stderr=true
 stdout_logfile=/var/www/data-diode/src/storage/app/bftp-diodeout.log
 
-[inet_http_server]         
+[program:python-date]
+command=sudo python3 /var/www/data-diode/fakeNTP/sntp-serv.py
+autostart=true
+autorestart=true
+user=www-data
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/var/www/data-diode/fakeNTP/python-date.log
+
+[inet_http_server]
 port=127.0.0.1:9001
 
 [supervisorctl]
