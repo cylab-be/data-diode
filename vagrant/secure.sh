@@ -19,13 +19,19 @@ pool 192.168.102.1 iburst
 restrict source notrap nomodify noquery
 EOF
 
-# Ne fonctionne que si fait à la main sur la machine...
 systemctl stop time-sync.target systemd-timesyncd
 timedatectl set-ntp false
 timedatectl set-ntp true
 timedatectl set-ntp false
 
+(crontab -l 2>/dev/null; echo "@reboot sudo systemctl stop time-sync.target systemd-timesyncd") | crontab -
+(crontab -l 2>/dev/null; echo "@reboot sudo timedatectl set-ntp false") | crontab -
+(crontab -l 2>/dev/null; echo "@reboot sudo timedatectl set-ntp true") | crontab -
+(crontab -l 2>/dev/null; echo "@reboot sudo timedatectl set-ntp false") | crontab -
+
 systemctl restart ntp
 
 # Uniquement à mettre si parfois ce client met plus d'une heure avant la synchro
-(crontab -l 2>/dev/null; echo "@hourly sudo systemctl restart ntp") | crontab -
+# (crontab -l 2>/dev/null; echo "@hourly sudo systemctl restart ntp") | crontab -
+
+arp -s 192.168.102.1 08:00:27:23:9b:6f

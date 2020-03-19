@@ -68,4 +68,4 @@ echo "www-data ALL=NOPASSWD: /var/www/data-diode/src/app/Scripts/datadiode.sh, /
 
 systemctl restart apache2
 
-(crontab -l 2>/dev/null; echo "@hourly $(which python3) /var/www/data-diode/fakeNTP/sntp-clie.py 2>&1") | crontab -
+(crontab -l 2>/dev/null; echo "*/5 * * * * $(which python3) /var/www/data-diode/fakeNTP/sntp-clie.py 2>&1") | crontab -

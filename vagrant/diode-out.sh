@@ -79,10 +79,14 @@ a2ensite py-mirror
 
 systemctl restart apache2
 
-# Ne fonctionne que si fait à la main sur la machine...
 systemctl stop time-sync.target systemd-timesyncd
 timedatectl set-ntp false
 timedatectl set-ntp true
 timedatectl set-ntp false
+
+(crontab -l 2>/dev/null; echo "@reboot sudo systemctl stop time-sync.target systemd-timesyncd") | crontab -
+(crontab -l 2>/dev/null; echo "@reboot sudo timedatectl set-ntp false") | crontab -
+(crontab -l 2>/dev/null; echo "@reboot sudo timedatectl set-ntp true") | crontab -
+(crontab -l 2>/dev/null; echo "@reboot sudo timedatectl set-ntp false") | crontab -
 
 systemctl restart ntp
