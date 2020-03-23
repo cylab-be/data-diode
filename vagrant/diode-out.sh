@@ -77,6 +77,16 @@ sed -i '/Listen 8000/d' /etc/apache2/ports.conf # delete lines
 sed -i '/Listen 80/a Listen 8000' /etc/apache2/ports.conf # add a line under an existing one
 a2ensite py-mirror
 
+mkdir /var/www/data-diode/src/storage/app/files/deb-mirror
+cat > /etc/apache2/sites-available/deb-mirror.conf << EOF
+<VirtualHost *:8001>
+        DocumentRoot /var/www/data-diode/src/storage/app/files/deb-mirror
+</VirtualHost>
+EOF
+sed -i '/Listen 8001/d' /etc/apache2/ports.conf # delete lines
+sed -i '/Listen 8000/a Listen 8001' /etc/apache2/ports.conf # add a line under an existing one
+a2ensite deb-mirror
+
 systemctl restart apache2
 
 systemctl stop time-sync.target systemd-timesyncd
@@ -90,3 +100,9 @@ timedatectl set-ntp false
 (crontab -l 2>/dev/null; echo "@reboot sudo timedatectl set-ntp false") | crontab -
 
 systemctl restart ntp
+
+#timedatectl set-timezone Europe/Brussels
+
+# Opera deb test
+wget -r -l 0 http://deb.opera.com/opera/
+mv deb.opera.com /var/www/data-diode/src/storage/app/files/deb-mirror

@@ -1,7 +1,7 @@
 #!/bin/bash
 export DEBIAN_FRONTEND=noninteractive
 apt update
-apt install -y apache2 php libapache2-mod-php php-pdo php-mbstring php-tokenizer php-xml composer zip unzip iptables-persistent php-sqlite3 python-pip python3-pip
+apt install -y apache2 php libapache2-mod-php php-pdo php-mbstring php-tokenizer php-xml composer zip unzip iptables-persistent php-sqlite3 python-pip python3-pip ntp
 a2dissite 000-default.conf
 cat > /etc/apache2/sites-available/data-diode.conf << EOF
 <Directory /var/www/data-diode/src/public>
@@ -59,8 +59,23 @@ mkdir downloads
 python3 -m pip install python-pypi-mirror
 chmod +x /var/www/data-diode/src/app/Scripts/sendpip.sh
 
+cat > /etc/ntp.conf << EOF
+statistics loopstats peerstats clockstats
+filegen loopstats file loopstats type day enable
+filegen peerstats file peerstats type day enable
+filegen clockstats file clockstats type day enable
+
+pool 0.be.pool.ntp.org iburst
+pool 1.be.pool.ntp.org iburst
+pool 2.be.pool.ntp.org iburst
+pool 3.be.pool.ntp.org iburst
+
+# needed for adding pool entries
+restrict source notrap nomodify noquery
+EOF
+
 cd /var/www/data-diode/src
-chown -R www-data:www-data . ../BlindFTP_0.37 /etc/supervisord.conf
+chown -R www-data:www-data . ../BlindFTP_0.37 /etc/supervisord.conf /etc/ntp.conf ../fakeNTP
 
 sed -i -e "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g" /etc/sysctl.conf
 sysctl -p /etc/sysctl.conf
@@ -68,4 +83,6 @@ echo "www-data ALL=NOPASSWD: /var/www/data-diode/src/app/Scripts/datadiode.sh, /
 
 systemctl restart apache2
 
-(crontab -l 2>/dev/null; echo "*/5 * * * * $(which python3) /var/www/data-diode/fakeNTP/sntp-clie.py 2>&1") | crontab -
+(crontab -l 2>/dev/null; echo "*/10 * * * * $(which python3) /var/www/data-diode/fakeNTP/sntp-clie.py 2>&1") | crontab -
+
+timedatectl set-timezone Europe/Brussels
