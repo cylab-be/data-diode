@@ -88,9 +88,11 @@ systemctl restart apache2
 timedatectl set-timezone Europe/Brussels
 
 # Opera deb test
-sudo -H -u www-data bash -c 'mkdir aptmirrors'
-cd aptmirrors
+sudo -H -u www-data bash -c 'mkdir apt'
+cd apt
+sudo -H -u www-data bash -c 'mkdir apt'
+cd apt
 sudo -H -u www-data bash -c 'wget -r -l 0 http://deb.opera.com/opera/' # is if root were www-data to give it the rights on deb.opera.com
-cd ..
-mv -v aptmirrors /var/www/data-diode/src/storage/app/files/
-chown -R www-data:www-data /var/www/data-diode/src/storage/app/files/aptmirrors
+cd ../..
+mv -v apt /var/www/data-diode/src/storage/app/files/
+chown -R www-data:www-data /var/www/data-diode/src/storage/app/files/apt

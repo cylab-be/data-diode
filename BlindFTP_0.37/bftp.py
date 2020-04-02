@@ -1160,7 +1160,7 @@ def synchro_arbo(repertoire):
             debug ("%s - Analyse arborescence" %mtime2str(time.time()))
             same, different, only1, only2 = xfl.compare_DT(Dscrutation, DRef)
             Console.Print_temp("%s - Traitement des fichiers supprimes" %mtime2str(time.time()))
-            debug ("\n========== Supprimes ========== ")
+            debug ("\n========== Supprimes ========== ")            
             for f in sorted(only2, reverse=True):
                 debug("S  "+f)
                 monaff.AffCar()
@@ -1295,7 +1295,7 @@ def synchro_arbo(repertoire):
             if TransmitDelay < 300: TransmitDelay=300
             # Boucle 2 d'émission temporelle
             FileLessRedundancy=0
-            LastFileSendMax=False
+            LastFileSendMax=False            
             while (boucleemission.temps_total() < TransmitDelay*4) and (not(LastFileSendMax)):
                 if len(FileToSend)!=0:
                     item=FileToSend.pop(0)
@@ -1351,6 +1351,9 @@ def synchro_arbo(repertoire):
                         attente=options.pause-boucleemission.temps_total()
                         if attente > 0:
                             print("%s - Attente avant nouvelle scrutation" %mtime2str(time.time()))
+                            # DIODE BEGIN
+                            print("Tous les fichiers ont été envoyés !")
+                            #DIODE END
                             time.sleep(attente)
             Console.Print_temp("%s - Sauvegarde du fichier de reprise" %mtime2str(time.time()))
             DRef.et.set(xfl.ATTR_TIME, str(time.time()))

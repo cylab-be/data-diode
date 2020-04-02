@@ -1,6 +1,8 @@
 #!/bin/sh
-mkdir py-mirror
-cd py-mirror
+mkdir pip
+cd pip
+mkdir pip
+cd pip
 mkdir downloads
 pypi-mirror download -d downloads/ -p /usr/local/bin/pip3 -b $1
 pypi-mirror create -d downloads -m simple
@@ -15,8 +17,8 @@ do
   # rm "$link"			# not used because removes the original file that has just been moved.
 done
 
-cd ..
-sudo chown -R www-data:www-data py-mirror
-sudo cp -r py-mirror /var/www/data-diode/src/storage/app/files
-sudo chown -R www-data:www-data /var/www/data-diode/src/storage/app/files/py-mirror
-sudo rm -rf py-mirror
+cd ../..
+sudo chown -R www-data:www-data pip
+sudo cp -r pip /var/www/data-diode/src/storage/app/files
+sudo chown -R www-data:www-data /var/www/data-diode/src/storage/app/files/pip
+sudo rm -rf pip

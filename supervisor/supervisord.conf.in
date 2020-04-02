@@ -14,14 +14,33 @@ nocleanup = true
 childlogdir = /tmp
 strip_ansi = false
 
-[program:blindftp-upload]
-command=sudo python /var/www/data-diode/BlindFTP_0.37/bftp.py -s /var/www/data-diode/src/storage/app/files -a 192.168.101.2 -b -P 5 -x
+[program:blindftp-ftp]
+command=sudo python /var/www/data-diode/BlindFTP_0.37/bftp.py -s /var/www/data-diode/src/storage/app/files/ftp -a 192.168.101.2 -b -P 5 -x
 autostart=true
 autorestart=true
 user=www-data
 numprocs=1
 redirect_stderr=true
-stdout_logfile=/var/www/data-diode/src/storage/app/bftp-diodein.log
+stdout_logfile=/var/www/data-diode/src/storage/app/bftp-diodein-ftp.log
+
+[program:blindftp-apt]
+command=sudo python /var/www/data-diode/BlindFTP_0.37/bftp.py -s /var/www/data-diode/src/storage/app/files/apt -a 192.168.101.2 -b -P 5 -x
+autostart=true
+autorestart=true
+user=www-data
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/var/www/data-diode/src/storage/app/bftp-diodein-apt.log
+
+[program:blindftp-pip]
+command=sudo python /var/www/data-diode/BlindFTP_0.37/bftp.py -s /var/www/data-diode/src/storage/app/files/pip -a 192.168.101.2 -b -P 5 -x
+autostart=true
+autorestart=true
+user=www-data
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/var/www/data-diode/src/storage/app/bftp-diodein-pip.log
+
 
 [inet_http_server]         
 port=127.0.0.1:9001

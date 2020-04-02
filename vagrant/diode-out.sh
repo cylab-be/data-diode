@@ -70,7 +70,7 @@ echo "www-data ALL=NOPASSWD: /usr/bin/python, /var/www/data-diode/src/app/Script
 
 cat > /etc/apache2/sites-available/py-mirror.conf << EOF
 <VirtualHost *:8000>
-        DocumentRoot /var/www/data-diode/src/storage/app/files/py-mirror
+        DocumentRoot /var/www/data-diode/src/storage/app/files/pip
 </VirtualHost>
 EOF
 sed -i '/Listen 8000/d' /etc/apache2/ports.conf # delete lines
