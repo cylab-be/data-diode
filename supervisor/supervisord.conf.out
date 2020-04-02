@@ -15,7 +15,7 @@ childlogdir = /tmp
 strip_ansi = false
 
 [program:blindftp-storage]
-command=python /var/www/data-diode/BlindFTP_0.37/bftp.py -r /var/www/data-diode/src/storage/app/files -a 192.168.101.2
+command=sudo python /var/www/data-diode/BlindFTP_0.37/bftp.py -r /var/www/data-diode/src/storage/app/files -a 192.168.101.2
 autostart=true
 autorestart=true
 user=www-data

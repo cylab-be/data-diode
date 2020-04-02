@@ -79,10 +79,18 @@ chown -R www-data:www-data . ../BlindFTP_0.37 /etc/supervisord.conf /etc/ntp.con
 
 sed -i -e "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g" /etc/sysctl.conf
 sysctl -p /etc/sysctl.conf
-echo "www-data ALL=NOPASSWD: /var/www/data-diode/src/app/Scripts/datadiode.sh, /var/www/data-diode/src/app/Scripts/sendpip.sh, /usr/local/bin/supervisord" | EDITOR="tee -a" visudo
+echo "www-data ALL=NOPASSWD: /usr/bin/python, /var/www/data-diode/src/app/Scripts/datadiode.sh, /var/www/data-diode/src/app/Scripts/sendpip.sh, /usr/local/bin/supervisord" | EDITOR="tee -a" visudo
 
 systemctl restart apache2
 
 (crontab -l 2>/dev/null; echo "*/10 * * * * $(which python3) /var/www/data-diode/fakeNTP/sntp-clie.py 2>&1") | crontab -
 
 timedatectl set-timezone Europe/Brussels
+
+# Opera deb test
+sudo -H -u www-data bash -c 'mkdir aptmirrors'
+cd aptmirrors
+sudo -H -u www-data bash -c 'wget -r -l 0 http://deb.opera.com/opera/' # is if root were www-data to give it the rights on deb.opera.com
+cd ..
+mv -v aptmirrors /var/www/data-diode/src/storage/app/files/
+chown -R www-data:www-data /var/www/data-diode/src/storage/app/files/aptmirrors

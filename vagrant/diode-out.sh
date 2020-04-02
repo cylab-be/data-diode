@@ -66,7 +66,7 @@ EOF
 chown -R www-data:www-data . ../BlindFTP_0.37 /etc/supervisord.conf /etc/ntp.conf ../fakeNTP
 sed -i -e "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g" /etc/sysctl.conf
 sysctl -p /etc/sysctl.conf
-echo "www-data ALL=NOPASSWD: /var/www/data-diode/src/app/Scripts/datadiode.sh, /usr/local/bin/supervisord, /usr/bin/python3, /var/www/data-diode/fakeNTP/sntp-serv.py" | EDITOR="tee -a" visudo
+echo "www-data ALL=NOPASSWD: /usr/bin/python, /var/www/data-diode/src/app/Scripts/datadiode.sh, /usr/local/bin/supervisord, /usr/bin/python3, /var/www/data-diode/fakeNTP/sntp-serv.py" | EDITOR="tee -a" visudo
 
 cat > /etc/apache2/sites-available/py-mirror.conf << EOF
 <VirtualHost *:8000>
@@ -77,10 +77,10 @@ sed -i '/Listen 8000/d' /etc/apache2/ports.conf # delete lines
 sed -i '/Listen 80/a Listen 8000' /etc/apache2/ports.conf # add a line under an existing one
 a2ensite py-mirror
 
-mkdir /var/www/data-diode/src/storage/app/files/deb-mirror
+#mkdir /var/www/data-diode/src/storage/app/files/deb-mirror
 cat > /etc/apache2/sites-available/deb-mirror.conf << EOF
 <VirtualHost *:8001>
-        DocumentRoot /var/www/data-diode/src/storage/app/files/deb-mirror
+        DocumentRoot /var/www/data-diode/src/storage/app/files/
 </VirtualHost>
 EOF
 sed -i '/Listen 8001/d' /etc/apache2/ports.conf # delete lines
@@ -102,7 +102,3 @@ timedatectl set-ntp false
 systemctl restart ntp
 
 #timedatectl set-timezone Europe/Brussels
-
-# Opera deb test
-wget -r -l 0 http://deb.opera.com/opera/
-mv deb.opera.com /var/www/data-diode/src/storage/app/files/deb-mirror

@@ -250,7 +250,7 @@ ATTR_LASTVIEW = "LastView"	        	# Last View Date
 ATTR_LASTSEND = "LastSend"	        	# Last Send Date
 
 #=== Valeurs à traiter au sein du fichier .ini in fine ========================
-MinFileRedundancy = 5
+MinFileRedundancy = 1
 
 #=== VARIABLES GLOBALES =======================================================
 
@@ -570,7 +570,7 @@ class Paquet:
             ##debug("nom_fichier    = %s" % self.nom_fichier)
             if chemin_interdit(self.nom_fichier):
                 logging.error('nom de fichier ou de chemin incorrect: %s' % self.nom_fichier)
-                raise ValueError, 'nom de fichier ou de chemin incorrect'
+                #raise ValueError, 'nom de fichier ou de chemin incorrect'
             taille_entete_complete = TAILLE_ENTETE + self.longueur_nom
             if self.taille_donnees != len(paquet) - taille_entete_complete:
                 debug("taille_paquet = %d" % len(paquet))
