@@ -92,7 +92,8 @@ sudo -H -u www-data bash -c 'mkdir apt'
 cd apt
 sudo -H -u www-data bash -c 'mkdir apt'
 cd apt
-sudo -H -u www-data bash -c 'wget -r -l 0 http://deb.opera.com/opera/' # is if root were www-data to give it the rights on deb.opera.com
+sudo -H -u www-data bash -c 'wget -r -l 0 http://deb.opera.com/opera/' # as if root were www-data to give it the rights on deb.opera.com
 cd ../..
 mv -v apt /var/www/data-diode/src/storage/app/files/
 chown -R www-data:www-data /var/www/data-diode/src/storage/app/files/apt
+python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py apt 1 # Python2.7

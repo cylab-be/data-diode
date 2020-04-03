@@ -1353,6 +1353,10 @@ def synchro_arbo(repertoire):
                             print("%s - Attente avant nouvelle scrutation" %mtime2str(time.time()))
                             # DIODE BEGIN
                             print("Tous les fichiers ont été envoyés !")
+                            if not '/var/www/data-diode/uploadersScripts' in sys.path:
+                                sys.path.append('/var/www/data-diode/uploadersScripts')
+                            import db_uploaders_clie
+                            db_uploaders_clie.main('apt', '0')
                             #DIODE END
                             time.sleep(attente)
             Console.Print_temp("%s - Sauvegarde du fichier de reprise" %mtime2str(time.time()))
