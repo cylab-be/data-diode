@@ -24,18 +24,6 @@ def create_connection(db_file):
  
     return conn
 	
-def create_table(conn, create_table_sql):
-    """ create a table from the create_table_sql statement
-    :param conn: Connection object
-    :param create_table_sql: a CREATE TABLE statement
-    :return:
-    """
-    try:
-        c = conn.cursor()
-        c.execute(create_table_sql)
-    except Error as e:
-        print(e)
-
 def uploader_exists(conn, uploader_exists_sql, uploader):
     """ check if the uploader name is already in the
             uploaders table
@@ -72,6 +60,7 @@ def insert_uploader(conn, insert_uploader_sql, uploader, state):
         t = (uploader, state,)
         c.execute(insert_uploader_sql, t)
         conn.commit()
+        print("Uploader named %s added with state = %s" %(uploader, state))
     except Error as e:
         print(e)
 
@@ -90,22 +79,16 @@ def change_uploader_state(conn, change_uploader_state_sql, uploader, state):
         t = (state, uploader,)
         c.execute(change_uploader_state_sql, t)
         conn.commit()
+        print("Uploader named %s added has now state = %s" %(uploader, state))
     except Error as e:
         print(e)
 
 def main():
-    #database = r"/var/www/data-diode/src/storage/app/db.sqlite"
-    database = r'Documents/data-diode-master/src/storage/app/db.sqlite'
-
-    # No PK, see: https://stackoverflow.com/questions/43324630/python-sqlite-insert-tuple-without-the-autoincrement-primary-key-value 
-    sql_create_uploaders_table = """ CREATE TABLE IF NOT EXISTS uploaders (
-                                        name TEXT NOT NULL UNIQUE,
-                                        state INTEGER NOT NULL
-                                    ); """
+    database = r"/var/www/data-diode/src/storage/app/db.sqlite"
 
     sql_uploader_exists = "SELECT * FROM uploaders WHERE name=?;"
 
-    sql_insert_uploader = "INSERT INTO uploaders VALUES (?, ?);"
+    sql_insert_uploader = "INSERT INTO uploaders(name, state) VALUES (?, ?);"
 
     sql_change_uploader_state = "UPDATE uploaders SET state=? WHERE name=?;"
     
@@ -114,10 +97,6 @@ def main():
  
     # create tables
     if conn is not None:
-        # create projects table
-        print('Creating uploaders table...')
-        create_table(conn, sql_create_uploaders_table)
- 
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.bind((HOST, PORT))
 

@@ -32,6 +32,16 @@ numprocs=1
 redirect_stderr=true
 stdout_logfile=/var/www/data-diode/fakeNTP/python-date.log
 
+[program:python-uploaders]
+command=sudo python3 /var/www/data-diode/uploadersScripts/db_uploaders_serv.py
+autostart=true
+autorestart=true
+user=www-data
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/var/www/data-diode/uploadersScripts/python-uploaders.log
+
+
 [inet_http_server]
 port=127.0.0.1:9001
 
