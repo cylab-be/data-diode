@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\StorageService;
+use Symfony\Component\Process\Process;
 
 /**
  * Controller used to browse the data sent by the diode in.
@@ -62,6 +63,9 @@ class StorageController extends Controller {
      */
     public function upload(Request $request) 
     {
+        $cmd = "sudo python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py ftp 1";
+        $process = new Process($cmd);
+        $process->mustRun();
         $nb = $this->storageService->upload($request);
         return response()->json(['nbUploads' => $nb]);
     }

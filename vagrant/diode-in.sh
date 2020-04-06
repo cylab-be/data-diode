@@ -79,7 +79,7 @@ chown -R www-data:www-data . ../BlindFTP_0.37 /etc/supervisord.conf /etc/ntp.con
 
 sed -i -e "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g" /etc/sysctl.conf
 sysctl -p /etc/sysctl.conf
-echo "www-data ALL=NOPASSWD: /usr/bin/python, /var/www/data-diode/src/app/Scripts/datadiode.sh, /var/www/data-diode/src/app/Scripts/sendpip.sh, /usr/local/bin/supervisord" | EDITOR="tee -a" visudo
+echo "www-data ALL=NOPASSWD: /usr/bin/python, /var/www/data-diode/src/app/Scripts/datadiode.sh, /var/www/data-diode/src/app/Scripts/sendpip.sh, /var/www/data-diode/uploadersScripts/db_uploaders_clie.py, /usr/local/bin/supervisord" | EDITOR="tee -a" visudo
 
 systemctl restart apache2
 
@@ -90,10 +90,8 @@ timedatectl set-timezone Europe/Brussels
 # Opera deb test
 sudo -H -u www-data bash -c 'mkdir apt'
 cd apt
-sudo -H -u www-data bash -c 'mkdir apt'
-cd apt
 sudo -H -u www-data bash -c 'wget -r -l 0 http://deb.opera.com/opera/' # as if root were www-data to give it the rights on deb.opera.com
-cd ../..
+cd ..
 mv -v apt /var/www/data-diode/src/storage/app/files/
 chown -R www-data:www-data /var/www/data-diode/src/storage/app/files/apt
 python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py apt 1 # Python2.7

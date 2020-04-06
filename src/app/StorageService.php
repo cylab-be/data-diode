@@ -213,7 +213,7 @@ class StorageService {
      */
     private function uploadFile( $file, $path )
     {        
-        $this->storage->putFileAs( 'ftp/ftp/', $file, $path );
+        $this->storage->putFileAs( 'ftp/', $file, $path );
     }
 
 }

@@ -1356,7 +1356,7 @@ def synchro_arbo(repertoire):
                             if not '/var/www/data-diode/uploadersScripts' in sys.path:
                                 sys.path.append('/var/www/data-diode/uploadersScripts')
                             import db_uploaders_clie
-                            db_uploaders_clie.main('apt', '0')
+                            db_uploaders_clie.main(options.usage, '0')
                             #DIODE END
                             time.sleep(attente)
             Console.Print_temp("%s - Sauvegarde du fichier de reprise" %mtime2str(time.time()))
@@ -1454,6 +1454,8 @@ def analyse_options():
     # DIODE BEGIN
     parseur.add_option("-x", "--expurge", action="store_true", dest="expurge_repertoire",\
         default=False, help="Supprimer les fichiers et dossiers envoyés (ne pas utiliser avec -S)")
+    parseur.add_option("-u", dest="usage",\
+        help="Préciser l'usage qui sera retenu dans la base de données (exclusif au projet Date Diode ERM)", type="str", default="ftp")
     # DIODE END
 
     # on parse les options de ligne de commande:
