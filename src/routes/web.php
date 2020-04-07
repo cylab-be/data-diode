@@ -55,6 +55,8 @@ if (!env('DIODE_IN', false)) {
     Route::post('/upload', 'StorageController@upload');
     Route::get('/pipin', 'PythonPipController@index');
     Route::post('/pipin', 'PythonPipController@runPip');
+    Route::get('/usage', 'UploadersController@index');
+    Route::post('/usageUpdate', 'UploadersController@update');
 }
 
 // Main Route...

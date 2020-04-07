@@ -242,7 +242,7 @@ export default {
                         if (self.nbFilesUploaded == files.length) {
                             module.onRequestSuccess.call(module, e, fileEntry);
                             upload.enable();
-                            toastr.success('Successfully uploaded ' + files.length + ' file' + (files.length > 1 ? 's' : '') + '!');
+                            toastr.success('Successfully added ' + files.length + ' file' + (files.length > 1 ? 's' : '') + ' to the (?) queue!');
                         }
                         resolve(self);
                     })
@@ -289,7 +289,7 @@ export default {
                         var e = { target: { responseText: '{"uploaded":true}', statusText: "OK", status: 200 } };
                         module.onRequestSuccess.call(module, e, fileEntry);                  
                         upload.enable();
-                        toastr.success('Successfully uploaded ' + files.length + ' file' + (files.length > 1 ? 's' : '') + '!');
+                        toastr.success('Successfully added ' + files.length + ' file' + (files.length > 1 ? 's' : '') + ' to the (?) queue!');
                         resolve(self);
                     })
                     .catch(function(error){
@@ -349,7 +349,7 @@ export default {
                         if (self.nbFilesUploaded == files.length) {
                             module.onRequestSuccess.call(module, e, fileEntry);
                             upload.enable();
-                            toastr.success('Successfully uploaded ' + files.length + ' file' + (files.length > 1 ? 's' : '') + '!');
+                            toastr.success('Successfully added ' + files.length + ' file' + (files.length > 1 ? 's' : '') + ' to the (?) queue!');
                         }
                         resolve(self);
                     })

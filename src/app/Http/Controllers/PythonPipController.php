@@ -47,9 +47,6 @@ class PythonPipController extends Controller
         } else if (strlen(preg_replace('/\s+/', '', $request->name)) == 0) {
             return response()->json(['message' => 'You must specify a package name!'], 400);
         }
-        $cmd = "sudo python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py pip 1";
-        $processCmd = new Process($cmd);
-        $processCmd->mustRun();
         $name = $request->name;
         $process = new Process('sudo -H ' . base_path('app/Scripts') . "/sendpip.sh '" . $name . "'");
         $process->setTimeout(0);

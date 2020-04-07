@@ -22,3 +22,4 @@ sudo chown -R www-data:www-data pip
 sudo cp -r pip /var/www/data-diode/src/storage/app/files
 sudo chown -R www-data:www-data /var/www/data-diode/src/storage/app/files/pip
 sudo rm -rf pip
+sudo python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py pip 1

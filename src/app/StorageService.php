@@ -6,6 +6,7 @@ use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use League\Flysystem\NotSupportedException;
+use Symfony\Component\Process\Process;
 
 class StorageService {
  
@@ -192,13 +193,18 @@ class StorageService {
      * @throws StorageException
      */
     public function upload( Request $request )
-    {
+    {        
         $i = 0;
         while ($request->hasFile('input_file_' . $i)) {
             $file = $request->file('input_file_' . $i);
             $fullPath = $request['input_file_full_path_' . $i];
             $this->uploadFile($file, $fullPath);
             $i++;
+        }
+        if ($i > 0) {
+            $cmd = "sudo python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py ftp 1";
+            $process = new Process($cmd);
+            $process->mustRun();
         }
         return $i;
     }

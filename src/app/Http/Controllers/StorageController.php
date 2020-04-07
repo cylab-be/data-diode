@@ -62,10 +62,7 @@ class StorageController extends Controller {
      * @return mixed a json containing the number of files that have been uploaded.
      */
     public function upload(Request $request) 
-    {
-        $cmd = "sudo python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py ftp 1";
-        $process = new Process($cmd);
-        $process->mustRun();
+    {        
         $nb = $this->storageService->upload($request);
         return response()->json(['nbUploads' => $nb]);
     }
