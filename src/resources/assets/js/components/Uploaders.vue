@@ -12,6 +12,9 @@
             <div class="col-6 col-sm-3">
                 {{ parseInt(uploader.state) === 0 ? 'free' : 'busy' }}
             </div>
+            <div class="col-6 col-sm-3">
+                {{ uploader.status }}
+            </div>
             <button>
                 DISABLE
             </button>
@@ -45,6 +48,12 @@ export default {
                 axios(options)
                 .then(function(response) {
                     me.uploaders = response.data.uploaders
+                    me.uploaders.map((uploader, i) => {
+                        uploader.status = response.data.statuses[i]
+                        return {
+                            uploader
+                        }
+                    })
                 })
                 .catch(function(error) {
                     toastr.error('Error. Please refresh the page.')
