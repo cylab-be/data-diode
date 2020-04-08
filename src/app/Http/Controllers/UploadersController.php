@@ -70,7 +70,7 @@ class UploadersController extends Controller
             return response()->json(['message' => 'You must specify an uploader\'s name.'], 422);
         } else if (!is_string($request->uploader)) {
             return response()->json(['message' => 'The uploader\'s name must be a string of characters.'], 422);
-        } else if (!preg_match("/^[a-zA-Z]*$/", $request->uploader)) {
+        } else if (!preg_match("/^[a-zA-Z]+$/", $request->uploader)) {
             return response()->json(['message' => 'The uploader\'s name must be composed of alphabetical characters only.'], 422);
         }
         $cmd = 'supervisorctl stop blindftp-' . $request->uploader;
@@ -88,7 +88,7 @@ class UploadersController extends Controller
             return response()->json(['message' => 'You must specify an uploader\'s name.'], 422);
         } else if (!is_string($request->uploader)) {
             return response()->json(['message' => 'The uploader\'s name must be a string of characters.'], 422);
-        } else if (!preg_match("/^[a-zA-Z]*$/", $request->uploader)) {
+        } else if (!preg_match("/^[a-zA-Z]+$/", $request->uploader)) {
             return response()->json(['message' => 'The uploader\'s name must be composed of alphabetical characters only.'], 422);
         }
         $cmd = 'supervisorctl restart blindftp-' . $request->uploader;
@@ -106,7 +106,7 @@ class UploadersController extends Controller
             return response()->json(['message' => 'You must specify an uploader\'s name.'], 422);
         } else if (!is_string($request->uploader)) {
             return response()->json(['message' => 'The uploader\'s name must be a string of characters.'], 422);
-        } else if (!preg_match("/^[a-zA-Z]*$/", $request->uploader)) {
+        } else if (!preg_match("/^[a-zA-Z]+$/", $request->uploader)) {
             return response()->json(['message' => 'The uploader\'s name must be composed of alphabetical characters only.'], 422);
         }
         $cmd = '';
@@ -121,6 +121,42 @@ class UploadersController extends Controller
             $process->mustRun();
         } catch (ProcessFailedException $exception) {
             return response()->json(['message' => 'The content of the ' . $request->uploader . '\'s folder could not be deleted.'], 400);
+        }
+    }
+
+    public function add(Request $request)
+    {
+        if ($request->uploader == null) {
+            return response()->json(['message' => 'You must specify an uploader\'s name.'], 422);
+        } else if (!is_string($request->uploader)) {
+            return response()->json(['message' => 'The uploader\'s name must be a string of characters.'], 422);
+        } else if (!preg_match("/^[a-zA-Z]+$/", $request->uploader)) {
+            return response()->json(['message' => 'The uploader\'s name must be composed of alphabetical characters only.'], 422);
+        }
+        $cmd = 'sudo /var/www/data-diode/src/app/Scripts/add-supervisor.sh ' . $request->uploader;
+        $process = new Process($cmd);
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException $exception) {
+            return response()->json(['message' => 'The ' . $request->uploader . '\'s channel could not have been added.'], 400);
+        }
+    }
+
+    public function del(Request $request)
+    {
+        if ($request->uploader == null) {
+            return response()->json(['message' => 'You must specify an uploader\'s name.'], 422);
+        } else if (!is_string($request->uploader)) {
+            return response()->json(['message' => 'The uploader\'s name must be a string of characters.'], 422);
+        } else if (!preg_match("/^[a-zA-Z]+$/", $request->uploader)) {
+            return response()->json(['message' => 'The uploader\'s name must be composed of alphabetical characters only.'], 422);
+        }
+        $cmd = 'sudo ' . base_path("app/Scripts") . 'del-supervisor.sh ' . $request->uploader;
+        $process = new Process($cmd);
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException $exception) {
+            return response()->json(['message' => 'The ' . $request->uploader . '\'s channel could not have been deleted.'], 400);
         }
     }
 }

@@ -41,6 +41,7 @@ numprocs=1
 redirect_stderr=true
 stdout_logfile=/var/www/data-diode/src/storage/app/bftp-diodein-pip.log
 
+#addhere
 
 [inet_http_server]         
 port=127.0.0.1:9001

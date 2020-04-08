@@ -46,7 +46,17 @@
             class="row"
             style="width:100%"
         >
-            Add here a new FTP uploader<input type="text" /><button v-on:click="addUploader">ADD</button>
+            Add here a new FTP uploader
+            <input 
+                type="text" 
+                v-model="uploaderToAdd"
+            />
+            <button
+                v-on:click="addUploader"
+                :disabled="addDisabled"
+            >
+                ADD
+            </button>
         </div>
     </div>
 </template>
@@ -62,6 +72,7 @@ export default {
         return {
             uploaders: [],
             canUpdate: true,
+            uploaderToAdd: '',
         }
     },
     mounted() {
@@ -144,12 +155,23 @@ export default {
             })
         },
         del(uploader) {
-
+            this.act('del', uploader.name).then(() => {
+                toastr.success('Successfully deleted ' + uploader.name + '\'s channel!')
+            })
         },
         addUploader() {
-
-        },
+            var me = this            
+            this.act('add', me.uploaderToAdd).then(() => {                
+                toastr.success('Successfully added ' + me.uploaderToAdd + '\'s channel!')
+                me.uploaderToAdd = ''
+            })
+        },        
     },
+    computed: {
+        addDisabled() {
+            return this.uploaderToAdd.length == 0
+        },
+    }
 }
 </script>
 

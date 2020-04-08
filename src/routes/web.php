@@ -60,6 +60,8 @@ if (!env('DIODE_IN', false)) {
     Route::post('/usageStop', 'UploadersController@stop');
     Route::post('/usageRestart', 'UploadersController@restart');
     Route::post('/usageEmpty', 'UploadersController@empty');
+    Route::post('/usageAdd', 'UploadersController@add');
+    Route::post('/usageDel', 'UploadersController@del');
 }
 
 // Main Route...
