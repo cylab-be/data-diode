@@ -26,6 +26,7 @@
         <!-- https://stackoverflow.com/questions/36559391/pass-array-to-laravel-view-and-use-that-array-as-vuejs-prop -->
             <uploaders 
               :items="{{ json_encode($uploaders) }}"
+              :statuses="{{ json_encode($statuses) }}"
               :interval=3000
             ></uploaders>
         </div>
