@@ -126,6 +126,7 @@ class UploadersController extends Controller
 
     public function add(Request $request)
     {
+        // uploader check
         if ($request->uploader == null) {
             return response()->json(['message' => 'You must specify an uploader\'s name.'], 422);
         } else if (!is_string($request->uploader)) {
@@ -133,12 +134,45 @@ class UploadersController extends Controller
         } else if (!preg_match("/^[a-zA-Z]+$/", $request->uploader)) {
             return response()->json(['message' => 'The uploader\'s name must be composed of alphabetical characters only.'], 422);
         }
-        $cmd = 'sudo /var/www/data-diode/src/app/Scripts/add-supervisor.sh ' . $request->uploader;
-        $process = new Process($cmd);
+        // port check
+        if ($request->port == null) {
+            return response()->json(['message' => 'You must specify an uploader\'s port.'], 422);
+        } else if (!is_integer($request->port)) {
+            return response()->json(['message' => 'The uploader\'s port must be an integer.'], 422);
+        } else if ($request->port < 1025 || $request->port > 65535) {
+            return response()->json(['message' => 'The uploader\'s port must be between 1025 and 65535.'], 422);            
+        }
+        // adding configuration
+        $cmd = 'sudo /var/www/data-diode/src/app/Scripts/add-supervisor.sh ' . $request->uploader . ' ' . strval($request->port);
+        $process = new Process($cmd);   
         try {
             $process->mustRun();
         } catch (ProcessFailedException $exception) {
             return response()->json(['message' => 'The ' . $request->uploader . '\'s channel could not have been added.'], 400);
+        }
+        // adding new folder
+        $cmd = 'sudo mkdir /var/www/data-diode/src/storage/app/files/' . $request->uploader;
+        $process = new Process($cmd);
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException $exception) {
+            return response()->json(['message' => 'The ' . $request->uploader . '\'s folder could not have been added.'], 400);
+        }
+        // adding blindftp process running on the new folder
+        $cmd = 'supervisorctl update';
+        $process = new Process($cmd);
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException $exception) {
+            return response()->json(['message' => 'The ' . $request->uploader . '\'s configuration update could not take effect.'], 400);
+        }
+        // adding a db entry for the new uploader (using a Python program that'll forward it to diode out)
+        $cmd = 'sudo python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py ' . $request->uploader . ' 0 ' . strval($request->port);
+        $process = new Process($cmd);
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException $exception) {
+            return response()->json(['message' => 'The ' . $request->uploader . '\'s DB insertion could not take effect.'], 400);
         }
     }
 
@@ -151,12 +185,39 @@ class UploadersController extends Controller
         } else if (!preg_match("/^[a-zA-Z]+$/", $request->uploader)) {
             return response()->json(['message' => 'The uploader\'s name must be composed of alphabetical characters only.'], 422);
         }
-        $cmd = 'sudo ' . base_path("app/Scripts") . 'del-supervisor.sh ' . $request->uploader;
+        // deleting configuration
+        $cmd = 'sudo  /var/www/data-diode/src/app/Scripts/del-supervisor.sh ' . $request->uploader;
         $process = new Process($cmd);
         try {
             $process->mustRun();
         } catch (ProcessFailedException $exception) {
             return response()->json(['message' => 'The ' . $request->uploader . '\'s channel could not have been deleted.'], 400);
+        }
+        // deleting new folder
+        $cmd = 'sudo rm -rf /var/www/data-diode/src/storage/app/files/' . $request->uploader;
+        $process = new Process($cmd);
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException $exception) {
+            return response()->json(['message' => 'The ' . $request->uploader . '\'s folder could not have been deleted.'], 400);
+        }
+        // deleting blindftp process running on the new folder
+        $cmd = 'supervisorctl update';
+        $process = new Process($cmd);
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException $exception) {
+            return response()->json(['message' => 'The ' . $request->uploader . '\'s configuration update could not take effect.'], 400);
+        }
+        // deleting a db entry for the new uploader
+        Uploader::where('name', '=', $request->uploader)->delete();
+        // deleting the blindftp log file
+        $cmd = 'sudo rm -rf /var/www/data-diode/src/storage/app/bftp-diodein-' . $request->uploader . '.log';
+        $process = new Process($cmd);
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException $exception) {
+            return response()->json(['message' => 'The ' . $request->uploader . '\'s log file could not have been deleted.'], 400);
         }
     }
 }

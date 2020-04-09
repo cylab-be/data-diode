@@ -15,6 +15,7 @@
             <div class="col-6 col-sm-1">
                 {{ uploader.status }}
             </div>
+            
             <div class="col-6 col-sm-1">
                 <button v-on:click="stop(uploader)" >
                     STOP
@@ -50,6 +51,12 @@
             <input 
                 type="text" 
                 v-model="uploaderToAdd"
+                placeholder="name"
+            />
+            <input 
+                type="text" 
+                v-model="portToAdd"
+                placeholder="port"
             />
             <button
                 v-on:click="addUploader"
@@ -73,6 +80,7 @@ export default {
             uploaders: [],
             canUpdate: true,
             uploaderToAdd: '',
+            portToAdd: '',
         }
     },
     mounted() {
@@ -161,11 +169,28 @@ export default {
         },
         addUploader() {
             var me = this            
-            this.act('add', me.uploaderToAdd).then(() => {                
-                toastr.success('Successfully added ' + me.uploaderToAdd + '\'s channel!')
+            const url = '/usageAdd'
+            const options = {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                url,
+                data: {
+                    uploader: me.uploaderToAdd,
+                    port: parseInt(me.portToAdd)
+                },
+            }
+            axios(options)
+            .then(function(response) {                    
+                const name = me.uploaderToAdd
+                const port = me.portToAdd
+                toastr.success('Successfully added ' + name + '\'s channel at port ' + port + '!')
                 me.uploaderToAdd = ''
+                me.portToAdd = ''
             })
-        },        
+            .catch(function(error) {
+                toastr.error(error.response.data.message)                
+            })
+        },
     },
     computed: {
         addDisabled() {

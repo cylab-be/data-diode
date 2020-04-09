@@ -17,6 +17,7 @@ class CreateUploadersTable extends Migration
             $table->increments('id');
             $table->string('name')->unique();
             $table->integer('state');
+            $table->integer('port')->unique();
         });
     }
 

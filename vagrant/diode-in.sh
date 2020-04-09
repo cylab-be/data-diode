@@ -51,11 +51,6 @@ update-rc.d supervisord defaults
 service supervisord stop
 service supervisord start
 
-cd storage/app/files/
-rm -rf py-mirror
-mkdir py-mirror
-cd py-mirror
-mkdir downloads
 python3 -m pip install python-pypi-mirror
 chmod +x /var/www/data-diode/src/app/Scripts/sendpip.sh
 
@@ -79,13 +74,18 @@ chown -R www-data:www-data . ../BlindFTP_0.37 /etc/supervisord.conf /etc/ntp.con
 
 sed -i -e "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g" /etc/sysctl.conf
 sysctl -p /etc/sysctl.conf
-echo "www-data ALL=NOPASSWD: /bin/rm, /usr/bin/python, /var/www/data-diode/src/app/Scripts/*, /var/www/data-diode/uploadersScripts/db_uploaders_clie.py, /usr/local/bin/supervisord" | EDITOR="tee -a" visudo
+echo "www-data ALL=NOPASSWD: /bin/mkdir, /bin/rm, /usr/bin/python, /var/www/data-diode/src/app/Scripts/*, /var/www/data-diode/uploadersScripts/db_uploaders_clie.py, /usr/local/bin/supervisord" | EDITOR="tee -a" visudo
 
 systemctl restart apache2
 
 (crontab -l 2>/dev/null; echo "*/10 * * * * $(which python3) /var/www/data-diode/fakeNTP/sntp-clie.py 2>&1") | crontab -
 
 timedatectl set-timezone Europe/Brussels
+
+# ftp, apt and pip added in db (diode in and diode out)
+python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py ftp 0 36016
+python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py apt 0 36017
+python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py pip 0 36018
 
 # Opera deb test
 sudo -H -u www-data bash -c 'mkdir apt'

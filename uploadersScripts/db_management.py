@@ -38,21 +38,22 @@ def uploader_exists(conn, uploader_exists_sql, uploader):
         print(e)
         return False
 
-def insert_uploader(conn, insert_uploader_sql, uploader, state):
+def insert_uploader(conn, insert_uploader_sql, uploader, state, port):
     """ insert a new uploader in the uploaders table
     :param conn: Connection object
     :param insert_uploader_sql: String object of the
             query used to insert an uploader
     :param uploader: String object of the uploader name
     :param state: String object of the state value
+    :param state: Integer object of the port value
     :return:
     """
     try:        
         c = conn.cursor()        
-        t = (uploader, state,)
+        t = (uploader, state,port,)
         c.execute(insert_uploader_sql, t)
         conn.commit()
-        print("Uploader named %s added with state = %s" %(uploader, state))
+        print("Uploader named %s added with state = %s and port = %d" %(uploader, state, port))
     except Error as e:
         print(e)
 

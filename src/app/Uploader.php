@@ -17,5 +17,5 @@ class Uploader extends Model
      *
      * @var array
      */
-    protected $fillable = ["name", "state"];
+    protected $fillable = ["name", "state", "port"];
 }
