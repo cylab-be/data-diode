@@ -1356,7 +1356,7 @@ def synchro_arbo(repertoire):
                             if not '/var/www/data-diode/uploadersScripts' in sys.path:
                                 sys.path.append('/var/www/data-diode/uploadersScripts')
                             import db_uploaders_clie
-                            db_uploaders_clie.main(options.usage, '0')
+                            db_uploaders_clie.main(options.usage, '0', 0)
                             #DIODE END
                             time.sleep(attente)
             Console.Print_temp("%s - Sauvegarde du fichier de reprise" %mtime2str(time.time()))

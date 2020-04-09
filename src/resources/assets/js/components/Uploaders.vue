@@ -15,7 +15,9 @@
             <div class="col-6 col-sm-1">
                 {{ uploader.status }}
             </div>
-            
+            <div class="col-6 col-sm-1">
+                {{ uploader.port }}
+            </div>
             <div class="col-6 col-sm-1">
                 <button v-on:click="stop(uploader)" >
                     STOP
@@ -194,7 +196,7 @@ export default {
     },
     computed: {
         addDisabled() {
-            return this.uploaderToAdd.length == 0
+            return this.uploaderToAdd.length == 0 || this.portToAdd.length == 0
         },
     }
 }

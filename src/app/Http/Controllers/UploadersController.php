@@ -140,7 +140,39 @@ class UploadersController extends Controller
         } else if (!is_integer($request->port)) {
             return response()->json(['message' => 'The uploader\'s port must be an integer.'], 422);
         } else if ($request->port < 1025 || $request->port > 65535) {
-            return response()->json(['message' => 'The uploader\'s port must be between 1025 and 65535.'], 422);            
+            return response()->json(['message' => 'The uploader\'s port must be between 1025 and 65535.'], 422);
+        }
+        // checking uploader's name not already added
+        $count = Uploader::where('name', '=', $request->uploader)->count();
+        if ($count > 0) {
+            return response()->json(['message' => 'This uploader already exists.'], 400);
+        }
+        // checking port not already used
+        $uploaders = Uploader::all();
+        $portUsedByUploaders = false;
+        foreach ($uploaders as $u) {
+            if ($u->port == $request->port) {
+                $portUsedByUploaders = true;
+                break;
+            }
+        }
+        if (!$portUsedByUploaders) {
+            $cmd = 'sudo netstat -peanut | grep ":' . strval($request->port) . ' "';
+            $process = new Process($cmd);
+            try {
+                $process->mustRun();
+                $output = $process->getOutput();
+                if (strlen($output) > 1) {
+                    return response()->json(['message' => 'This port number is already used by another program.'], 400);
+                }
+            } catch (ProcessFailedException $exception) {
+                $output = $process->getOutput();
+                if (strlen($output) > 1) {
+                    return response()->json(['message' => 'A problem appeared when checking if the port number is already used.'], 400);
+                } // else there is no real error, just an empty output considered as one.
+            }
+        } else {
+            return response()->json(['message' => 'This port number is already used by another uploader.'], 400);
         }
         // adding configuration
         $cmd = 'sudo /var/www/data-diode/src/app/Scripts/add-supervisor.sh ' . $request->uploader . ' ' . strval($request->port);
@@ -184,6 +216,11 @@ class UploadersController extends Controller
             return response()->json(['message' => 'The uploader\'s name must be a string of characters.'], 422);
         } else if (!preg_match("/^[a-zA-Z]+$/", $request->uploader)) {
             return response()->json(['message' => 'The uploader\'s name must be composed of alphabetical characters only.'], 422);
+        }
+        // checking uploader's name existing
+        $count = Uploader::where('name', '=', $request->uploader)->count();
+        if ($count == 0) {
+            return response()->json(['message' => 'This uploader does not exist.'], 400);
         }
         // deleting configuration
         $cmd = 'sudo  /var/www/data-diode/src/app/Scripts/del-supervisor.sh ' . $request->uploader;
