@@ -3,6 +3,7 @@
 
 import socket
 import re
+import subprocess
 from db_management import create_connection, uploader_exists, insert_uploader, change_uploader_state
 
 HOST = '192.168.101.2'
@@ -38,7 +39,12 @@ def main():
                    change_uploader_state(conn,  sql_change_uploader_state, uploader, state)
                 else:
                     if 1025 <= port and port <= 65535:
-                        insert_uploader(conn, sql_insert_uploader, uploader, state, port)
+                        result = subprocess.run("sudo /var/www/data-diode/src/app/Scripts/add-supervisor-out.sh %s %d" %(uploader,port), shell=True, stdout=subprocess.PIPE)
+                        if result.returncode == 0:
+                            insert_uploader(conn, sql_insert_uploader, uploader, state, port)
+                            print(result.stdout)
+                        else:
+                            print(result.stdout)
                     else:
                         print("The uploader's port must be between 1025 and 65535")
             else:

@@ -174,37 +174,16 @@ class UploadersController extends Controller
         } else {
             return response()->json(['message' => 'This port number is already used by another uploader.'], 400);
         }
-        // adding configuration
-        $cmd = 'sudo /var/www/data-diode/src/app/Scripts/add-supervisor.sh ' . $request->uploader . ' ' . strval($request->port);
-        $process = new Process($cmd);   
-        try {
-            $process->mustRun();
-        } catch (ProcessFailedException $exception) {
-            return response()->json(['message' => 'The ' . $request->uploader . '\'s channel could not have been added.'], 400);
-        }
-        // adding new folder
-        $cmd = 'sudo mkdir /var/www/data-diode/src/storage/app/files/' . $request->uploader;
+        // adding uploader
+        $cmd = 'sudo /var/www/data-diode/src/app/Scripts/add-supervisor-in.sh ' . $request->uploader . ' ' . strval($request->port);
         $process = new Process($cmd);
         try {
             $process->mustRun();
+            $output = $process->getOutput();
+            return response()->json(['message' => $output], 200);
         } catch (ProcessFailedException $exception) {
-            return response()->json(['message' => 'The ' . $request->uploader . '\'s folder could not have been added.'], 400);
-        }
-        // adding blindftp process running on the new folder
-        $cmd = 'supervisorctl update';
-        $process = new Process($cmd);
-        try {
-            $process->mustRun();
-        } catch (ProcessFailedException $exception) {
-            return response()->json(['message' => 'The ' . $request->uploader . '\'s configuration update could not take effect.'], 400);
-        }
-        // adding a db entry for the new uploader (using a Python program that'll forward it to diode out)
-        $cmd = 'sudo python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py ' . $request->uploader . ' 0 ' . strval($request->port);
-        $process = new Process($cmd);
-        try {
-            $process->mustRun();
-        } catch (ProcessFailedException $exception) {
-            return response()->json(['message' => 'The ' . $request->uploader . '\'s DB insertion could not take effect.'], 400);
+            $output = $process->getOutput();
+            return response()->json(['message' => $output], 400);
         }
     }
 

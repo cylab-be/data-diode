@@ -74,7 +74,7 @@ chown -R www-data:www-data . ../BlindFTP_0.37 /etc/supervisord.conf /etc/ntp.con
 
 sed -i -e "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g" /etc/sysctl.conf
 sysctl -p /etc/sysctl.conf
-echo "www-data ALL=NOPASSWD: /bin/netstat, /bin/mkdir, /bin/rm, /usr/bin/python, /var/www/data-diode/src/app/Scripts/*, /var/www/data-diode/uploadersScripts/db_uploaders_clie.py, /usr/local/bin/supervisord" | EDITOR="tee -a" visudo
+echo "www-data ALL=NOPASSWD: /bin/netstat, /bin/rm, /usr/bin/python, /var/www/data-diode/src/app/Scripts/*, /var/www/data-diode/uploadersScripts/db_uploaders_clie.py, /usr/local/bin/supervisord" | EDITOR="tee -a" visudo
 
 systemctl restart apache2
 
