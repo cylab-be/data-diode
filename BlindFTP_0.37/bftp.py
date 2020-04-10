@@ -134,13 +134,15 @@ termes.
 
 #=== IMPORTS ==================================================================
 
-# DIODE BEGIN
-import db_uploaders_clie
-# DIODE END
 import sys, socket, struct, time, os, os.path, tempfile, logging, traceback
 import binascii
 import threading
 import ConfigParser
+# DIODE BEGIN
+if not '/var/www/data-diode/uploadersScripts' in sys.path:
+    sys.path.append('/var/www/data-diode/uploadersScripts')
+import db_uploaders_clie
+# DIODE END
 
 # Dedicated Windows modules
 if sys.platform == 'win32':
@@ -1355,9 +1357,7 @@ def synchro_arbo(repertoire):
                         if attente > 0:
                             print("%s - Attente avant nouvelle scrutation" %mtime2str(time.time()))
                             # DIODE BEGIN
-                            print("Tous les fichiers ont été envoyés !")
-                            if not '/var/www/data-diode/uploadersScripts' in sys.path:
-                                sys.path.append('/var/www/data-diode/uploadersScripts')                            
+                            print("Tous les fichiers ont été envoyés !")                            
                             db_uploaders_clie.main3(options.usage, '0', 0)
                             #DIODE END
                             time.sleep(attente)
