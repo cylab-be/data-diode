@@ -55,14 +55,15 @@ if (!env('DIODE_IN', false)) {
     Route::post('/upload', 'StorageController@upload');
     Route::get('/pipin', 'PythonPipController@index');
     Route::post('/pipin', 'PythonPipController@runPip');
-    Route::get('/usage', 'UploadersController@index');
-    Route::post('/usageUpdate', 'UploadersController@update');
-    Route::post('/usageStop', 'UploadersController@stop');
-    Route::post('/usageRestart', 'UploadersController@restart');
-    Route::post('/usageEmpty', 'UploadersController@empty');
     Route::post('/usageAdd', 'UploadersController@add');
     Route::post('/usageDel', 'UploadersController@del');
 }
+
+Route::get('/usage', 'UploadersController@index');
+Route::post('/usageUpdate', 'UploadersController@update');
+Route::post('/usageStop', 'UploadersController@stop');
+Route::post('/usageRestart', 'UploadersController@restart');
+Route::post('/usageEmpty', 'UploadersController@empty');
 
 // Main Route...
 Route::get('/', 'MainPageController@index');

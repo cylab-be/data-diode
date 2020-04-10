@@ -134,6 +134,9 @@ termes.
 
 #=== IMPORTS ==================================================================
 
+# DIODE BEGIN
+import db_uploaders_clie
+# DIODE END
 import sys, socket, struct, time, os, os.path, tempfile, logging, traceback
 import binascii
 import threading
@@ -1354,9 +1357,8 @@ def synchro_arbo(repertoire):
                             # DIODE BEGIN
                             print("Tous les fichiers ont été envoyés !")
                             if not '/var/www/data-diode/uploadersScripts' in sys.path:
-                                sys.path.append('/var/www/data-diode/uploadersScripts')
-                            import db_uploaders_clie
-                            db_uploaders_clie.main(options.usage, '0', 0)
+                                sys.path.append('/var/www/data-diode/uploadersScripts')                            
+                            db_uploaders_clie.main3(options.usage, '0', 0)
                             #DIODE END
                             time.sleep(attente)
             Console.Print_temp("%s - Sauvegarde du fichier de reprise" %mtime2str(time.time()))

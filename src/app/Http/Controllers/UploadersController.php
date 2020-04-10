@@ -201,39 +201,14 @@ class UploadersController extends Controller
         if ($count == 0) {
             return response()->json(['message' => 'This uploader does not exist.'], 400);
         }
-        // deleting configuration
-        $cmd = 'sudo  /var/www/data-diode/src/app/Scripts/del-supervisor.sh ' . $request->uploader;
+        // deleting uploader
+        $cmd = 'sudo /var/www/data-diode/src/app/Scripts/del-supervisor-in.sh ' . $request->uploader;
         $process = new Process($cmd);
         try {
             $process->mustRun();
+            return response()->json(['message' => 'Successfully deleted ' . $request->uploader . '\'s channel.'], 200);
         } catch (ProcessFailedException $exception) {
-            return response()->json(['message' => 'The ' . $request->uploader . '\'s channel could not have been deleted.'], 400);
-        }
-        // deleting new folder
-        $cmd = 'sudo rm -rf /var/www/data-diode/src/storage/app/files/' . $request->uploader;
-        $process = new Process($cmd);
-        try {
-            $process->mustRun();
-        } catch (ProcessFailedException $exception) {
-            return response()->json(['message' => 'The ' . $request->uploader . '\'s folder could not have been deleted.'], 400);
-        }
-        // deleting blindftp process running on the new folder
-        $cmd = 'supervisorctl update';
-        $process = new Process($cmd);
-        try {
-            $process->mustRun();
-        } catch (ProcessFailedException $exception) {
-            return response()->json(['message' => 'The ' . $request->uploader . '\'s configuration update could not take effect.'], 400);
-        }
-        // deleting a db entry for the new uploader
-        Uploader::where('name', '=', $request->uploader)->delete();
-        // deleting the blindftp log file
-        $cmd = 'sudo rm -rf /var/www/data-diode/src/storage/app/bftp-diodein-' . $request->uploader . '.log';
-        $process = new Process($cmd);
-        try {
-            $process->mustRun();
-        } catch (ProcessFailedException $exception) {
-            return response()->json(['message' => 'The ' . $request->uploader . '\'s log file could not have been deleted.'], 400);
+            return response()->json(['message' => 'Failed to delete ' . $request->uploader . '\'s channel.'], 400);
         }
     }
 }

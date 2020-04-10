@@ -75,3 +75,21 @@ def change_uploader_state(conn, change_uploader_state_sql, uploader, state):
         print("Uploader named %s added has now state = %s" %(uploader, state))
     except Error as e:
         print(e)
+
+def delete_uploader(conn, delete_uploader_sql, uploader):
+    """ delete a specific uploader in the uploaders
+        table
+    :param conn: Connection object
+    :param change_uploader_state_sql: String object of
+            the query used to delete an uploader
+    :param uploader: String object of the uploader name
+    :return:
+    """
+    try:
+        c = conn.cursor()
+        t = (uploader,)
+        c.execute(delete_uploader_sql, t)
+        conn.commit()
+        print("Uploader named %s added has been deleted" %uploader)
+    except Error as e:
+        print(e)

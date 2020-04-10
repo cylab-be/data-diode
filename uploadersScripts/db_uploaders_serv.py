@@ -4,7 +4,7 @@
 import socket
 import re
 import subprocess
-from db_management import create_connection, uploader_exists, insert_uploader, change_uploader_state
+from db_management import create_connection, uploader_exists, insert_uploader, change_uploader_state, delete_uploader
 
 HOST = '192.168.101.2'
 PORT = 65431
@@ -17,11 +17,13 @@ def main():
     sql_insert_uploader = "INSERT INTO uploaders(name, state, port) VALUES (?, ?, ?);"
 
     sql_change_uploader_state = "UPDATE uploaders SET state=? WHERE name=?;"
+
+    sql_delete_uploader = "DELETE FROM uploaders WHERE name=?;"
     
     # create a database connection
     conn = create_connection(database)
  
-    # create tables
+    # Create tables
     if conn is not None:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.bind((HOST, PORT))
@@ -30,11 +32,12 @@ def main():
         while True:
             data, addr = sock.recvfrom(1024)
             pattern = '^[a-zA-Z]+:[0-1]:[0-9]+$'
-            ts = data.decode('utf-8')
-            uploader, state, port = ts.split(':')
-            port = int(port)
+            del_pattern = '^del:[a-zA-Z]+$'
+            ts = data.decode('utf-8')            
 
             if re.match(pattern, ts):
+                uploader, state, port = ts.split(':')
+                port = int(port)
                 if uploader_exists(conn, sql_uploader_exists, uploader):
                    change_uploader_state(conn,  sql_change_uploader_state, uploader, state)
                 else:
@@ -46,11 +49,20 @@ def main():
                         else:
                             print(result.stdout)
                     else:
-                        print("The uploader's port must be between 1025 and 65535")
+                        print("The uploader's port must be between 1025 and 65535.")
+            elif re.match(del_pattern, ts):
+                _, uploader = ts.split(':')
+                if uploader_exists(conn, sql_uploader_exists, uploader):
+                    delete_uploader(conn, sql_delete_uploader, uploader)
+                    result = subprocess.run("sudo /var/www/data-diode/src/app/Scripts/del-supervisor-out.sh %s" %(uploader), shell=True, stdout=subprocess.PIPE)
+                    print(result.stdout)
+                else:
+                    print('This uploader does not exist.')
+                    
             else:
                 print('Error! The received data is invalid.')
         
-        # Close or the database will remain locked
+        # Close or the database may remain locked
         conn.close()
     else:
         print("Error! cannot create the database connection.")
