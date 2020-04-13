@@ -101,7 +101,7 @@ export default {
         })
         setInterval(() => {
             if (me.canUpdate) {
-                const url = '/usageUpdate'
+                const url = '/channelUpdate'
                 const options = {
                     method: 'POST',
                     headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
@@ -127,7 +127,7 @@ export default {
     methods: {
         act(action, name) {
             return new Promise((resolve, reject) => {
-                const url = '/usage' + action[0].toUpperCase() + action.slice(1); 
+                const url = '/channel' + action[0].toUpperCase() + action.slice(1); 
                 const options = {
                     method: 'POST',
                     headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
@@ -176,7 +176,7 @@ export default {
         },
         addUploader() {
             var me = this            
-            const url = '/usageAdd'
+            const url = '/channelAdd'
             const options = {
                 method: 'POST',
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
