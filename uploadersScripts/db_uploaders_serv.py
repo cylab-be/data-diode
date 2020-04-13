@@ -31,8 +31,8 @@ def main():
         print("Listening on PORT %d" %PORT)
         while True:
             data, addr = sock.recvfrom(1024)
-            pattern = '^[a-zA-Z]+:[0-1]:[0-9]+$'
-            del_pattern = '^del:[a-zA-Z]+$'
+            pattern = '^[a-zA-Z0-9]+:[0-1]:[0-9]+$'
+            del_pattern = '^del:[a-zA-Z0-9]+$'
             ts = data.decode('utf-8')            
 
             if re.match(pattern, ts):

@@ -38,7 +38,10 @@
                     EMPTY &amp; RESTART
                 </button>
             </div>
-            <div class="col-6 col-sm-1">
+            <div 
+                class="col-6 col-sm-1"
+                :hidden="!diodein"
+            >
                 <button v-on:click="del(uploader)" >
                     DELETE
                 </button>
@@ -48,6 +51,7 @@
         <div
             class="row"
             style="width:100%"
+            :hidden="!diodein"
         >
             Add here a new FTP uploader
             <input 
@@ -76,6 +80,7 @@ export default {
         items: Array,
         statuses: Array,
         interval: Number,
+        diodein: Boolean,
     },
     data() {
         return {

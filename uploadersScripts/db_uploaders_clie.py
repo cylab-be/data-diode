@@ -80,7 +80,7 @@ def main3(uploader, state, port):
     conn.close()
 
 if __name__ == '__main__':
-    name_pattern = '^[a-zA-Z]*$'
+    name_pattern = '^[a-zA-Z0-9]+$'
     state_pattern = '^[0-1]$'
     send = False
     if len(sys.argv) == 1:

@@ -195,17 +195,23 @@ class StorageService {
     public function upload( Request $request )
     {        
         $i = 0;
+        $uploaderName = 'ftp';
         while ($request->hasFile('input_file_' . $i)) {
             $file = $request->file('input_file_' . $i);
             $fullPath = $request['input_file_full_path_' . $i];
-            $this->uploadFile($file, $fullPath);
+            $uploaderName = $request['uploader'];
+            if ($uploaderName == null) {
+                $uploaderName = 'ftp';
+            }
+            $this->uploadFile($file, $fullPath, $uploaderName);
             $i++;
         }
         if ($i > 0) {
-            $cmd = "sudo python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py ftp 1";
+            $cmd = "sudo python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py " . $uploaderName . " 1";
             $process = new Process($cmd);
             $process->mustRun();
         }
+        return response()->json(['i' => $i, 'uploaderName' => $uploaderName], 200);
         return $i;
     }
     
@@ -214,12 +220,13 @@ class StorageService {
      *
      * @param UploadedFile the file.
      * @param string the path.
+     * @param string the name of the uploader's channel.
      *
      * @return string
      */
-    private function uploadFile( $file, $path )
+    private function uploadFile( $file, $path, $uploaderName )
     {        
-        $this->storage->putFileAs( 'ftp/', $file, $path );
+        $this->storage->putFileAs( $uploaderName . '/', $file, $path );
     }
 
 }

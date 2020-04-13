@@ -1,5 +1,15 @@
 <template>
     <div class="box">
+        <div>
+            <select v-model="selectedUploaderName">
+                <option 
+                    v-for="uploader in uploaders"
+                    :key="uploader.name"
+                    :value="uploader.name">
+                    {{ uploader.name }}
+                </option>
+            </select>
+        </div>
         <span v-if="folder_only">            
             <div 
                 class="dropZoneElementFolder"
@@ -118,6 +128,8 @@ export default {
             },
             index: 0,
             nbFilesUploaded: 0,
+            uploaders: [],
+            selectedUploaderName: '',
         }
     },
     methods: {
@@ -199,12 +211,35 @@ export default {
     },
     mounted() {
 
-        var me = this;
+        var me = this
 
+        // loading uploaders
+        const url = '/usageUpdate'
+        const options = {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            url,
+        }
+        axios(options)
+        .then(function(response) {
+            me.uploaders = response.data.uploaders
+            me.uploaders.map((uploader, i) => {
+                uploader.status = response.data.statuses[i]
+                return {
+                    uploader
+                }
+            })
+            me.selectedUploaderName = response.data.uploaders[0].name
+        })
+        .catch(function(error) {
+            toastr.error('Error. Please refresh the page.')
+        })
+
+        // upload section
         var upload = this.$refs.upload.kendoWidget();
 
         upload._module.postFormData = function (url, data, fileEntry, xhr) {
-            
+
             var module = this;
             var counter = 0;
             me.index = 0;
@@ -213,8 +248,9 @@ export default {
             const firstPass = (self) => {
                 return new Promise(function(resolve, reject) {          
                     let formData = new FormData();
+                    formData.append('uploader', me.selectedUploaderName);
                     formData.append('input_file_full_path_' + 0, files[self.index].name);
-                    formData.append("input_file_" + 0, files[self.index].rawFile);
+                    formData.append('input_file_' + 0, files[self.index].rawFile);
                     self.index++;
                     axios.post( url,
                         formData,
@@ -242,7 +278,7 @@ export default {
                         if (self.nbFilesUploaded == files.length) {
                             module.onRequestSuccess.call(module, e, fileEntry);
                             upload.enable();
-                            toastr.success('Successfully added ' + files.length + ' file' + (files.length > 1 ? 's' : '') + ' to the (?) queue!');
+                            toastr.success('Successfully added ' + files.length + ' file' + (files.length > 1 ? 's' : '') + ' to the ' + me.selectedUploaderName + '\'s channel!');
                         }
                         resolve(self);
                     })
@@ -261,8 +297,9 @@ export default {
                         return;
                     }
                     let formData = new FormData();
+                    formData.append('uploader', me.selectedUploaderName);
                     formData.append('input_file_full_path_' + 0, files[self.index].name);
-                    formData.append("input_file_" + 0, files[self.index].rawFile);
+                    formData.append('input_file_' + 0, files[self.index].rawFile);
                     self.index++;
                     axios.post( url,
                         formData,
@@ -289,7 +326,7 @@ export default {
                         var e = { target: { responseText: '{"uploaded":true}', statusText: "OK", status: 200 } };
                         module.onRequestSuccess.call(module, e, fileEntry);                  
                         upload.enable();
-                        toastr.success('Successfully added ' + files.length + ' file' + (files.length > 1 ? 's' : '') + ' to the (?) queue!');
+                        toastr.success('Successfully added ' + files.length + ' file' + (files.length > 1 ? 's' : '') + ' to the ' + me.selectedUploaderName + '\'s channel!');
                         resolve(self);
                     })
                     .catch(function(error){
@@ -312,10 +349,11 @@ export default {
                     }
                     var limit = self.index + rest
                     let formData = new FormData();
+                    formData.append('uploader', me.selectedUploaderName);
                     let j = 0;
                     while (self.index < limit) {
                         formData.append('input_file_full_path_' + j, files[self.index].name);
-                        formData.append("input_file_" + j, files[self.index].rawFile);
+                        formData.append('input_file_' + j, files[self.index].rawFile);
                         self.index++;
                         j++;
                     }
@@ -349,7 +387,7 @@ export default {
                         if (self.nbFilesUploaded == files.length) {
                             module.onRequestSuccess.call(module, e, fileEntry);
                             upload.enable();
-                            toastr.success('Successfully added ' + files.length + ' file' + (files.length > 1 ? 's' : '') + ' to the (?) queue!');
+                            toastr.success('Successfully added ' + files.length + ' file' + (files.length > 1 ? 's' : '') + ' to the ' + me.selectedUploaderName + '\'s channel!');
                         }
                         resolve(self);
                     })

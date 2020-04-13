@@ -28,6 +28,11 @@
               :items="{{ json_encode($uploaders) }}"
               :statuses="{{ json_encode($statuses) }}"
               :interval=3000
+              @if (env("DIODE_IN", true))
+                diodein
+              @else
+              @endif
+              
             ></uploaders>
         </div>
     </div>

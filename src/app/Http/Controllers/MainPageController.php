@@ -39,6 +39,11 @@ class MainPageController extends Controller
                     'icon'=> 'fa fa-box-open',
                     'url'=> '/storage',
                 ],
+                [
+                    'name'=> 'CHANNELS',
+                    'icon'=> 'fas fa-road',
+                    'url'=> '/usage',
+                ],
             ];            
         } else {
             // DIODE IN
@@ -56,6 +61,11 @@ class MainPageController extends Controller
                     'name'=> 'PYTHON PIP',
                     'icon'=> 'fab fa-python',
                     'url'=> '/pipin',
+                ],
+                [
+                    'name'=> 'CHANNELS',
+                    'icon'=> 'fas fa-road',
+                    'url'=> '/usage',
                 ],
             ];
         }

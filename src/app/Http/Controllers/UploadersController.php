@@ -70,7 +70,7 @@ class UploadersController extends Controller
             return response()->json(['message' => 'You must specify an uploader\'s name.'], 422);
         } else if (!is_string($request->uploader)) {
             return response()->json(['message' => 'The uploader\'s name must be a string of characters.'], 422);
-        } else if (!preg_match("/^[a-zA-Z]+$/", $request->uploader)) {
+        } else if (!preg_match("/^[a-zA-Z0-9]+$/", $request->uploader)) {
             return response()->json(['message' => 'The uploader\'s name must be composed of alphabetical characters only.'], 422);
         }
         $cmd = 'supervisorctl stop blindftp-' . $request->uploader;
@@ -88,7 +88,7 @@ class UploadersController extends Controller
             return response()->json(['message' => 'You must specify an uploader\'s name.'], 422);
         } else if (!is_string($request->uploader)) {
             return response()->json(['message' => 'The uploader\'s name must be a string of characters.'], 422);
-        } else if (!preg_match("/^[a-zA-Z]+$/", $request->uploader)) {
+        } else if (!preg_match("/^[a-zA-Z0-9]+$/", $request->uploader)) {
             return response()->json(['message' => 'The uploader\'s name must be composed of alphabetical characters only.'], 422);
         }
         $cmd = 'supervisorctl restart blindftp-' . $request->uploader;
@@ -106,7 +106,7 @@ class UploadersController extends Controller
             return response()->json(['message' => 'You must specify an uploader\'s name.'], 422);
         } else if (!is_string($request->uploader)) {
             return response()->json(['message' => 'The uploader\'s name must be a string of characters.'], 422);
-        } else if (!preg_match("/^[a-zA-Z]+$/", $request->uploader)) {
+        } else if (!preg_match("/^[a-zA-Z0-9]+$/", $request->uploader)) {
             return response()->json(['message' => 'The uploader\'s name must be composed of alphabetical characters only.'], 422);
         }
         $cmd = '';
@@ -131,7 +131,7 @@ class UploadersController extends Controller
             return response()->json(['message' => 'You must specify an uploader\'s name.'], 422);
         } else if (!is_string($request->uploader)) {
             return response()->json(['message' => 'The uploader\'s name must be a string of characters.'], 422);
-        } else if (!preg_match("/^[a-zA-Z]+$/", $request->uploader)) {
+        } else if (!preg_match("/^[a-zA-Z0-9]+$/", $request->uploader)) {
             return response()->json(['message' => 'The uploader\'s name must be composed of alphabetical characters only.'], 422);
         }
         // port check
@@ -193,7 +193,7 @@ class UploadersController extends Controller
             return response()->json(['message' => 'You must specify an uploader\'s name.'], 422);
         } else if (!is_string($request->uploader)) {
             return response()->json(['message' => 'The uploader\'s name must be a string of characters.'], 422);
-        } else if (!preg_match("/^[a-zA-Z]+$/", $request->uploader)) {
+        } else if (!preg_match("/^[a-zA-Z0-9]+$/", $request->uploader)) {
             return response()->json(['message' => 'The uploader\'s name must be composed of alphabetical characters only.'], 422);
         }
         // checking uploader's name existing

@@ -36,6 +36,8 @@ sed -i -e "s/#addhere/# end blindftp-$1\n#addhere/g" /etc/supervisord.conf
 } &> /dev/null
 if [ $? -eq 0 ]; then
     mkdir "/var/www/data-diode/src/storage/app/files/$1" &> /dev/null
+    # the following sudo is necessary otherwise the owner will remain root
+    sudo chown -R www-data:www-data "/var/www/data-diode/src/storage/app/files/$1" &> /dev/null
     if [ $? -eq 0 ]; then
 	supervisorctl update &> /dev/null
         if [ $? -eq 0 ]; then
