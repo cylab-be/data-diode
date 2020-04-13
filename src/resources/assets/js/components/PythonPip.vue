@@ -130,7 +130,7 @@ export default {
 
                 function send(name) {
                     return new Promise((resolve, reject) => {
-                        axios.post('/pipin',
+                        axios.post('/pythonpip',
                         {
                             name: name,
                         })

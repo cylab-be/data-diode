@@ -214,7 +214,7 @@ export default {
         var me = this
 
         // loading uploaders
-        const url = '/usageUpdate'
+        const url = '/channelUpdate'
         const options = {
             method: 'POST',
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },

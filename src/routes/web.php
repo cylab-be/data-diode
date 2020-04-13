@@ -53,13 +53,13 @@ if (!env('DIODE_IN', false)) {
     // DIODE IN
     Route::get('/upload', 'StorageController@uploadIndex');
     Route::post('/upload', 'StorageController@upload');
-    Route::get('/pipin', 'PythonPipController@index');
-    Route::post('/pipin', 'PythonPipController@runPip');
+    Route::get('/pythonpip', 'PythonPipController@index');
+    Route::post('/pythonpip', 'PythonPipController@runPip');
     Route::post('/channelAdd', 'UploadersController@add');
     Route::post('/channelDel', 'UploadersController@del');
 }
 
-Route::get('/channel', 'UploadersController@index');
+Route::get('/channels', 'UploadersController@index');
 Route::post('/channelUpdate', 'UploadersController@update');
 Route::post('/channelStop', 'UploadersController@stop');
 Route::post('/channelRestart', 'UploadersController@restart');

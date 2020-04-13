@@ -42,7 +42,7 @@ class MainPageController extends Controller
                 [
                     'name'=> 'CHANNELS',
                     'icon'=> 'fas fa-road',
-                    'url'=> '/usage',
+                    'url'=> '/channels',
                 ],
             ];            
         } else {
@@ -60,12 +60,12 @@ class MainPageController extends Controller
                 [
                     'name'=> 'PYTHON PIP',
                     'icon'=> 'fab fa-python',
-                    'url'=> '/pipin',
+                    'url'=> '/pythonpip',
                 ],
                 [
                     'name'=> 'CHANNELS',
                     'icon'=> 'fas fa-road',
-                    'url'=> '/usage',
+                    'url'=> '/channels',
                 ],
             ];
         }
