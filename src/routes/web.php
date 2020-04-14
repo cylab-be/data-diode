@@ -67,3 +67,4 @@ Route::post('/channelEmpty', 'UploadersController@empty');
 
 // Main Route...
 Route::get('/', 'MainPageController@index');
+Route::get('/main', 'MainBisController@index');

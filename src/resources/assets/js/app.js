@@ -20,3 +20,4 @@ Vue.component('growing-button', require('./components/GrowingButton.vue'));
 Vue.component('restart-button', require('./components/RestartButton.vue'));
 Vue.component('python-pip', require('./components/PythonPip.vue'));
 Vue.component('uploaders', require('./components/Uploaders.vue'));
+Vue.component('main-bis', require('./components/MainBis.vue'));

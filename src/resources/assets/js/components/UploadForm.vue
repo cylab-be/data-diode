@@ -13,7 +13,7 @@
         <span v-if="folder_only">            
             <div 
                 class="dropZoneElementFolder"
-                v-on:dragover="dropZoneColorOn"                
+                v-on:dragover="dropZoneColorOn"
                 v-on:dragleave="dropZoneColorOff"
                 v-on:dragstart="dropZoneColorOn"
                 v-on:dragend="dropZoneColorOff"
