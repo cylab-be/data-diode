@@ -54,7 +54,8 @@
                     paddingLeft: '0.5em',
                     paddingRight: '0.5em',
                     marginTop: '0.7em',
-                    width: '8em',                    
+                    width: '8em', 
+                    height: '2em',                   
                 }"
                 placeholder='name'
             >
@@ -67,6 +68,7 @@
                     paddingRight: '0.5em',
                     marginTop: '0.7em',
                     width: '5em',
+                    height: '2em',
                 }"
                 placeholder='port'
             >
@@ -75,8 +77,11 @@
                 :style="{
                     marginTop: '0.7em',
                     marginRight: '2em',
-                    //height: '2em',
+                    height: '2em',
                     float:'right',
+                    border: 'none',
+                    backgroundColor: '#007bff',
+                    borderRadius: '0.3em',
                 }"
                 v-on:click="addUploader"
             >
@@ -84,6 +89,7 @@
                     class="fas fa-plus"
                     :style="{
                         margin: 'auto',
+                        color: '#ddd',
                     }"
                 ></i>
             </button>
@@ -103,9 +109,45 @@
                 :style="uploaderStyles[index]"
                 @mouseenter="mouseEnter(index)"
                 @mouseleave="mouseLeave(index)"
-            >
-                <b :style="{float:'left', marginLeft: '2em'}">{{ item.name }}</b>
-                <span :style="{float:'right', marginRight: '2em'}">[port {{ item.port }}]</span>
+            >   
+                <i  
+                    v-if="item.state == '1'"
+                    class="fas fa-sync fa-spin"
+                    :style="{
+                        margin: 'auto',
+                        float:'left',
+                        marginTop: '0.3em',
+                        marginLeft: '0.5em',
+                        width: '1em',
+                    }"
+                ></i>
+                <i
+                    v-else
+                    class="fas fa-circle"
+                    :style="{
+                        margin: 'auto',
+                        marginLeft: '0.5em',
+                        marginTop: '0.3em',
+                        width: '1em',
+                        float:'left',
+                    }"
+                ></i>                
+                <b 
+                    :style="{
+                        float:'left',
+                        marginLeft: '0.5em'
+                    }"
+                >
+                    {{ item.name }}
+                </b>                
+                <span 
+                    :style="{
+                        float:'right',
+                        marginRight: '2em'
+                    }"
+                >
+                    [port {{ item.port }}]
+                </span>
             </button>
         </transition-group>
     </div>
@@ -139,6 +181,7 @@ export default {
             port: '',
             canUpdate: true,
             addDisabled: false,
+            angle: 0,
         }
     },
     computed: {
@@ -191,6 +234,7 @@ export default {
                     me.uploaders = response.data.uploaders
                     me.uploaders.map((uploader, i) => {
                         uploader.status = response.data.statuses[i]
+                        me.getStatusColor(i)
                         return {
                             uploader
                         }
@@ -316,6 +360,21 @@ export default {
                 toastr.error(error.response.data.message)
                 me.addDisabled = false
             })
+        },
+        getStatusColor(index) {
+            var me = this
+            var uploader = me.uploaders[index]
+            if (uploader.status) {
+                if (uploader.status == 'running') {
+                    me.uploaderStyles[index].color = '#28a745'
+                } else if (uploader.status == 'stopped') {
+                    me.uploaderStyles[index].color = '#dc3545'
+                } else {
+                    me.uploaderStyles[index].color = 'inherit'    
+                }
+            } else {
+                me.uploaderStyles[index].color = 'inherit'
+            }            
         },
     },
 }
