@@ -1,159 +1,50 @@
 <template>    
-    <div
-        :style="{
-            width: '24em',
-            textAlign: 'center',
-            margin: 'auto',
-            marginBottom: '4em',
-        }"
-    >
-        <div :style="{width:'100%', textAlign: 'center'}">
-            <input                 
-                v-model="query"
-                :style="{
-                    width:'10em',
-                    height:'3em',
-                    padding: '0.5em',
-                    marginLeft:'3em',
-                    marginRight:0,
-                    marginTop:0,
-                    marginBottom:0,
-                }"
-            >
-            <i 
-                :style="{
-                    width:'3em',
-                    fontSize: '1em',
-                    height:'3em',
-                    padding: 0,
-                    margin: 0,
-                }"
-                class="fas fa-search"
-            ></i>
+    <div class="main">
+        <div class="query-main">
+            <input class="query" v-model="query">
+            <i class="fas fa-search query-icon"></i>
         </div>
-        <br />
-        <div
-            :style="{
-                backgroundColor: '#007bff00',
-                border: '0.1em dashed #aaa',
-                borderRadius: '0.7em',        
-                fontSize: '1em',
-                textAlign: 'center',
-                marginLeft: 'auto',
-                marginRight: 'auto',
-                height: '3.6em',
-                width: '24em',
-                marginBottom: '1em',
-            }"
-        >
-            <input
-                v-model="name"
-                :style="{                    
-                    float:'left',
-                    marginLeft: '2em',
-                    paddingLeft: '0.5em',
-                    paddingRight: '0.5em',
-                    marginTop: '0.7em',
-                    width: '8em', 
-                    height: '2em',                   
-                }"
-                placeholder='name'
-            >
-            <input
-            v-model="port"
-                :style="{
-                    float:'left',
-                    marginLeft: '2em',
-                    paddingLeft: '0.5em',
-                    paddingRight: '0.5em',
-                    marginTop: '0.7em',
-                    width: '5em',
-                    height: '2em',
-                }"
-                placeholder='port'
-            >
-            <button
-            :disabled="addDisabled"
-                :style="{
-                    marginTop: '0.7em',
-                    marginRight: '2em',
-                    height: '2em',
-                    float:'right',
-                    border: 'none',
-                    backgroundColor: '#007bff',
-                    borderRadius: '0.3em',
-                }"
-                v-on:click="addUploader"
-            >
-                <i 
-                    class="fas fa-plus"
-                    :style="{
-                        margin: 'auto',
-                        color: '#ddd',
-                    }"
-                ></i>
+        <br/>
+        <div class="add-uploader-main">
+            <input class="add-uploader-name-input" v-model="name" placeholder='name'>
+            <input class="add-uploader-port-input" v-model="port" placeholder='port'>
+            <button class="add-uploader-button" :disabled="addDisabled" v-on:click="addUploader">
+                <i class="fas fa-plus add-uploader-button-icon"></i>
             </button>
         </div>
+        <i v-if="loadingUploaders" class="fas fa-sync fa-spin"></i>
         <transition-group
+            v-else
+            class="items"            
             name="staggered-fade"
-            tag="div"
-            style="width:100%;text-align:center;margin:auto;"
+            tag="div"            
             v-on:before-enter="beforeEnter"
             v-on:enter="enter"
             v-on:leave="leave"
         >
-            <button
+            <uploader
                 v-for="(item, index) in computedList"
                 v-bind:key="item.name"
                 v-bind:data-index="index"
-                :style="uploaderStyles[index]"
-                @mouseenter="mouseEnter(index)"
-                @mouseleave="mouseLeave(index)"
-            >   
-                <i  
-                    v-if="item.state == '1'"
-                    class="fas fa-sync fa-spin"
-                    :style="{
-                        margin: 'auto',
-                        float:'left',
-                        marginTop: '0.3em',
-                        marginLeft: '0.5em',
-                        width: '1em',
-                    }"
-                ></i>
-                <i
-                    v-else
-                    class="fas fa-circle"
-                    :style="{
-                        margin: 'auto',
-                        marginLeft: '0.5em',
-                        marginTop: '0.3em',
-                        width: '1em',
-                        float:'left',
-                    }"
-                ></i>                
-                <b 
-                    :style="{
-                        float:'left',
-                        marginLeft: '0.5em'
-                    }"
-                >
-                    {{ item.name }}
-                </b>                
-                <span 
-                    :style="{
-                        float:'right',
-                        marginRight: '2em'
-                    }"
-                >
-                    [port {{ item.port }}]
-                </span>
-            </button>
+                :item="item"
+            >
+            </uploader>
         </transition-group>
+
+        <template id='growing-button'>
+            <div>
+                Le parent...
+                <slot></slot>
+                ... englobe l'enfant
+            </div>
+        </template>
+
     </div>
 </template>
 
 <script>
+import EventBus from './eventbus'
+
 export default {
     props: {
         //items: Array,
@@ -162,35 +53,27 @@ export default {
         //diodein: Boolean,
     },
     data() {
-        return {
-            uploaderStyle: {
-                backgroundColor: '#007bff00',
-                border: '0.1em dashed #aaa',
-                borderRadius: '0.7em',        
-                fontSize: '1em',
-                textAlign: 'center',
-                marginLeft: 'auto',
-                marginRight: 'auto',
-                height: '3.6em',
-                width: '24em',
-            },
-            uploaderStyles: [],
+        return {            
             uploaders: [],
             query: '',
             name: '',
             port: '',
             canUpdate: true,
             addDisabled: false,
-            angle: 0,
+            loadingUploaders: true,
         }
     },
     computed: {
         computedList: function () {
             var me = this
-            const res = this.uploaders.filter(function (item) {
+            const res = me.uploaders.filter(function (item) {
                 return item.name.toLowerCase().indexOf(me.query.trim().toLowerCase()) !== -1
             })
-            return res
+            return res.sort((a, b) => {
+                if(a.name < b.name) { return -1; }
+                if(a.name > b.name) { return 1; }
+                return 0;
+            })
         },
     },
     mounted() {
@@ -206,10 +89,8 @@ export default {
         axios(options)
         .then(function(response) {
             me.uploaders = response.data.uploaders
+            me.loadingUploaders = false
             me.uploaders.map((uploader, i) => {
-                // Object.assign will make a copy and avoid all styles 
-                // to work on the same reference
-                me.uploaderStyles.push(Object.assign({}, me.uploaderStyle))
                 uploader.status = response.data.statuses[i]
                 return {
                     uploader
@@ -234,7 +115,7 @@ export default {
                     me.uploaders = response.data.uploaders
                     me.uploaders.map((uploader, i) => {
                         uploader.status = response.data.statuses[i]
-                        me.getStatusColor(i)
+                        EventBus.$emit('update-status-' + uploader.id, uploader.status == 'running')
                         return {
                             uploader
                         }
@@ -246,30 +127,24 @@ export default {
                 })
             }
         }, me.interval)
+
+        EventBus.$on('remove-uploader', item => {
+            me.uploaders = me.uploaders.filter( uploader => {
+                return uploader.name != item.name
+            })
+        })
     },
     methods: {
-        mouseEnter: function(index) {
-            var me = this
-            me.uploaderStyles[index].backgroundColor = '#007bff40'
-        },
-        mouseLeave: function(index) {
-            var me = this
-            me.uploaderStyles[index].backgroundColor = '#007bff00'
-        },
         beforeEnter: function (el) {
             el.style.opacity = 0
             el.style.height = 0
             el.style.width = 0
-            /*el.style.paddingTop = 0
-            el.style.paddingBottom = 0
-            el.style.marginTop = 0
-            el.style.marginBottom = 0*/
         },
         enter: function (el, done) {
             var delay = el.dataset.index * 100
             setTimeout(function () {
                 
-                var pos = 70
+                var pos = 0
                 var id = setInterval(frame, 5)
                 function frame() {
                     if (pos == 100) {
@@ -279,21 +154,12 @@ export default {
                         el.style.borderWidth = '0.1em'
                         el.style.borderRadius = '0.7em'
                         el.style.fontSize = '1em'
-                        /*el.style.paddingTop = '1em'
-                        el.style.paddingBottom = '1em'
-                        el.style.marginTop = '0.2em'
-                        el.style.marginBottom = '0.2em'*/
                         el.complete = done
                         clearInterval(id)
                     } else {
                         pos += 2
                         el.style.opacity = pos / 100.0
                         el.style.height = (3.6 * pos / 100.0) + 'em'
-                        el.style.width = (24 * pos / 100.0) + 'em'
-                        /*el.style.paddingTop = (pos / 100) + 'em'
-                        el.style.paddingBottom = (pos / 100) + 'em'
-                        el.style.marginTop = (0.2 * pos / 100)  + 'em'
-                        el.style.marginBottom = (0.2 * pos / 100) + 'em'*/
                     }
                 }
                 
@@ -321,13 +187,6 @@ export default {
                         pos -= 2
                         el.style.opacity = pos / 100.0
                         el.style.height = (3.6 * pos / 100.0) + 'em'
-                        el.style.width = (24 * pos / 100.0) + 'em'
-                        /*el.style.marginTop = (0.5 * 3.6 * (100 - pos) / 100) + 'em'
-                        el.style.marginBottom = (0.5 * 3.6 * (100 - pos) / 100) + 'em'
-                        el.style.fontSize = 0.5 * pos / 100.0 + 'em'
-                        el.style.padding = el.style.padding / 1.5
-                        el.style.borderWidth = el.style.borderWidth / 1.5
-                        el.style.borderRadius = el.style.borderRadius / 1.5*/
                     }
                 }
                 
@@ -351,7 +210,12 @@ export default {
                 const name = me.name
                 const port = me.port
                 toastr.success('Successfully added ' + name + '\'s channel at port ' + port + '!')
-                me.uploaderStyles.push(Object.assign({}, me.uploaderStyle))
+                me.uploaders.push({
+                    name: name,
+                    port: port,
+                    state: '0',
+                    status: 'running',
+                })
                 me.name = ''
                 me.port = ''
                 me.addDisabled = false
@@ -361,25 +225,94 @@ export default {
                 me.addDisabled = false
             })
         },
-        getStatusColor(index) {
-            var me = this
-            var uploader = me.uploaders[index]
-            if (uploader.status) {
-                if (uploader.status == 'running') {
-                    me.uploaderStyles[index].color = '#28a745'
-                } else if (uploader.status == 'stopped') {
-                    me.uploaderStyles[index].color = '#dc3545'
-                } else {
-                    me.uploaderStyles[index].color = 'inherit'    
-                }
-            } else {
-                me.uploaderStyles[index].color = 'inherit'
-            }            
-        },
     },
 }
 </script>
 
 <style scoped>
+
+.main {
+    width: 24em;
+    text-align: center;
+    margin: auto;
+    margin-bottom: 4em;
+}
+
+.query {
+    width: 10em;
+    height: 3em;
+    padding: 0.5em;
+    margin-left: 3em;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.query-main {
+    width: 100%;
+    text-align: center;
+}
+
+.query-icon {
+    width: 3em;
+    font-size: 1em;
+    height: 3em;
+    padding: 0;
+    margin: 0;
+}
+
+.add-uploader-main {
+    background-color: #007bff00;
+    border: 0.1em dashed #aaa;
+    border-radius: 0.7em;  
+    font-size: 1em;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    height: 3.6em;
+    width: 24em;
+    margin-bottom: 1em;
+}
+
+.add-uploader-name-input {
+    float: left;
+    margin-left: 2em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    margin-top: 0.7em;
+    width: 8em;
+    height: 2em;
+}
+
+.add-uploader-port-input {
+    float: left;
+    margin-left: 1.5em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    margin-top: 0.7em;
+    width: 5.5em;
+    height: 2em;
+}
+
+.add-uploader-button {
+    margin-top: 0.7em;
+    margin-right: 2em;
+    height: 2em;
+    float: right;
+    border: none;
+    background-color: #007bff;
+    border-radius: 0.3em;
+}
+
+.add-uploader-button-icon {
+    margin: auto;
+    color: #ddd;
+}
+
+.items {
+    width: 100%;
+    text-align: center;
+    margin: auto;
+}
 
 </style>
