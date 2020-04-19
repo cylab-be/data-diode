@@ -1,19 +1,10 @@
 <template>
     <div>
         <button 
-            :style="{
-                margin: 0,
-                border: 'none',
-                padding: 0,
-                width: '8em',
-                height: '4em',
-                backgroundColor: '#007bff',
-                color: '#bbb',
-                fontSize: '1.33em',
-                position: 'relative',
-                opacity: 0.8,                
-            }"
+            :style="mainStyle"
             v-on:click="move"
+            v-on:mouseenter="mainStyle.opacity = 1"
+            v-on:mouseleave="mainStyle.opacity = 0.8"
         >            
             <i 
                 class="fa fa-file"
@@ -47,6 +38,19 @@
 export default {
    data() {
        return {
+            mainStyle: {
+                margin: 0,
+                border: 'none',
+                padding: 0,
+                width: '8em',
+                height: '4em',
+                backgroundColor: '#007bff',
+                color: '#bbb',
+                fontSize: '1.33em',
+                position: 'relative',
+                opacity: 0.8,
+                overflow: 'hidden',
+            },
             moveStyleLeft: {
                 position: 'absolute',
                 top: 0,

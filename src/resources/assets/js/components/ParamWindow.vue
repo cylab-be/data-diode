@@ -189,6 +189,13 @@ export default {
 <style scoped>
 
 .main {
+    /* position: absolute avoids the
+       "stacking contexts" effect between 
+       this  component's z-index and the
+       transform css prop used by the 
+       fa-spin classes of the Uploaders
+       components */
+    position: absolute; 
     padding: 0;
     margin: 0;
 }

@@ -45433,7 +45433,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n.main[data-v-452b8014] {\n    padding: 0;\n    margin: 0;\n}\n.veil-main[data-v-452b8014] {\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background-color: #666;\n    opacity: 0.7;\n    z-index: 998;\n}\n.window-main[data-v-452b8014] {\n    position: fixed;\n    top: calc(50% - 15em);\n    left: calc(50% - 15em);\n    z-index: 999;\n    width: 30em;\n    height: 30em;\n    background-color: #f5f8fa;\n    border: 0.1em dashed #aaa;\n    border-radius: 0.7em;\n}\n.window-title[data-v-452b8014] {\n    margin-left: 2em;\n    margin-top: 0.8em;\n    float: left;\n    font-size: 1.33em;\n}\n.window-close-button[data-v-452b8014] {\n    margin-top: 1.0em;\n    margin-right: 2em;\n    height: 2em;\n    float: right;\n    border: none;\n    background-color: #dc3545;\n    border-radius: 0.3em;\n}\n.window-close-button-icon[data-v-452b8014] {\n    margin: auto;\n    color: #ddd;\n}\n.window-title-bottom-bar[data-v-452b8014] {\n    margin-left: auto;\n    margin-right: auto;\n    border: 0.16em dashed #aaa;\n    border-bottom-width: 0;\n    border-left-width: 0;\n    border-right-width: 0;\n    padding: 0;\n    height: 0;\n    width: 93%;\n}\n.text[data-v-452b8014] {\n    font-size: 1.33em;\n}\n.blink-me[data-v-452b8014] {\n  -webkit-animation: blinker-data-v-452b8014 1s linear infinite;\n          animation: blinker-data-v-452b8014 1s linear infinite;\n}\n@-webkit-keyframes blinker-data-v-452b8014 {\n50% {\n    opacity: 0;\n}\n}\n@keyframes blinker-data-v-452b8014 {\n50% {\n    opacity: 0;\n}\n}\n\n", ""]);
+exports.push([module.i, "\n.main[data-v-452b8014] {\n    /* position: absolute avoids the\n       \"stacking contexts\" effect between \n       this  component's z-index and the\n       transform css prop used by the \n       fa-spin classes of the Uploaders\n       components */\n    position: absolute; \n    padding: 0;\n    margin: 0;\n}\n.veil-main[data-v-452b8014] {\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background-color: #666;\n    opacity: 0.7;\n    z-index: 998;\n}\n.window-main[data-v-452b8014] {\n    position: fixed;\n    top: calc(50% - 15em);\n    left: calc(50% - 15em);\n    z-index: 999;\n    width: 30em;\n    height: 30em;\n    background-color: #f5f8fa;\n    border: 0.1em dashed #aaa;\n    border-radius: 0.7em;\n}\n.window-title[data-v-452b8014] {\n    margin-left: 2em;\n    margin-top: 0.8em;\n    float: left;\n    font-size: 1.33em;\n}\n.window-close-button[data-v-452b8014] {\n    margin-top: 1.0em;\n    margin-right: 2em;\n    height: 2em;\n    float: right;\n    border: none;\n    background-color: #dc3545;\n    border-radius: 0.3em;\n}\n.window-close-button-icon[data-v-452b8014] {\n    margin: auto;\n    color: #ddd;\n}\n.window-title-bottom-bar[data-v-452b8014] {\n    margin-left: auto;\n    margin-right: auto;\n    border: 0.16em dashed #aaa;\n    border-bottom-width: 0;\n    border-left-width: 0;\n    border-right-width: 0;\n    padding: 0;\n    height: 0;\n    width: 93%;\n}\n.text[data-v-452b8014] {\n    font-size: 1.33em;\n}\n.blink-me[data-v-452b8014] {\n  -webkit-animation: blinker-data-v-452b8014 1s linear infinite;\n          animation: blinker-data-v-452b8014 1s linear infinite;\n}\n@-webkit-keyframes blinker-data-v-452b8014 {\n50% {\n    opacity: 0;\n}\n}\n@keyframes blinker-data-v-452b8014 {\n50% {\n    opacity: 0;\n}\n}\n\n", ""]);
 
 // exports
 
@@ -47245,7 +47245,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -47292,19 +47292,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
         return {
+            mainStyle: {
+                margin: 0,
+                border: 'none',
+                padding: 0,
+                width: '8em',
+                height: '4em',
+                backgroundColor: '#007bff',
+                color: '#bbb',
+                fontSize: '1.33em',
+                position: 'relative',
+                opacity: 0.8,
+                overflow: 'hidden'
+            },
             moveStyleLeft: {
                 position: 'absolute',
                 top: 0,
@@ -47396,19 +47400,16 @@ var render = function() {
     _c(
       "button",
       {
-        style: {
-          margin: 0,
-          border: "none",
-          padding: 0,
-          width: "8em",
-          height: "4em",
-          backgroundColor: "#007bff",
-          color: "#bbb",
-          fontSize: "1.33em",
-          position: "relative",
-          opacity: 0.8
-        },
-        on: { click: _vm.move }
+        style: _vm.mainStyle,
+        on: {
+          click: _vm.move,
+          mouseenter: function($event) {
+            _vm.mainStyle.opacity = 1
+          },
+          mouseleave: function($event) {
+            _vm.mainStyle.opacity = 0.8
+          }
+        }
       },
       [
         _c("i", {
