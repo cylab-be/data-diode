@@ -21,6 +21,8 @@
             class="param-window" 
             ref="paramWindow"
             :item="item"
+            :max-upload-size="maxUploadSize"
+            :max-upload-size-error-message="maxUploadSizeErrorMessage"
             v-on:stop="stop"
             v-on:restart="restart"
             v-on:del="del"
@@ -32,6 +34,8 @@
 export default {
     props: {
         item: Object,
+        maxUploadSize: Number,
+        maxUploadSizeErrorMessage: String,
     },
     data() {
         return {

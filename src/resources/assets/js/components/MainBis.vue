@@ -28,17 +28,19 @@
                 v-bind:data-index="index"
                 :item="item"
                 v-on:del="del"
+                :max-upload-size="maxUploadSize"
+                :max-upload-size-error-message="maxUploadSizeErrorMessage"
             >
             </uploader>
         </transition-group>
 
-        <template id='growing-button'>
+        <!--template id='growing-button'>
             <div>
                 Le parent...
                 <slot></slot>
                 ... englobe l'enfant
             </div>
-        </template>        
+        </template-->
     </div>
 </template>
 
@@ -49,6 +51,8 @@ export default {
         //statuses: Array,
         interval: Number,
         //diodein: Boolean,
+        maxUploadSize: Number,
+        maxUploadSizeErrorMessage: String,
     },
     data() {
         return {            
@@ -64,7 +68,7 @@ export default {
     computed: {
         computedList: function () {
             var me = this
-            const res = me.uploaders.filter(function (item) {
+            const res = this.uploaders.filter(function (item) {
                 return item.name.toLowerCase().indexOf(me.query.trim().toLowerCase()) !== -1
             })
             return res.sort((a, b) => {

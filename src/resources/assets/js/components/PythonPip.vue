@@ -61,11 +61,22 @@
                 </div>
             </div>            
         </div>
-        <div  
-            style="width:100%;white-space:pre-wrap;"
-            v-for="(inst, index) in installedNames" :key="index"
+        <div 
+            :style="{
+                width: '100%',
+                overflow:'scroll',
+                height:'12em',
+            }"
         >
-            <p>{{ inst }}</p>
+            <div  
+                :style="{
+                    width: '100%',
+                    whiteSpace:'pre-wrap',                
+                }"
+                v-for="(inst, index) in installedNames" :key="index"
+            >
+                <p>{{ inst }}</p>
+            </div>
         </div>
     </div>
 </template>

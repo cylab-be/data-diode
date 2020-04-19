@@ -75,52 +75,57 @@ export default {
                 backgroundColor: '#bbb',
             },
             moveBegin: true,
-
+            moveAvailable: true,
        }
    },
    methods: {
        move() {
             var me = this
-            if (this.moveBegin) {
-                var pos = 0
-                var id = setInterval(frame, 20)
-                function frame() {
-                    if (pos == 40) {
-                        clearInterval(id)
-                        me.moveStyleLeft.width = '4em'
-                        me.moveStyleRight.marginLeft = '8em'
-                        me.moveStyleRight.width = 0
-                        me.moveBegin = false
-                        me.$emit('toggled', 'ON')
-                    } else {
-                        const abs = Math.abs(pos - 40 / 2)
-                        const delta = abs > 15 ? 1 : abs > 10 ? 2 : 4
-                        pos += delta
-                        me.moveStyleLeft.width = (pos / 10.0) + 'em'
-                        me.moveStyleRight.marginLeft = (4 + (pos / 10.0)) + 'em'
-                        me.moveStyleRight.width = (4 - (pos / 10.0)) + 'em'
-                    }
-                }            
-            } else {
-                var pos = 40
-                var id = setInterval(frame, 20)
-                function frame() {
-                    if (pos == 0) {
-                        clearInterval(id)
-                        me.moveStyleLeft.width = 0
-                        me.moveStyleRight.marginLeft = '4em'
-                        me.moveStyleRight.width = '4em'
-                        me.moveBegin = true
-                        me.$emit('toggled')
-                    } else {
-                        const abs = Math.abs(pos - 40 / 2)
-                        const delta = abs > 15 ? 1 : abs > 10 ? 2 : 4
-                        pos -= delta
-                        me.moveStyleLeft.width = (pos / 10.0) + 'em'
-                        me.moveStyleRight.marginLeft = (4 + (pos / 10.0)) + 'em'
-                        me.moveStyleRight.width = (4 - (pos / 10.0)) + 'em'
-                    }
-                }  
+            if (this.moveAvailable) {
+                this.moveAvailable = false
+                if (this.moveBegin) {
+                    var pos = 0
+                    var id = setInterval(frame, 20)
+                    function frame() {
+                        if (pos == 40) {
+                            clearInterval(id)
+                            me.moveStyleLeft.width = '4em'
+                            me.moveStyleRight.marginLeft = '8em'
+                            me.moveStyleRight.width = 0
+                            me.moveBegin = false
+                            me.moveAvailable = true
+                            me.$emit('toggled', 'ON')
+                        } else {
+                            const abs = Math.abs(pos - 40 / 2)
+                            const delta = abs > 15 ? 1 : abs > 10 ? 2 : 4
+                            pos += delta
+                            me.moveStyleLeft.width = (pos / 10.0) + 'em'
+                            me.moveStyleRight.marginLeft = (4 + (pos / 10.0)) + 'em'
+                            me.moveStyleRight.width = (4 - (pos / 10.0)) + 'em'
+                        }
+                    }            
+                } else {
+                    var pos = 40
+                    var id = setInterval(frame, 20)
+                    function frame() {
+                        if (pos == 0) {
+                            clearInterval(id)
+                            me.moveStyleLeft.width = 0
+                            me.moveStyleRight.marginLeft = '4em'
+                            me.moveStyleRight.width = '4em'
+                            me.moveBegin = true
+                            me.moveAvailable = true
+                            me.$emit('toggled')
+                        } else {
+                            const abs = Math.abs(pos - 40 / 2)
+                            const delta = abs > 15 ? 1 : abs > 10 ? 2 : 4
+                            pos -= delta
+                            me.moveStyleLeft.width = (pos / 10.0) + 'em'
+                            me.moveStyleRight.marginLeft = (4 + (pos / 10.0)) + 'em'
+                            me.moveStyleRight.width = (4 - (pos / 10.0)) + 'em'
+                        }
+                    }  
+                }
             }
        }
    }

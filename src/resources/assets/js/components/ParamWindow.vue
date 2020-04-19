@@ -39,15 +39,22 @@
                         <del-button v-on:del="del" ref="delButton"></del-button>
                     </div>
                 </div>
-                <hr class="window-title-bottom-bar"/>
             </span>
             <span v-show="param == 'ftp'">
-                <upload :item="item"></upload>
-                <hr class="window-title-bottom-bar"/>
+                <upload 
+                    :item="item"
+                    :max-upload-size="maxUploadSize"
+                    :max-upload-size-error-message="maxUploadSizeErrorMessage"
+                ></upload>                
             </span>
-            <div class="row">
-                <button v-on:click="param = 'config'">CONFIG</button>
-                <button v-on:click="param = 'ftp'">FTP</button>
+            <span v-show="param == 'pip'">
+                <python-pip></python-pip>
+            </span>
+            <div class="row" :style="{position: 'absolute', bottom: '1em', width: '100%', margin: 'auto'}">
+                <hr class="window-title-bottom-bar"/>
+                <button class="param-button" v-on:click="param = 'config'">CONFIG</button><!-- This comment 
+                avoids spaces --><button class="param-button" v-on:click="param = 'ftp'">FTP</button><!-- This comment 
+                avoids spaces --><button class="param-button" v-on:click="param = 'pip'">PIP</button>
             </div>
         </div>
     </div>
@@ -57,6 +64,8 @@
 export default {
     props: {
         item: Object,
+        maxUploadSize: Number,
+        maxUploadSizeErrorMessage: String,
     },
     data() {
         return {
@@ -259,6 +268,11 @@ export default {
 
 .text {
     font-size: 1.33em;
+}
+
+.param-button {
+    width: 30%;
+    height: 4em;
 }
 
 .blink-me {

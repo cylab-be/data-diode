@@ -44047,7 +44047,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -44058,6 +44058,17 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -44362,16 +44373,29 @@ var render = function() {
         ])
       }),
       _vm._v(" "),
-      _vm._l(_vm.installedNames, function(inst, index) {
-        return _c(
-          "div",
-          {
-            key: index,
-            staticStyle: { width: "100%", "white-space": "pre-wrap" }
-          },
-          [_c("p", [_vm._v(_vm._s(inst))])]
-        )
-      })
+      _c(
+        "div",
+        {
+          style: {
+            width: "100%",
+            overflow: "scroll",
+            height: "12em"
+          }
+        },
+        _vm._l(_vm.installedNames, function(inst, index) {
+          return _c(
+            "div",
+            {
+              key: index,
+              style: {
+                width: "100%",
+                whiteSpace: "pre-wrap"
+              }
+            },
+            [_c("p", [_vm._v(_vm._s(inst))])]
+          )
+        })
+      )
     ],
     2
   )
@@ -45024,13 +45048,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
         //items: Array,
         //statuses: Array,
-        interval: Number
+        interval: Number,
         //diodein: Boolean,
+        maxUploadSize: Number,
+        maxUploadSizeErrorMessage: String
     },
     data: function data() {
         return {
@@ -45047,7 +45075,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     computed: {
         computedList: function computedList() {
             var me = this;
-            var res = me.uploaders.filter(function (item) {
+            var res = this.uploaders.filter(function (item) {
                 return item.name.toLowerCase().indexOf(me.query.trim().toLowerCase()) !== -1;
             });
             return res.sort(function (a, b) {
@@ -45316,25 +45344,18 @@ var render = function() {
             _vm._l(_vm.computedList, function(item, index) {
               return _c("uploader", {
                 key: item.name,
-                attrs: { "data-index": index, item: item },
+                attrs: {
+                  "data-index": index,
+                  item: item,
+                  "max-upload-size": _vm.maxUploadSize,
+                  "max-upload-size-error-message": _vm.maxUploadSizeErrorMessage
+                },
                 on: { del: _vm.del }
               })
             })
-          ),
-      _vm._v(" "),
-      [
-        _c(
-          "div",
-          [
-            _vm._v("\n            Le parent...\n            "),
-            _vm._t("default"),
-            _vm._v("\n            ... englobe l'enfant\n        ")
-          ],
-          2
-        )
-      ]
+          )
     ],
-    2
+    1
   )
 }
 var staticRenderFns = []
@@ -45433,7 +45454,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n.main[data-v-452b8014] {\n    /* position: absolute avoids the\n       \"stacking contexts\" effect between \n       this  component's z-index and the\n       transform css prop used by the \n       fa-spin classes of the Uploaders\n       components */\n    position: absolute; \n    padding: 0;\n    margin: 0;\n}\n.veil-main[data-v-452b8014] {\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background-color: #666;\n    opacity: 0.7;\n    z-index: 998;\n}\n.window-main[data-v-452b8014] {\n    position: fixed;\n    top: calc(50% - 15em);\n    left: calc(50% - 15em);\n    z-index: 999;\n    width: 30em;\n    height: 30em;\n    background-color: #f5f8fa;\n    border: 0.1em dashed #aaa;\n    border-radius: 0.7em;\n}\n.window-title[data-v-452b8014] {\n    margin-left: 2em;\n    margin-top: 0.8em;\n    float: left;\n    font-size: 1.33em;\n}\n.window-close-button[data-v-452b8014] {\n    margin-top: 1.0em;\n    margin-right: 2em;\n    height: 2em;\n    float: right;\n    border: none;\n    background-color: #dc3545;\n    border-radius: 0.3em;\n}\n.window-close-button-icon[data-v-452b8014] {\n    margin: auto;\n    color: #ddd;\n}\n.window-title-bottom-bar[data-v-452b8014] {\n    margin-left: auto;\n    margin-right: auto;\n    border: 0.16em dashed #aaa;\n    border-bottom-width: 0;\n    border-left-width: 0;\n    border-right-width: 0;\n    padding: 0;\n    height: 0;\n    width: 93%;\n}\n.text[data-v-452b8014] {\n    font-size: 1.33em;\n}\n.blink-me[data-v-452b8014] {\n  -webkit-animation: blinker-data-v-452b8014 1s linear infinite;\n          animation: blinker-data-v-452b8014 1s linear infinite;\n}\n@-webkit-keyframes blinker-data-v-452b8014 {\n50% {\n    opacity: 0;\n}\n}\n@keyframes blinker-data-v-452b8014 {\n50% {\n    opacity: 0;\n}\n}\n\n", ""]);
+exports.push([module.i, "\n.main[data-v-452b8014] {\n    /* position: absolute avoids the\n       \"stacking contexts\" effect between \n       this  component's z-index and the\n       transform css prop used by the \n       fa-spin classes of the Uploaders\n       components */\n    position: absolute; \n    padding: 0;\n    margin: 0;\n}\n.veil-main[data-v-452b8014] {\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background-color: #666;\n    opacity: 0.7;\n    z-index: 998;\n}\n.window-main[data-v-452b8014] {\n    position: fixed;\n    top: calc(50% - 15em);\n    left: calc(50% - 15em);\n    z-index: 999;\n    width: 30em;\n    height: 30em;\n    background-color: #f5f8fa;\n    border: 0.1em dashed #aaa;\n    border-radius: 0.7em;\n}\n.window-title[data-v-452b8014] {\n    margin-left: 2em;\n    margin-top: 0.8em;\n    float: left;\n    font-size: 1.33em;\n}\n.window-close-button[data-v-452b8014] {\n    margin-top: 1.0em;\n    margin-right: 2em;\n    height: 2em;\n    float: right;\n    border: none;\n    background-color: #dc3545;\n    border-radius: 0.3em;\n}\n.window-close-button-icon[data-v-452b8014] {\n    margin: auto;\n    color: #ddd;\n}\n.window-title-bottom-bar[data-v-452b8014] {\n    margin-left: auto;\n    margin-right: auto;\n    border: 0.16em dashed #aaa;\n    border-bottom-width: 0;\n    border-left-width: 0;\n    border-right-width: 0;\n    padding: 0;\n    height: 0;\n    width: 93%;\n}\n.text[data-v-452b8014] {\n    font-size: 1.33em;\n}\n.param-button[data-v-452b8014] {\n    width: 30%;\n    height: 4em;\n}\n.blink-me[data-v-452b8014] {\n  -webkit-animation: blinker-data-v-452b8014 1s linear infinite;\n          animation: blinker-data-v-452b8014 1s linear infinite;\n}\n@-webkit-keyframes blinker-data-v-452b8014 {\n50% {\n    opacity: 0;\n}\n}\n@keyframes blinker-data-v-452b8014 {\n50% {\n    opacity: 0;\n}\n}\n\n", ""]);
 
 // exports
 
@@ -45499,10 +45520,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
-        item: Object
+        item: Object,
+        maxUploadSize: Number,
+        maxUploadSizeErrorMessage: String
     },
     data: function data() {
         return {
@@ -45759,9 +45789,7 @@ var render = function() {
                   1
                 )
               ]
-            ),
-            _vm._v(" "),
-            _c("hr", { staticClass: "window-title-bottom-bar" })
+            )
           ]
         ),
         _vm._v(" "),
@@ -45778,38 +45806,85 @@ var render = function() {
             ]
           },
           [
-            _c("upload", { attrs: { item: _vm.item } }),
-            _vm._v(" "),
-            _c("hr", { staticClass: "window-title-bottom-bar" })
+            _c("upload", {
+              attrs: {
+                item: _vm.item,
+                "max-upload-size": _vm.maxUploadSize,
+                "max-upload-size-error-message": _vm.maxUploadSizeErrorMessage
+              }
+            })
           ],
           1
         ),
         _vm._v(" "),
-        _c("div", { staticClass: "row" }, [
-          _c(
-            "button",
-            {
-              on: {
-                click: function($event) {
-                  _vm.param = "config"
-                }
+        _c(
+          "span",
+          {
+            directives: [
+              {
+                name: "show",
+                rawName: "v-show",
+                value: _vm.param == "pip",
+                expression: "param == 'pip'"
               }
-            },
-            [_vm._v("CONFIG")]
-          ),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              on: {
-                click: function($event) {
-                  _vm.param = "ftp"
+            ]
+          },
+          [_c("python-pip")],
+          1
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "row",
+            style: {
+              position: "absolute",
+              bottom: "1em",
+              width: "100%",
+              margin: "auto"
+            }
+          },
+          [
+            _c("hr", { staticClass: "window-title-bottom-bar" }),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "param-button",
+                on: {
+                  click: function($event) {
+                    _vm.param = "config"
+                  }
                 }
-              }
-            },
-            [_vm._v("FTP")]
-          )
-        ])
+              },
+              [_vm._v("CONFIG")]
+            ),
+            _c(
+              "button",
+              {
+                staticClass: "param-button",
+                on: {
+                  click: function($event) {
+                    _vm.param = "ftp"
+                  }
+                }
+              },
+              [_vm._v("FTP")]
+            ),
+            _c(
+              "button",
+              {
+                staticClass: "param-button",
+                on: {
+                  click: function($event) {
+                    _vm.param = "pip"
+                  }
+                }
+              },
+              [_vm._v("PIP")]
+            )
+          ]
+        )
       ])
     ]
   )
@@ -46213,10 +46288,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
-        item: Object
+        item: Object,
+        maxUploadSize: Number,
+        maxUploadSizeErrorMessage: String
     },
     data: function data() {
         return {
@@ -46324,7 +46403,11 @@ var render = function() {
       _c("param-window", {
         ref: "paramWindow",
         staticClass: "param-window",
-        attrs: { item: _vm.item },
+        attrs: {
+          item: _vm.item,
+          "max-upload-size": _vm.maxUploadSize,
+          "max-upload-size-error-message": _vm.maxUploadSizeErrorMessage
+        },
         on: { stop: _vm.stop, restart: _vm.restart, del: _vm.del }
       })
     ],
@@ -46846,7 +46929,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
-        item: Object
+        item: Object,
+        maxUploadSize: Number,
+        maxUploadSizeErrorMessage: String
     },
     data: function data() {
         var _uploadIconButtonStyl;
@@ -46927,9 +47012,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 toastr.error('You must select at least one file to upload!');
                 return;
             }
+            var totalSize = 0;
+            for (var i = 0; i < input.files.length; i++) {
+                totalSize += input.files[i].size; // given in bytes (octets)
+                if (totalSize > this.maxUploadSize) {
+                    toastr.error(this.maxUploadSizeErrorMessage);
+                    return;
+                }
+            }
 
             this.uploading = true;
             this.uploadIcon = 'fa-times';
+            this.item.state = '1'; // to make the Uploader's icon spin
 
             var upload = function upload() {
 
@@ -46942,7 +47036,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
                     var i = me.currentNb;
                     var file = input.files[i];
-                    console.log(file);
                     var formData = new FormData();
 
                     var extra = 2 * (('' + me.totalNb).length - 2);
@@ -47245,7 +47338,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -47332,56 +47425,61 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 height: '4em',
                 backgroundColor: '#bbb'
             },
-            moveBegin: true
-
+            moveBegin: true,
+            moveAvailable: true
         };
     },
 
     methods: {
         move: function move() {
             var me = this;
-            if (this.moveBegin) {
-                var frame = function frame() {
-                    if (pos == 40) {
-                        clearInterval(id);
-                        me.moveStyleLeft.width = '4em';
-                        me.moveStyleRight.marginLeft = '8em';
-                        me.moveStyleRight.width = 0;
-                        me.moveBegin = false;
-                        me.$emit('toggled', 'ON');
-                    } else {
-                        var abs = Math.abs(pos - 40 / 2);
-                        var delta = abs > 15 ? 1 : abs > 10 ? 2 : 4;
-                        pos += delta;
-                        me.moveStyleLeft.width = pos / 10.0 + 'em';
-                        me.moveStyleRight.marginLeft = 4 + pos / 10.0 + 'em';
-                        me.moveStyleRight.width = 4 - pos / 10.0 + 'em';
-                    }
-                };
+            if (this.moveAvailable) {
+                this.moveAvailable = false;
+                if (this.moveBegin) {
+                    var frame = function frame() {
+                        if (pos == 40) {
+                            clearInterval(id);
+                            me.moveStyleLeft.width = '4em';
+                            me.moveStyleRight.marginLeft = '8em';
+                            me.moveStyleRight.width = 0;
+                            me.moveBegin = false;
+                            me.moveAvailable = true;
+                            me.$emit('toggled', 'ON');
+                        } else {
+                            var abs = Math.abs(pos - 40 / 2);
+                            var delta = abs > 15 ? 1 : abs > 10 ? 2 : 4;
+                            pos += delta;
+                            me.moveStyleLeft.width = pos / 10.0 + 'em';
+                            me.moveStyleRight.marginLeft = 4 + pos / 10.0 + 'em';
+                            me.moveStyleRight.width = 4 - pos / 10.0 + 'em';
+                        }
+                    };
 
-                var pos = 0;
-                var id = setInterval(frame, 20);
-            } else {
-                var _frame = function _frame() {
-                    if (pos == 0) {
-                        clearInterval(id);
-                        me.moveStyleLeft.width = 0;
-                        me.moveStyleRight.marginLeft = '4em';
-                        me.moveStyleRight.width = '4em';
-                        me.moveBegin = true;
-                        me.$emit('toggled');
-                    } else {
-                        var abs = Math.abs(pos - 40 / 2);
-                        var delta = abs > 15 ? 1 : abs > 10 ? 2 : 4;
-                        pos -= delta;
-                        me.moveStyleLeft.width = pos / 10.0 + 'em';
-                        me.moveStyleRight.marginLeft = 4 + pos / 10.0 + 'em';
-                        me.moveStyleRight.width = 4 - pos / 10.0 + 'em';
-                    }
-                };
+                    var pos = 0;
+                    var id = setInterval(frame, 20);
+                } else {
+                    var _frame = function _frame() {
+                        if (pos == 0) {
+                            clearInterval(id);
+                            me.moveStyleLeft.width = 0;
+                            me.moveStyleRight.marginLeft = '4em';
+                            me.moveStyleRight.width = '4em';
+                            me.moveBegin = true;
+                            me.moveAvailable = true;
+                            me.$emit('toggled');
+                        } else {
+                            var abs = Math.abs(pos - 40 / 2);
+                            var delta = abs > 15 ? 1 : abs > 10 ? 2 : 4;
+                            pos -= delta;
+                            me.moveStyleLeft.width = pos / 10.0 + 'em';
+                            me.moveStyleRight.marginLeft = 4 + pos / 10.0 + 'em';
+                            me.moveStyleRight.width = 4 - pos / 10.0 + 'em';
+                        }
+                    };
 
-                var pos = 40;
-                var id = setInterval(_frame, 20);
+                    var pos = 40;
+                    var id = setInterval(_frame, 20);
+                }
             }
         }
     }

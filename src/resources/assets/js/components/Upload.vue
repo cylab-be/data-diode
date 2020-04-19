@@ -61,6 +61,8 @@
 export default {
     props: {
         item: Object,
+        maxUploadSize: Number,
+        maxUploadSizeErrorMessage: String,
     },
     data() {
         return {
@@ -142,9 +144,18 @@ export default {
                 toastr.error('You must select at least one file to upload!')
                 return
             }
+            var totalSize = 0
+            for (let i = 0; i < input.files.length; i++) {
+                totalSize += input.files[i].size // given in bytes (octets)
+                if (totalSize > this.maxUploadSize) {
+                    toastr.error(this.maxUploadSizeErrorMessage)
+                    return
+                }
+            }            
 
             this.uploading = true
             this.uploadIcon = 'fa-times'
+            this.item.state = '1' // to make the Uploader's icon spin
             
             const upload = () => {
                 
@@ -157,7 +168,6 @@ export default {
 
                     const i = me.currentNb
                     const file = input.files[i]
-                    console.log(file)
                     var formData = new FormData()
 
                     const extra = 2 * (('' + me.totalNb).length - 2)

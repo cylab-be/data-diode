@@ -22,10 +22,13 @@
 
 @section("content")
     <div class="container">
-        <div class="tab-v1">            
-            <main-bis :interval=10000>
-
-            </main-bis>            
+        <div class="tab-v1">
+            <!-- The following info about upload can come from PHP (ex: from .env) -->
+            <main-bis 
+              :interval=10000
+              :max-upload-size="{{1024 * 1024 * 1024}}"
+              max-upload-size-error-message="You cannot upload more than 1GB at once!"
+            ></main-bis>
         </div>
     </div>
 @endsection
