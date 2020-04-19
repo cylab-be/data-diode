@@ -25,10 +25,7 @@
         <div class="tab-v1">            
             <main-bis :interval=10000>
 
-            </main-bis>
-            <param-window style="position:fixed;top:0;left:0;width:100%;height:100%;padding:0;margin:0">
-            
-            </param-window>
+            </main-bis>            
         </div>
     </div>
 @endsection

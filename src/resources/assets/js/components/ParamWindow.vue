@@ -2,100 +2,93 @@
     <div class="main" :hidden="!windowVisible">
         <div class="veil-main"></div>
         <div class="window-main">
-            <div class=row>
+            <div class="row">
                 <span class="window-title" :class="blinkClass">
-                    <b>{{ windowName }}</b> {{ windowStatus }}
+                    <b>{{ item.name }}</b>
+                    &nbsp;
+                    {{ 
+                        item.status == 'running' ? 
+                            'is running on port ' + item.port 
+                        : 
+                            'is stopped [port ' + item.port + ']' 
+                    }}
                 </span>
-                <button class="window-close-button" v-on:click="windowVisible = false" :disabled="closeDisabled">
+                <button class="window-close-button" v-on:click="close" :disabled="closeDisabled">
                     <i class="fas fa-times window-close-button-icon" :class="closeDisabled ? 'fa-spin' : ''"></i>
                 </button>
             </div>
             <hr class="window-title-bottom-bar"/>
-            <toggler v-on:toggled="toggle" ref="toggler"></toggler>
-            <button
-                :style="{
-                    margin: 'auto',
-                    backgroundColor: '#bdc3c7',
-                    color: '#5bc85c',
-                    borderRadius: '1em',
-                    border: 'none',
-                    width: '4em',
-                    height: '4em',
-                }"
-                v-on:click="empty(item)"
-            >
-                <i 
-                    class="fas fa-2x fa-trash"
-                    :class="emptyBlinkClass"
-                    :style="{
-                        margin: 'auto',
-                    }"        
-                ></i>
-            </button>
-            <button
-                :style="{
-                    margin: 'auto',
-                    backgroundColor: '#bdc3c7',
-                    color: '#dc3545',
-                    borderRadius: '1em',
-                    border: 'none',
-                    width: '4em',
-                    height: '4em',
-                }"
-                v-on:click="del(item)"
-            >
-                <i 
-                    class="fas fa-2x fa-times"
-                    :class="delBlinkClass"
-                    :style="{
-                        margin: 'auto',
-                    }"
-                ></i>
-            </button>
+            <span v-show="param == 'config'">
+                <div class="row" :style="{paddingBottom:'0.5em'}">
+                    <div class="text" :style="{float:'left', marginLeft: '2em', width: '12em'}">
+                        {{
+                            'Click to toggle the FTP channel status'
+                        }}
+                    </div>
+                    <toggler :style="{float:'right', marginRight:'2em'}" v-on:toggled="toggle" ref="toggler"></toggler>
+                </div>
+                <hr class="window-title-bottom-bar"/>
+                <div class="row" :style="{paddingBottom:'0.5em'}">
+                    <div class="text" :style="{float:'left', marginLeft: '2em', width: '12em'}">
+                        {{
+                            'Click to empty - delete the FTP channel'
+                        }}
+                    </div>
+                    <div :style="{float:'right', marginRight:'2em'}">
+                        <empty-button v-on:empty="empty" ref="emptyButton"></empty-button>
+                        <del-button v-on:del="del" ref="delButton"></del-button>
+                    </div>
+                </div>
+                <hr class="window-title-bottom-bar"/>
+            </span>
+            <span v-show="param == 'ftp'">
+                <upload :item="item"></upload>
+                <hr class="window-title-bottom-bar"/>
+            </span>
+            <div class="row">
+                <button v-on:click="param = 'config'">CONFIG</button>
+                <button v-on:click="param = 'ftp'">FTP</button>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
-import EventBus from './eventbus'
-
 export default {
+    props: {
+        item: Object,
+    },
     data() {
         return {
             windowVisible: false,
-            windowName: '',
-            windowStatus: '',
-            item: {},
-            uploaderStyle: {},
             blinkClass: '',
-            emptyBlinkClass: '',
-            delBlinkClass: '',
             closeDisabled: false,
+            param: 'config',
         }
     },
     mounted() {
-        EventBus.$on('paramwindowupdate', (item, uploaderStyle) => {
-            this.updateMe(item, uploaderStyle)
-        })
     },
     methods: {
+        open() {            
+            this.windowVisible = true
+            this.$refs.toggler.setStatus(this.item.status == 'running' ? 'ON' : 'OFF')
+        },
+        close() {
+            return new Promise((resolve, reject) => {
+                this.windowVisible = false
+                if (this.windowVisible) {
+                    reject()
+                } else {
+                    resolve()
+                }
+            })
+        },
         toggle(text) {
             if (text == 'ON') {
-                this.restart(this.item)
+                this.restart()
             } else if (text == 'OFF') {
-                this.stop(this.item)
+                this.stop()
             }
-        },
-        updateMe(item, uploaderStyle) {
-            var me = this
-            me.$refs.toggler.setStatus(item.status == 'running' ? 'ON' : 'OFF')
-            me.windowVisible = true
-            const runStr = 'is running on port ' + item.port
-            const stopStr = 'is stopped [port ' + item.port + ']'
-            me.windowName = item.name
-            me.windowStatus = item.status == 'running' ? runStr : stopStr
-            me.item = item
-            me.uploaderStyle = uploaderStyle
         },
         act(action, name) {
             return new Promise((resolve, reject) => {
@@ -118,71 +111,74 @@ export default {
                 })
             })
         },
-        stop(uploader) {
+        stop() {
             var me = this
-            me.blinkClass = 'blink-me'
-            me.closeDisabled = true
-            this.act('stop', uploader.name).then(() => {
-                me.windowStatus = 'is stopped [port ' + me.item.port + ']'
-                me.blinkClass = ''                
-                EventBus.$emit('update-status-' + me.item.id, false)
-                toastr.success('Successfully stopped ' + uploader.name + '\'s channel!')
-                me.closeDisabled = false
-            }).catch(error => {                
-                me.$refs.toggler.move(false)
+            this.blinkClass = 'blink-me'
+            this.closeDisabled = true
+            this.act('stop', this.item.name).then(() => {
+                me.$emit('stop')
                 me.blinkClass = ''
-                me.closeDisabled = false
-            })
-        },
-        restart(uploader) {
-            var me = this
-            me.blinkClass = 'blink-me'
-            me.closeDisabled = true
-            this.act('restart', uploader.name).then(() => {
-                me.windowStatus = 'is running on port ' + me.item.port
-                me.blinkClass = ''
-                EventBus.$emit('update-status-' + me.item.id, true)
-                toastr.success('Successfully restarted ' + uploader.name + '\'s channel!')
-                me.closeDisabled = false
-            }).catch(error => {                
-                me.$refs.toggler.move(false)
-                me.blinkClass = ''
-                me.closeDisabled = false
-            })
-        },
-        empty(uploader) {
-            var me = this
-            me.closeDisabled = true
-            me.emptyBlinkClass = 'blink-me'
-            this.act('empty', uploader.name).then(() => {
-                toastr.success('Successfully emptied ' + uploader.name + '\'s channel!')
-                me.emptyBlinkClass = ''
+                toastr.success('Successfully stopped ' + me.item.name + '\'s channel!')
                 me.closeDisabled = false
             }).catch(error => {
-                me.emptyBlinkClass = ''
+                me.$refs.toggler.move(false)
+                me.blinkClass = ''
                 me.closeDisabled = false
             })
         },
-        emptyAndRestart(uploader) {
+        restart() {
+            var me = this
+            this.blinkClass = 'blink-me'
+            this.closeDisabled = true
+            this.act('restart', this.item.name).then(() => {
+                me.$emit('restart')
+                me.windowStatus = 'is running on port ' + me.item.port
+                me.blinkClass = ''                
+                toastr.success('Successfully restarted ' + me.item.name + '\'s channel!')
+                me.closeDisabled = false
+            }).catch(error => {                
+                me.$refs.toggler.move(false)
+                me.blinkClass = ''
+                me.closeDisabled = false
+            })
+        },
+        empty() {
+            var me = this
+            this.closeDisabled = true
+            this.$refs.emptyButton.startBlink()
+            this.act('empty', this.item.name).then(() => {                
+                this.$refs.emptyButton.stopBlink()
+                toastr.success('Successfully emptied ' + me.item.name + '\'s channel!')
+                me.closeDisabled = false
+            }).catch(error => {
+                this.$refs.emptyButton.stopBlink()
+                me.closeDisabled = false
+            })
+        },
+        /*emptyAndRestart(uploader) {
             var me = this
             me.act('empty', uploader.name).then(() => {
                 me.act('restart', uploader.name).then(() => {
                     toastr.success('Successfully emptied and restarted ' + uploader.name + '\'s channel!')
                 })
             })
-        },
-        del(uploader) {
+        },*/
+        del() {
             var me = this
-            me.closeDisabled = true
-            me.delBlinkClass = 'fa-spin'
-            this.act('del', uploader.name).then(() => {
-                me.delBlinkClass = ''
-                me.windowVisible = false
-                toastr.success('Successfully deleted ' + uploader.name + '\'s channel!')
-                EventBus.$emit('remove-uploader', uploader)
+            this.closeDisabled = true
+            this.$refs.delButton.startSpin()
+            this.act('del', this.item.name).then(() => {
+                me.close().then(() => {
+                    me.$emit('del')
+                })  //  Promise is necessary otherwise this ParamWindow's ref
+                    //  could be lost when the associated Uploader is deleted,
+                    //  making the complete closing of the ParamWindow 
+                    //  impossible.
+                this.$refs.delButton.stopSpin()
+                toastr.success('Successfully deleted ' + this.item.name + '\'s channel!')
                 me.closeDisabled = false
             }).catch(error => {
-                me.delBlinkClass = ''
+                this.$refs.delButton.stopSpin()
                 me.closeDisabled = false
             })
         },
@@ -251,7 +247,11 @@ export default {
     border-right-width: 0;
     padding: 0;
     height: 0;
-    width: 28em;
+    width: 93%;
+}
+
+.text {
+    font-size: 1.33em;
 }
 
 .blink-me {

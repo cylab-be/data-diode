@@ -17,12 +17,18 @@
             &nbsp;
             <span class="item-port">[port {{ item.port }}]</span>
         </button>
+        <param-window 
+            class="param-window" 
+            ref="paramWindow"
+            :item="item"
+            v-on:stop="stop"
+            v-on:restart="restart"
+            v-on:del="del"
+        ></param-window>
     </div>
 </template>
 
 <script>
-import EventBus from './eventbus'
-
 export default {
     props: {
         item: Object,
@@ -57,6 +63,17 @@ export default {
         }
     },
     methods: {
+        stop() {
+            this.uploaderStyle.color = '#dc3545'
+            this.item.status = 'stopped'
+        },
+        restart() {
+            this.uploaderStyle.color = '#28a745'
+            this.item.status = 'running'
+        },
+        del() {
+            this.$emit('del', this.item)
+        },
         updateMe(isRunning) {
             this.uploaderStyle.color = isRunning ? '#28a745' : '#dc3545'
             this.item.status = isRunning ? 'running' : 'stopped'
@@ -69,14 +86,7 @@ export default {
             this.uploaderStyle.backgroundColor = '#007bff00'
         },
         showParamWindow() {
-            var me = this
-            // Here and not in mounted so that when a new one
-            // is added, it gets an id            
-            EventBus.$on('update-status-' + me.item.id, (isRunning) => {
-                console.log(isRunning)
-                me.updateMe(isRunning)
-            })
-            EventBus.$emit('paramwindowupdate', this.item, this.uploaderStyle)
+            this.$refs.paramWindow.open()
         },
     }
 }
@@ -108,6 +118,16 @@ export default {
 .item-port {
     float: right;
     margin-right: 2em;
+}
+
+.param-window {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
 }
 
 </style>

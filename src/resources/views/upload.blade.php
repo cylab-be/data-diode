@@ -23,7 +23,7 @@
 @section("content")
     <div class="container">
     <div class="tab-v1">
-        <upload-form-toggler upload_url="/upload" style="width:40em;margin:auto;"></upload-form-toggler>
+        EMPTY
     </div>
     <script>
         document.body.style.backgroundColor = '#ccc';

@@ -27,6 +27,7 @@
                 v-bind:key="item.name"
                 v-bind:data-index="index"
                 :item="item"
+                v-on:del="del"
             >
             </uploader>
         </transition-group>
@@ -37,14 +38,11 @@
                 <slot></slot>
                 ... englobe l'enfant
             </div>
-        </template>
-
+        </template>        
     </div>
 </template>
 
 <script>
-import EventBus from './eventbus'
-
 export default {
     props: {
         //items: Array,
@@ -115,7 +113,6 @@ export default {
                     me.uploaders = response.data.uploaders
                     me.uploaders.map((uploader, i) => {
                         uploader.status = response.data.statuses[i]
-                        EventBus.$emit('update-status-' + uploader.id, uploader.status == 'running')
                         return {
                             uploader
                         }
@@ -128,13 +125,13 @@ export default {
             }
         }, me.interval)
 
-        EventBus.$on('remove-uploader', item => {
-            me.uploaders = me.uploaders.filter( uploader => {
-                return uploader.name != item.name
-            })
-        })
     },
     methods: {
+        del(item) {
+            this.uploaders = this.uploaders.filter( uploader => {
+                return uploader.name != item.name
+            })
+        },
         beforeEnter: function (el) {
             el.style.opacity = 0
             el.style.height = 0

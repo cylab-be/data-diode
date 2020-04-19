@@ -1,5 +1,5 @@
 <template>
-    <div
+    <button
         :style="moveBackgroundStyle"
         v-on:click="move(true)"
         v-on:mouseenter="moveBackgroundStyle.backgroundColor = '#ddd'; moveStyle.opacity = 1"
@@ -9,7 +9,7 @@
             :style="moveStyle"
         >
         </div>
-    </div>
+    </button>
 </template>
 
 <script>
@@ -18,7 +18,19 @@ export default {
         status: String
     },
     data() {
-        return {
+        return {            
+            moveBackgroundStyle: {
+                width: '8em',
+                height: '4em',
+                borderRadius: '2em',
+                backgroundColor: '#eee',
+                padding: 0,
+                //margin: 'auto',
+                //overflow: 'hidden',
+                border: 'none',
+                boxShadow: 'inset 0 0 4em rgba(100,100,100,0.6)',
+                position: 'relative',
+            },
             moveStyle: {
                 width: '4em',
                 height: '4em',
@@ -27,24 +39,14 @@ export default {
                 borderRadius: '50%',
                 marginLeft: '0em',
                 opacity: 0.6,
-            },
-            moveBackgroundStyle: {
-                width: '8em',
-                height: '4em',
-                borderRadius: '2em',
-                backgroundColor: '#eee',
-                padding: 0,
-                margin: 'auto',
-                overflow: 'hidden',
-                boxShadow: 'inset 0 0 4em rgba(100,100,100,0.6)',
+                position: 'absolute',
+                marginTop: '-2em',
             },
             moveAvailable: true,
             moveBegin: true,
         }
     },
     mounted() {
-        var me = this
-        me.marginLeft = me.moveBegin ? '0em' : '4em'        
     },
     methods: {
         setStatus(status) {

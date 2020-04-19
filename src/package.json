@@ -11,9 +11,6 @@
     },
     "devDependencies": {
         "@fortawesome/fontawesome-free": "^5.12.1",
-        "@progress/kendo-buttons-vue-wrapper": "^2020.1.219",
-        "@progress/kendo-ui": "^2020.1.219",
-        "@progress/kendo-upload-vue-wrapper": "^2020.1.219",
         "axios": "^0.16.2",
         "bootstrap-sass": "^3.3.7",
         "cross-env": "^5.0.1",
