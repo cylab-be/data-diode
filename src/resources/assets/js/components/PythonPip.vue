@@ -1,149 +1,118 @@
 <template>
     <div>
-        <div>
-            <input 
-                v-model="packageName"
-                ref="package"
-                v-on:keyup.enter="$refs.add.click()"
-            >
-            <button
-                type="button"
-                ref="add"
-                :style="addButtonStyle"
-                v-on:click="addPackageName"
-                :disabled="cannotAdd"
-            >
-                Add package
+        <span v-show="!isPipModule">
+            <p>[add a new module below]</p>
+            <input class="port-input" v-model="pipport" placeholder="port">
+            <button class="add-package-button" v-on:click="addPip">
+                <i class="fas fa-plus add-package-button-icon"></i>
             </button>
-        </div>
-        <button
-            type="button"
-            v-on:click="installPackages"
-            :disabled="cannotInstall || packageNames.length == 0"
-        >
-            Download Packages
-        </button>
-        <div  
-            style="width:100%;"          
-            v-for="(pack, index) in packageNames" :key="index"
-        >
-            <div class="row">
-                <div class="col-sm-1 col-md-1 col-lg-1 col-xl-1">
-                    <button
-                        type="button"
-                        v-on:click="deletePackageName(index)"
-                    >
-                        <i class="fa fa-times"></i>
-                    </button>
-                </div>
-                <div class="col-sm-2 col-md-2 col-lg-2 col-xl-2">
-                    <p>
-                        {{ pack }}
-                    </p>                    
-                </div>
-                <div class="col-sm-1 col-md-1 col-lg-1 col-xl-1">
-                    <button
-                        type="button"
-                        v-on:click="upPackageName(index)"
-                        :disabled="index <= 0"
-                    >
-                        <i class="fa fa-arrow-up"></i>
-                    </button>
-                </div>
-                <div class="col-sm-1 col-md-1 col-lg-1 col-xl-1">
-                    <button
-                        type="button"
-                        v-on:click="downPackageName(index)"
-                        :disabled="index >= packageNames.length - 1"
-                    >
-                        <i class="fa fa-arrow-down"></i>
-                    </button>
-                </div>
-            </div>            
-        </div>
-        <div 
-            :style="{
-                width: '100%',
-                overflow:'scroll',
-                height:'12em',
-            }"
-        >
-            <div  
+        </span>
+        <span v-show="isPipModule">
+            <div :style="{marginBottom: '0.5em'}">
+                <p>[module running on port {{ pipport }}]</p>
+                <input 
+                    v-model="packageName"
+                    placeholder="package name"
+                >
+                <button
+                    type="button"
+                    class="add-package-button"                 
+                    v-on:click="downloadPackage"
+                    :disabled="cannotDownload"
+                >
+                    <i class="fas fa-plus add-package-button-icon"></i>
+                </button>
+            </div>
+            <div 
                 :style="{
                     width: '100%',
-                    whiteSpace:'pre-wrap',                
+                    overflow:'scroll',
+                    height:'12em',
                 }"
-                v-for="(inst, index) in installedNames" :key="index"
             >
-                <p>{{ inst }}</p>
+                <div  
+                    :style="{
+                        width: '95%',
+                        whiteSpace:'pre-wrap',                
+                    }"
+                    v-for="(item, index) in downloadedData" :key="index"
+                >
+                    <p>{{ item }}</p>
+                </div>
             </div>
-        </div>
+        </span>
     </div>
 </template>
 
 <script>
 export default {
+    props: {
+        item: Object,
+    },
     data() {
         return {
             packageName: '',
-            packageNames: [],
-            installedNames: [],
-            cannotInstall: false,
-            cannotAdd: false,
+            downloadedData: [],
+            cannotDownload: false,
+            pipport: '',
+            isPipModule: false,
         }
     },
     mounted() {
-        this.$refs.package.focus()
+        var me = this
+        const url = '/getPipPort'
+        const options = {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            url,
+            data: {
+                uploader: me.item.name,
+            },
+        }
+        axios(options)
+        .then(function(response) {
+            me.isPipModule = response.data.pipport != 0
+            me.pipport = response.data.pipport
+        })
+        .catch(function(error) {
+            toastr.error('Unable to get the ' + me.item.name + '\'s channel pip port module')
+        })
     },
     methods: {
-        addPackageName() {
-            this.installedNames = []
-            if (this.packageName.length == 0) {
-                toastr.error('The package name cannot be empty!')
-            } else {
-                this.packageNames.push(this.packageName)
-                this.packageName = ''
+        addPip() {
+            var me = this
+            const url = '/addPip'
+            const port = parseInt(me.pipport)
+            const options = {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                url,
+                data: {
+                    uploader: me.item.name,
+                    port: port
+                },
             }
-            this.$refs.package.focus()
+            axios(options)
+            .then(function(response) {
+                me.isPipModule = true
+                toastr.success(response.data.message)
+            })
+            .catch(function(error) {
+                toastr.error(error.response.data.message)
+            })
         },
-        deletePackageName(i) {
-            this.packageNames.splice(i,  1)
-        },
-        upPackageName(i) {
-            if (i > 0) {
-                const save = this.packageNames[i]
-                this.packageNames[i] = this.packageNames[i - 1]
-                this.packageNames[i - 1] = save
-                // refresh list
-                this.packageNames.push('')
-                this.packageNames.pop()
-            }
-        },
-        downPackageName(i) {
-            if (i + 1 < this.packageNames.length) {
-                const save = this.packageNames[i]
-                this.packageNames[i] = this.packageNames[i + 1]
-                this.packageNames[i + 1] = save
-                // refresh list
-                this.packageNames.push('')
-                this.packageNames.pop()
-            }
-        },
-        installPackages() {            
-            if (this.packageNames.length > 0) {
-                this.cannotAdd = true
-                this.cannotInstall = true
-                const names = this.packageNames
-                this.packageNames = []
-                var me = this               
-                
-                let i = 0
-
+        downloadPackage() {
+            if (this.packageName.length > 0) {
+                this.item.state = '1'
+                this.downloadedData = []
+                this.cannotDownload = true
+                var me = this            
                 function send(name) {
                     return new Promise((resolve, reject) => {
                         axios.post('/pythonpip',
                         {
                             name: name,
+                            uploader: me.item.name
                         })
                         .then(function(response){                            
                             resolve(response)
@@ -153,32 +122,21 @@ export default {
                         })
                     })
                 }
-
-                function next(name) {
-                    if (i == 0) {
-                        me.installedNames.push('Packages installation:')
+                this.downloadedData.push('Downloading ' + this.packageName + '...')
+                const name = this.packageName
+                this.packageName = ''
+                send(name).then(response => {
+                    me.downloadedData.push(response.data.output)
+                    if (response.data.output.startsWith('Failed')) {
+                        toastr.error('The download of the ' + name + ' package failed.')
+                    } else {
+                        toastr.success('The ' + name + ' package has been successfully downloaded and added to the ' + me.item.name + '\'s channel.')
+                        me.item.state = '1'
                     }
-                    var name = names[i]
-                    me.installedNames.push('Downloading ' + name + '...')
-                    return send(name).then(response => {
-                        me.installedNames.push(response.data.output)
-                        i++
-                        if (i < names.length) {
-                            return next(name)
-                        } else {
-                            return
-                        }
-                    }).catch(error => {
-                        toastr.error(error.message)
-                    })
-                }
-
-                next(names[i]).then(() => {
-                    me.installedNames.push('Done.')
-                    this.cannotAdd = false
-                    this.cannotInstall = false
+                    me.cannotDownload = false
+                }).catch(error => {
+                    toastr.error(error.response.data.message)
                 })
-                
             } else {
                 toastr.error('You must specify at least one package.')
             }
@@ -188,5 +146,24 @@ export default {
 </script>
 
 <style scoped>
+
+.add-package-button {
+    height: 2em;
+    border: none;
+    background-color: #007bff;
+    border-radius: 0.3em;
+}
+
+.add-package-button-icon {
+    margin: auto;
+    color: #ddd;
+}
+
+.port-input {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    width: 5.5em;
+    height: 2em;
+}
 
 </style>

@@ -1,8 +1,6 @@
 #!/bin/sh
-mkdir pip
-cd pip
-mkdir pip
-cd pip
+mkdir $2
+cd $2
 mkdir downloads
 pypi-mirror download -d downloads/ -p /usr/local/bin/pip3 -b $1
 pypi-mirror create -d downloads -m simple
@@ -17,9 +15,9 @@ do
   # rm "$link"			# not used because removes the original file that has just been moved.
 done
 
-cd ../..
-sudo chown -R www-data:www-data pip
-sudo cp -r pip /var/www/data-diode/src/storage/app/files
-sudo chown -R www-data:www-data /var/www/data-diode/src/storage/app/files/pip
-sudo rm -rf pip
-sudo python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py pip 1
+cd ..
+sudo chown -R www-data:www-data $2
+sudo cp -r $2 /var/www/data-diode/src/storage/app/files
+sudo chown -R "www-data:www-data /var/www/data-diode/src/storage/app/files/$2"
+sudo rm -rf $2
+sudo python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py update $2 1

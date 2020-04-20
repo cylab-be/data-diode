@@ -48,7 +48,7 @@
                 ></upload>                
             </span>
             <span v-show="param == 'pip'">
-                <python-pip></python-pip>
+                <python-pip :item="item"></python-pip>
             </span>
             <div class="row" :style="{position: 'absolute', bottom: '1em', width: '100%', margin: 'auto'}">
                 <hr class="window-title-bottom-bar"/>
@@ -83,13 +83,17 @@ export default {
             this.$refs.toggler.setStatus(this.item.status == 'running' ? 'ON' : 'OFF')
         },
         close() {
+            console.log('close')
             return new Promise((resolve, reject) => {
-                this.windowVisible = false
-                if (this.windowVisible) {
-                    reject()
-                } else {
-                    resolve()
+                if (!this.closeDisabled) {
+                    this.windowVisible = false
+                    if (this.windowVisible) {
+                        reject()
+                    } else {
+                        resolve()
+                    }
                 }
+                resolve()
             })
         },
         toggle(text) {

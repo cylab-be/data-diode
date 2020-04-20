@@ -83,15 +83,15 @@ systemctl restart apache2
 timedatectl set-timezone Europe/Brussels
 
 # ftp, apt and pip added in db (diode in and diode out)
-python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py ftp 0 36016
-python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py apt 0 36017
-python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py pip 0 36018
+python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py add ftp 0 36016
+python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py add apt 0 36017
+python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py add pip 0 36018
 
 # Opera deb test
-sudo -H -u www-data bash -c 'mkdir apt'
-cd apt
-sudo -H -u www-data bash -c 'wget -r -l 0 http://deb.opera.com/opera/' # as if root were www-data to give it the rights on deb.opera.com
-cd ..
-mv -v apt /var/www/data-diode/src/storage/app/files/
-chown -R www-data:www-data /var/www/data-diode/src/storage/app/files/apt
-python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py apt 1 # Python2.7
+#sudo -H -u www-data bash -c 'mkdir apt'
+#cd apt
+#sudo -H -u www-data bash -c 'wget -r -l 0 http://deb.opera.com/opera/' # as if root were www-data to give it the rights on deb.opera.com
+#cd ..
+#mv -v apt /var/www/data-diode/src/storage/app/files/
+#chown -R www-data:www-data /var/www/data-diode/src/storage/app/files/apt
+#python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py update apt 1 # Python2.7

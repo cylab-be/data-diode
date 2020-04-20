@@ -53,26 +53,24 @@ def insert_uploader(conn, insert_uploader_sql, uploader, state, port):
         t = (uploader, state,port,)
         c.execute(insert_uploader_sql, t)
         conn.commit()
-        print("Uploader named %s added with state = %s and port = %d" %(uploader, state, port))
     except Error as e:
         print(e)
 
-def change_uploader_state(conn, change_uploader_state_sql, uploader, state):
-    """ change the state value of a specific uploader in
+def change_uploader_attribute(conn, change_uploader_attribute_sql, uploader, attribute):
+    """ change an attribute value of a specific uploader in
             the uploaders table
     :param conn: Connection object
-    :param change_uploader_state_sql: String object of
+    :param change_uploader_attribute_sql: String object of
             the query used to update an uploader
     :param uploader: String object of the uploader name
-    :param state: String object of the new state value
+    :param attribute: String object of the new attribute value
     :return:
     """
     try:
         c = conn.cursor()
-        t = (state, uploader,)
-        c.execute(change_uploader_state_sql, t)
+        t = (attribute, uploader,)
+        c.execute(change_uploader_attribute_sql, t)
         conn.commit()
-        print("Uploader named %s added has now state = %s" %(uploader, state))
     except Error as e:
         print(e)
 
@@ -80,8 +78,8 @@ def delete_uploader(conn, delete_uploader_sql, uploader):
     """ delete a specific uploader in the uploaders
         table
     :param conn: Connection object
-    :param change_uploader_state_sql: String object of
-            the query used to delete an uploader
+    :param delete_uploader_sql: String object of the
+            query used to delete an uploader
     :param uploader: String object of the uploader name
     :return:
     """
@@ -90,6 +88,5 @@ def delete_uploader(conn, delete_uploader_sql, uploader):
         t = (uploader,)
         c.execute(delete_uploader_sql, t)
         conn.commit()
-        print("Uploader named %s added has been deleted" %uploader)
     except Error as e:
         print(e)

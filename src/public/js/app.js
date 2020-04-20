@@ -44047,7 +44047,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n.add-package-button[data-v-28b1c574] {\n    height: 2em;\n    border: none;\n    background-color: #007bff;\n    border-radius: 0.3em;\n}\n.add-package-button-icon[data-v-28b1c574] {\n    margin: auto;\n    color: #ddd;\n}\n.port-input[data-v-28b1c574] {\n    padding-left: 0.5em;\n    padding-right: 0.5em;\n    width: 5.5em;\n    height: 2em;\n}\n\n", ""]);
 
 // exports
 
@@ -44104,100 +44104,67 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
+    props: {
+        item: Object
+    },
     data: function data() {
         return {
             packageName: '',
-            packageNames: [],
-            installedNames: [],
-            cannotInstall: false,
-            cannotAdd: false
+            downloadedData: [],
+            cannotDownload: false,
+            pipport: '',
+            isPipModule: false
         };
     },
     mounted: function mounted() {
-        this.$refs.package.focus();
+        var me = this;
+        var url = '/getPipPort';
+        var options = {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            url: url,
+            data: {
+                uploader: me.item.name
+            }
+        };
+        axios(options).then(function (response) {
+            me.isPipModule = response.data.pipport != 0;
+            me.pipport = response.data.pipport;
+        }).catch(function (error) {
+            toastr.error('Unable to get the ' + me.item.name + '\'s channel pip port module');
+        });
     },
 
     methods: {
-        addPackageName: function addPackageName() {
-            this.installedNames = [];
-            if (this.packageName.length == 0) {
-                toastr.error('The package name cannot be empty!');
-            } else {
-                this.packageNames.push(this.packageName);
-                this.packageName = '';
-            }
-            this.$refs.package.focus();
+        addPip: function addPip() {
+            var me = this;
+            var url = '/addPip';
+            var port = parseInt(me.pipport);
+            var options = {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                url: url,
+                data: {
+                    uploader: me.item.name,
+                    port: port
+                }
+            };
+            axios(options).then(function (response) {
+                me.isPipModule = true;
+                toastr.success(response.data.message);
+            }).catch(function (error) {
+                toastr.error(error.response.data.message);
+            });
         },
-        deletePackageName: function deletePackageName(i) {
-            this.packageNames.splice(i, 1);
-        },
-        upPackageName: function upPackageName(i) {
-            if (i > 0) {
-                var save = this.packageNames[i];
-                this.packageNames[i] = this.packageNames[i - 1];
-                this.packageNames[i - 1] = save;
-                // refresh list
-                this.packageNames.push('');
-                this.packageNames.pop();
-            }
-        },
-        downPackageName: function downPackageName(i) {
-            if (i + 1 < this.packageNames.length) {
-                var save = this.packageNames[i];
-                this.packageNames[i] = this.packageNames[i + 1];
-                this.packageNames[i + 1] = save;
-                // refresh list
-                this.packageNames.push('');
-                this.packageNames.pop();
-            }
-        },
-        installPackages: function installPackages() {
-            var _this = this;
-
-            if (this.packageNames.length > 0) {
+        downloadPackage: function downloadPackage() {
+            if (this.packageName.length > 0) {
                 var send = function send(name) {
                     return new Promise(function (resolve, reject) {
                         axios.post('/pythonpip', {
-                            name: name
+                            name: name,
+                            uploader: me.item.name
                         }).then(function (response) {
                             resolve(response);
                         }).catch(function (error) {
@@ -44206,37 +44173,25 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     });
                 };
 
-                var _next = function _next(name) {
-                    if (i == 0) {
-                        me.installedNames.push('Packages installation:');
-                    }
-                    var name = names[i];
-                    me.installedNames.push('Downloading ' + name + '...');
-                    return send(name).then(function (response) {
-                        me.installedNames.push(response.data.output);
-                        i++;
-                        if (i < names.length) {
-                            return _next(name);
-                        } else {
-                            return;
-                        }
-                    }).catch(function (error) {
-                        toastr.error(error.message);
-                    });
-                };
-
-                this.cannotAdd = true;
-                this.cannotInstall = true;
-                var names = this.packageNames;
-                this.packageNames = [];
+                this.item.state = '1';
+                this.downloadedData = [];
+                this.cannotDownload = true;
                 var me = this;
 
-                var i = 0;
-
-                _next(names[i]).then(function () {
-                    me.installedNames.push('Done.');
-                    _this.cannotAdd = false;
-                    _this.cannotInstall = false;
+                this.downloadedData.push('Downloading ' + this.packageName + '...');
+                var name = this.packageName;
+                this.packageName = '';
+                send(name).then(function (response) {
+                    me.downloadedData.push(response.data.output);
+                    if (response.data.output.startsWith('Failed')) {
+                        toastr.error('The download of the ' + name + ' package failed.');
+                    } else {
+                        toastr.success('The ' + name + ' package has been successfully downloaded and added to the ' + me.item.name + '\'s channel.');
+                        me.item.state = '1';
+                    }
+                    me.cannotDownload = false;
+                }).catch(function (error) {
+                    toastr.error(error.response.data.message);
                 });
             } else {
                 toastr.error('You must specify at least one package.');
@@ -44253,152 +44208,128 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    [
-      _c("div", [
+  return _c("div", [
+    _c(
+      "span",
+      {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: !_vm.isPipModule,
+            expression: "!isPipModule"
+          }
+        ]
+      },
+      [
+        _c("p", [_vm._v("[add a new module below]")]),
+        _vm._v(" "),
         _c("input", {
           directives: [
             {
               name: "model",
               rawName: "v-model",
-              value: _vm.packageName,
-              expression: "packageName"
+              value: _vm.pipport,
+              expression: "pipport"
             }
           ],
-          ref: "package",
-          domProps: { value: _vm.packageName },
+          staticClass: "port-input",
+          attrs: { placeholder: "port" },
+          domProps: { value: _vm.pipport },
           on: {
-            keyup: function($event) {
-              if (
-                !("button" in $event) &&
-                _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-              ) {
-                return null
-              }
-              _vm.$refs.add.click()
-            },
             input: function($event) {
               if ($event.target.composing) {
                 return
               }
-              _vm.packageName = $event.target.value
+              _vm.pipport = $event.target.value
             }
           }
         }),
         _vm._v(" "),
         _c(
           "button",
-          {
-            ref: "add",
-            style: _vm.addButtonStyle,
-            attrs: { type: "button", disabled: _vm.cannotAdd },
-            on: { click: _vm.addPackageName }
-          },
-          [_vm._v("\n            Add package\n        ")]
+          { staticClass: "add-package-button", on: { click: _vm.addPip } },
+          [_c("i", { staticClass: "fas fa-plus add-package-button-icon" })]
         )
-      ]),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          attrs: {
-            type: "button",
-            disabled: _vm.cannotInstall || _vm.packageNames.length == 0
-          },
-          on: { click: _vm.installPackages }
-        },
-        [_vm._v("\n        Download Packages\n    ")]
-      ),
-      _vm._v(" "),
-      _vm._l(_vm.packageNames, function(pack, index) {
-        return _c("div", { key: index, staticStyle: { width: "100%" } }, [
-          _c("div", { staticClass: "row" }, [
-            _c("div", { staticClass: "col-sm-1 col-md-1 col-lg-1 col-xl-1" }, [
-              _c(
-                "button",
-                {
-                  attrs: { type: "button" },
-                  on: {
-                    click: function($event) {
-                      _vm.deletePackageName(index)
-                    }
-                  }
-                },
-                [_c("i", { staticClass: "fa fa-times" })]
-              )
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "col-sm-2 col-md-2 col-lg-2 col-xl-2" }, [
-              _c("p", [
-                _vm._v(
-                  "\n                    " + _vm._s(pack) + "\n                "
-                )
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "col-sm-1 col-md-1 col-lg-1 col-xl-1" }, [
-              _c(
-                "button",
-                {
-                  attrs: { type: "button", disabled: index <= 0 },
-                  on: {
-                    click: function($event) {
-                      _vm.upPackageName(index)
-                    }
-                  }
-                },
-                [_c("i", { staticClass: "fa fa-arrow-up" })]
-              )
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "col-sm-1 col-md-1 col-lg-1 col-xl-1" }, [
-              _c(
-                "button",
-                {
-                  attrs: {
-                    type: "button",
-                    disabled: index >= _vm.packageNames.length - 1
-                  },
-                  on: {
-                    click: function($event) {
-                      _vm.downPackageName(index)
-                    }
-                  }
-                },
-                [_c("i", { staticClass: "fa fa-arrow-down" })]
-              )
-            ])
-          ])
-        ])
-      }),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          style: {
-            width: "100%",
-            overflow: "scroll",
-            height: "12em"
+      ]
+    ),
+    _vm._v(" "),
+    _c(
+      "span",
+      {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: _vm.isPipModule,
+            expression: "isPipModule"
           }
-        },
-        _vm._l(_vm.installedNames, function(inst, index) {
-          return _c(
-            "div",
-            {
-              key: index,
-              style: {
-                width: "100%",
-                whiteSpace: "pre-wrap"
+        ]
+      },
+      [
+        _c("div", { style: { marginBottom: "0.5em" } }, [
+          _c("p", [
+            _vm._v("[module running on port " + _vm._s(_vm.pipport) + "]")
+          ]),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.packageName,
+                expression: "packageName"
               }
+            ],
+            attrs: { placeholder: "package name" },
+            domProps: { value: _vm.packageName },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.packageName = $event.target.value
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "add-package-button",
+              attrs: { type: "button", disabled: _vm.cannotDownload },
+              on: { click: _vm.downloadPackage }
             },
-            [_c("p", [_vm._v(_vm._s(inst))])]
+            [_c("i", { staticClass: "fas fa-plus add-package-button-icon" })]
           )
-        })
-      )
-    ],
-    2
-  )
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            style: {
+              width: "100%",
+              overflow: "scroll",
+              height: "12em"
+            }
+          },
+          _vm._l(_vm.downloadedData, function(item, index) {
+            return _c(
+              "div",
+              {
+                key: index,
+                style: {
+                  width: "95%",
+                  whiteSpace: "pre-wrap"
+                }
+              },
+              [_c("p", [_vm._v(_vm._s(item))])]
+            )
+          })
+        )
+      ]
+    )
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -45552,13 +45483,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         close: function close() {
             var _this = this;
 
+            console.log('close');
             return new Promise(function (resolve, reject) {
-                _this.windowVisible = false;
-                if (_this.windowVisible) {
-                    reject();
-                } else {
-                    resolve();
+                if (!_this.closeDisabled) {
+                    _this.windowVisible = false;
+                    if (_this.windowVisible) {
+                        reject();
+                    } else {
+                        resolve();
+                    }
                 }
+                resolve();
             });
         },
         toggle: function toggle(text) {
@@ -45829,7 +45764,7 @@ var render = function() {
               }
             ]
           },
-          [_c("python-pip")],
+          [_c("python-pip", { attrs: { item: _vm.item } })],
           1
         ),
         _vm._v(" "),

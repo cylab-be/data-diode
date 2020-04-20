@@ -3,30 +3,56 @@
 import socket
 import sys
 import re
-from db_management import create_connection, uploader_exists, insert_uploader, change_uploader_state, delete_uploader
+from db_management import create_connection, uploader_exists, insert_uploader, change_uploader_attribute, delete_uploader
 
 HOST = '192.168.101.2'
 PORT = 65431
 
-MSG1 = """
-Send a delete message to diode out:
-    This script needs 1 argument: uploader_name(alphabetical only)
-    Example: python3 %s ftp
-OR
-Add/update an uploader:
-    This script needs three arguments: uploader_name(alphabetical only) uploader_state(0 or 1) port(1025-65535)
-    Example: python3 %s ftp 0 36016
-"""
-MSG3 = """
-Add/update an uploader:
-    This script needs three arguments: uploader_name(alphabetical only) uploader_state(0 or 1) port(1025-65535)
-    Example: python3 %s ftp 0 36016
-"""
+database = r"/var/www/data-diode/src/storage/app/db.sqlite"
 
-def main1(uploader):
-    database = r"/var/www/data-diode/src/storage/app/db.sqlite"
-    
-    sql_delete_uploader = "DELETE FROM uploaders WHERE name=?;"
+sql_uploader_exists = "SELECT * FROM uploaders WHERE name=?;"
+sql_insert_uploader = "INSERT INTO uploaders(name, state, port) VALUES (?, ?, ?);"
+sql_change_uploader_state = "UPDATE uploaders SET state=? WHERE name=?;"
+sql_delete_uploader = "DELETE FROM uploaders WHERE name=?;"
+sql_change_uploader_pipport = "UPDATE uploaders SET pipport=? WHERE name=?;"
+
+def pipremove(uploader):
+    conn = create_connection(database)
+    if conn is not None:
+        change_uploader_attribute(conn, sql_change_uploader_pipport, uploader, 0)
+
+        # Information sent to "diode out"
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect((HOST, PORT))
+        msg = 'pipremove' + ':' + uploader
+        s.sendall(msg) # s.sendall(bytes(msg, 'utf-8')) # Working with Python3 but not Python2
+        s.close()
+    else:
+        print("Error! cannot create the database connection.")
+
+    # Close or the database may remain locked
+    if conn is not None:
+        conn.close()
+
+def pipadd(uploader, pipport):
+    conn = create_connection(database)
+    if conn is not None:
+        change_uploader_attribute(conn, sql_change_uploader_pipport, uploader, pipport)
+
+        # Information sent to "diode out"
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect((HOST, PORT))
+        msg = 'pipadd' + ':' + uploader + ':' + str(pipport)
+        s.sendall(msg) # s.sendall(bytes(msg, 'utf-8')) # Working with Python3 but not Python2
+        s.close()
+    else:
+        print("Error! cannot create the database connection.")
+
+    # Close or the database may remain locked
+    if conn is not None:
+        conn.close()
+
+def remove(uploader):
 
     conn = create_connection(database)
     if conn is not None:
@@ -42,25 +68,16 @@ def main1(uploader):
         print("Error! cannot create the database connection.")
 
     # Close or the database may remain locked
-    conn.close()
+    if conn is not None:
+        conn.close()
 
-def main3(uploader, state, port):
+def add(uploader, state, port):
 
-    database = r"/var/www/data-diode/src/storage/app/db.sqlite"
-
-    sql_uploader_exists = "SELECT * FROM uploaders WHERE name=?;"
-
-    sql_insert_uploader = "INSERT INTO uploaders(name, state, port) VALUES (?, ?, ?);"
-
-    sql_change_uploader_state = "UPDATE uploaders SET state=? WHERE name=?;"
-
-    sql_delete_uploader = "DELETE FROM uploaders WHERE name=?;"
-        
     # Information sent to "diode in" database
     conn = create_connection(database)
     if conn is not None:
         if uploader_exists(conn, sql_uploader_exists, uploader):
-            change_uploader_state(conn,  sql_change_uploader_state, uploader, state)
+            change_uploader_attribute(conn,  sql_change_uploader_state, uploader, state)
         else:
             if port != 0:
                 insert_uploader(conn, sql_insert_uploader, uploader, state, port)
@@ -77,33 +94,64 @@ def main3(uploader, state, port):
         print("Error! cannot create the database connection.")
 
     # Close or the database may remain locked
-    conn.close()
+    if conn is not None:
+        conn.close()
 
 if __name__ == '__main__':
+    
+    options = ['help', 'add', 'update', 'remove', 'pipadd', 'pipremove']
+
     name_pattern = '^[a-zA-Z0-9]+$'
     state_pattern = '^[0-1]$'
-    send = False
+
     if len(sys.argv) == 1:
-        send = True
-        print(MSG1 %(sys.argv[0], sys.argv[0]))
-    if len(sys.argv) == 2:
-        if not re.match(name_pattern, sys.argv[1]):
-            print("The uploader's name must be composed of alphabetical characters only")
-        else:
-            main1(sys.argv[1])
-    if len(sys.argv) >= 3:
-        if not re.match(name_pattern, sys.argv[1]):
-            print("The uploader's name must be composed of alphabetical characters only")
-        elif not re.match(state_pattern, sys.argv[2]):
-            print("The uploader's state must be 0 or 1")        
-        else:
-            if len(sys.argv) == 3:
-                main3(sys.argv[1], sys.argv[2], 0)
+        print('Error: no option specified. Use "%s help" to see all options' %sys.argv[0])
+    
     else:
-        if not send:
-            print(MSG3 %sys.argv[0])
-    if len(sys.argv) >= 4:
-        if not (1025 <= int(sys.argv[3]) and int(sys.argv[3]) <= 65355):
-            print("The uploader's port must be between 1025 and 65535")
-        else:
-            main3(sys.argv[1], sys.argv[2], int(sys.argv[3]))
+        
+        if sys.argv[1] not in options:        
+            print('Error: invalid option. Use "%s help" to see all options' %sys.argv[0])
+        
+        elif sys.argv[1] == 'help':
+            print('%s help\n\tshow this help\n' %sys.argv[0])
+            print('%s add name state port\n\tadd an uploader with:\n\t\tname regex ^[a-zA-Z0-9]+$\n\t\tstate in [0, 1]\n\t\tport in [1025, 65535]\n' %sys.argv[0])
+            print('%s update name state\n\tupdate an uploader\'s state with:\n\t\tname regex ^[a-zA-Z0-9]+$\n\t\tstate in [0, 1]\n' %sys.argv[0])
+            print('%s remove name\n\tremove an uploader with:\n\t\t name regex ^[a-zA-Z0-9]+$\n' %sys.argv[0])
+            print('%s pip name port\n\tadd a pip module to an uploader with:\n\t\tname regex ^[a-zA-Z0-9]+$\n\t\tport in [1025, 65535]\n' %sys.argv[0])
+            print('%s pipadd name port\n\tto implement...\n' %sys.argv[0])
+            print('%s pipremove name\n\tto implement...\n' %sys.argv[0])
+    
+        elif sys.argv[1] == 'add':
+            if not len(sys.argv) == 5:
+                print('Error: invalid number of parameters. Use "%s help" to see all options' %sys.argv[0])
+            elif not re.match(name_pattern, sys.argv[2]) or sys.argv[3] not in ['0', '1'] or not (1025 <= int(sys.argv[4]) and int(sys.argv[4]) <= 65355):
+                print('Error: one or more invalid parameters. Use "%s help" to see all options' %sys.argv[0])
+            else:
+                add(sys.argv[2], sys.argv[3], int(sys.argv[4]))
+
+        elif sys.argv[1] == 'update':
+            if not len(sys.argv) == 4:
+                print('Error: invalid number of parameters. Use "%s help" to see all options' %sys.argv[0])
+            elif not re.match(name_pattern, sys.argv[2]) or sys.argv[3] not in ['0', '1']:
+                print('Error: one or more invalid parameters. Use "%s help" to see all options' %sys.argv[0])
+            else:
+                add(sys.argv[2], sys.argv[3], 0)
+
+        elif sys.argv[1] == 'remove':
+            if not len(sys.argv) == 3:
+                print('Error: invalid number of parameters. Use "%s help" to see all options' %sys.argv[0])
+            elif not re.match(name_pattern, sys.argv[2]):
+                print('Error: one or more invalid parameters. Use "%s help" to see all options' %sys.argv[0])
+            else:
+                remove(sys.argv[2])
+
+        elif sys.argv[1] == 'pipadd':
+            if not len(sys.argv) == 4:
+                print('Error: invalid number of parameters. Use "%s help" to see all options' %sys.argv[0])
+            elif not re.match(name_pattern, sys.argv[2]) or not (1025 <= int(sys.argv[3]) and int(sys.argv[3]) <= 65355):
+                print('Error: one or more invalid parameters. Use "%s help" to see all options' %sys.argv[0])
+            else:
+                pipadd(sys.argv[2], int(sys.argv[3]))
+
+        elif sys.argv[1] == 'pipremove':
+            print('to implement...')

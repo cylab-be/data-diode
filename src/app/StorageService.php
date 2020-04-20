@@ -207,7 +207,7 @@ class StorageService {
             $i++;
         }
         if ($i > 0) {
-            $cmd = "sudo python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py " . $uploaderName . " 1";
+            $cmd = "sudo python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py update " . $uploaderName . " 1";
             $process = new Process($cmd);
             $process->mustRun();
         }

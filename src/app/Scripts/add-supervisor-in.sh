@@ -48,7 +48,7 @@ if [ $? -eq 0 ]; then
     if [ $? -eq 0 ]; then
 	supervisorctl update &> /dev/null
 	if [ $? -eq 0 ]; then
-	    python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py $1 0 $2
+	    python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py add $1 0 $2
 	    if [ $? -eq 0 ]; then
 		echo "The $1's channel has successfully been added."
 	    else
