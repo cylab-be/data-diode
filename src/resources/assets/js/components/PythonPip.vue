@@ -10,6 +10,9 @@
         <span v-show="isPipModule">
             <div :style="{marginBottom: '0.5em'}">
                 <p>[module running on port {{ pipport }}]</p>
+                <button class="remove-package-button" v-on:click="removePip">
+                    <i class="fas fa-times add-package-button-icon"></i>
+                </button>
                 <input 
                     v-model="packageName"
                     placeholder="package name"
@@ -101,6 +104,26 @@ export default {
                 toastr.error(error.response.data.message)
             })
         },
+        removePip() {
+            var me = this
+            const url = '/removePip'
+            const options = {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                url,
+                data: {
+                    uploader: me.item.name,
+                },
+            }
+            axios(options)
+            .then(function(response) {
+                me.isPipModule = false
+                toastr.success(response.data.message)
+            })
+            .catch(function(error) {
+                toastr.error(error.response.data.message)
+            })
+        },
         downloadPackage() {
             if (this.packageName.length > 0) {
                 this.item.state = '1'
@@ -151,6 +174,13 @@ export default {
     height: 2em;
     border: none;
     background-color: #007bff;
+    border-radius: 0.3em;
+}
+
+.remove-package-button {
+    height: 2em;
+    border: none;
+    background-color: #dc3545;
     border-radius: 0.3em;
 }
 

@@ -1,6 +1,19 @@
 import sqlite3
 from sqlite3 import Error
 
+HOST = '192.168.101.2'
+PORT = 65431
+
+database = r"/var/www/data-diode/src/storage/app/db.sqlite"
+
+sql_uploader_exists = "SELECT * FROM uploaders WHERE name=?;"
+sql_uploader_pipport = "SELECT pipport FROM uploaders WHERE name=?;"
+sql_insert_uploader = "INSERT INTO uploaders(name, state, port) VALUES (?, ?, ?);"
+sql_change_uploader_state = "UPDATE uploaders SET state=? WHERE name=?;"
+sql_delete_uploader = "DELETE FROM uploaders WHERE name=?;"
+sql_change_uploader_pipport = "UPDATE uploaders SET pipport=? WHERE name=?;"
+
+
 def create_connection(db_file):
     """ create a database connection to the SQLite database
         specified by db_file
@@ -88,5 +101,22 @@ def delete_uploader(conn, delete_uploader_sql, uploader):
         t = (uploader,)
         c.execute(delete_uploader_sql, t)
         conn.commit()
+    except Error as e:
+        print(e)
+
+def get_uploader_pipport(conn, uploader_pipport_sql, uploader):
+    """ get the pipport of a specific uploader from
+        the uploaders table
+    :param conn: Connection object
+    :param uploader_pipport_sql: String object of the
+            query used to get the pipport
+    :param uploader: String object of the uploader name
+    :return:
+    """    
+    try:
+        c = conn.cursor()
+        t = (uploader,)
+        c.execute(uploader_pipport_sql, t)
+        return c.fetchone()[0]
     except Error as e:
         print(e)

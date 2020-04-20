@@ -4,19 +4,11 @@
 import socket
 import re
 import subprocess
-from db_management import create_connection, uploader_exists, insert_uploader, change_uploader_attribute, delete_uploader
+from db_management import *
 
-HOST = '192.168.101.2'
-PORT = 65431
 
-def main():
-    database = r"/var/www/data-diode/src/storage/app/db.sqlite"
 
-    sql_uploader_exists = "SELECT * FROM uploaders WHERE name=?;"
-    sql_insert_uploader = "INSERT INTO uploaders(name, state, port) VALUES (?, ?, ?);"
-    sql_change_uploader_state = "UPDATE uploaders SET state=? WHERE name=?;"
-    sql_delete_uploader = "DELETE FROM uploaders WHERE name=?;"
-    sql_change_uploader_pipport = "UPDATE uploaders SET pipport=? WHERE name=?;"
+def main():    
     
     # create a database connection
     conn = create_connection(database)
@@ -34,7 +26,7 @@ def main():
             pattern = '^[a-zA-Z0-9]+:[0-1]:[0-9]+$'
             del_pattern = '^del:[a-zA-Z0-9]+$'
             pipadd_pattern = '^pipadd:[a-zA-Z0-9]+:[0-9]+$'
-            pipremove_pattern = '^pipremove:[a-zA-Z0-9]+$'
+            pipremove_pattern = '^pipremove:[a-zA-Z0-9]+'
             ts = data.decode('utf-8')
 
             if re.match(pattern, ts):
@@ -75,8 +67,9 @@ def main():
             elif re.match(pipremove_pattern, ts):
                 _, uploader = ts.split(':')
                 if uploader_exists(conn, sql_uploader_exists, uploader):
-                    change_uploader_attribute(conn,  sql_change_uploader_pipport, uploader, 0)
-                    result = subprocess.run("", shell=True, stdout=subprocess.PIPE)
+                    pipport = get_uploader_pipport(conn, sql_uploader_pipport, uploader)
+                    change_uploader_attribute(conn, sql_change_uploader_pipport, uploader, 0)
+                    result = subprocess.run("sudo /var/www/data-diode/src/app/Scripts/pipremove-out.sh %s %s" %(uploader, pipport), shell=True, stdout=subprocess.PIPE)
                     print(result.stdout)
                 else:
                     print('This uploader does not exist.')

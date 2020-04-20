@@ -3,22 +3,12 @@
 import socket
 import sys
 import re
-from db_management import create_connection, uploader_exists, insert_uploader, change_uploader_attribute, delete_uploader
-
-HOST = '192.168.101.2'
-PORT = 65431
-
-database = r"/var/www/data-diode/src/storage/app/db.sqlite"
-
-sql_uploader_exists = "SELECT * FROM uploaders WHERE name=?;"
-sql_insert_uploader = "INSERT INTO uploaders(name, state, port) VALUES (?, ?, ?);"
-sql_change_uploader_state = "UPDATE uploaders SET state=? WHERE name=?;"
-sql_delete_uploader = "DELETE FROM uploaders WHERE name=?;"
-sql_change_uploader_pipport = "UPDATE uploaders SET pipport=? WHERE name=?;"
+from db_management import *
 
 def pipremove(uploader):
     conn = create_connection(database)
     if conn is not None:
+        pipport = get_uploader_pipport(conn, sql_uploader_pipport, uploader)
         change_uploader_attribute(conn, sql_change_uploader_pipport, uploader, 0)
 
         # Information sent to "diode out"
@@ -117,9 +107,8 @@ if __name__ == '__main__':
             print('%s add name state port\n\tadd an uploader with:\n\t\tname regex ^[a-zA-Z0-9]+$\n\t\tstate in [0, 1]\n\t\tport in [1025, 65535]\n' %sys.argv[0])
             print('%s update name state\n\tupdate an uploader\'s state with:\n\t\tname regex ^[a-zA-Z0-9]+$\n\t\tstate in [0, 1]\n' %sys.argv[0])
             print('%s remove name\n\tremove an uploader with:\n\t\t name regex ^[a-zA-Z0-9]+$\n' %sys.argv[0])
-            print('%s pip name port\n\tadd a pip module to an uploader with:\n\t\tname regex ^[a-zA-Z0-9]+$\n\t\tport in [1025, 65535]\n' %sys.argv[0])
-            print('%s pipadd name port\n\tto implement...\n' %sys.argv[0])
-            print('%s pipremove name\n\tto implement...\n' %sys.argv[0])
+            print('%s pipadd name port\n\tadd a pip module to an uploader with:\n\t\tname regex ^[a-zA-Z0-9]+$\n\t\tport in [1025, 65535]\n' %sys.argv[0])
+            print('%s pipremove name\n\tremove a pip module from an uploader with:\n\t\tname regex ^[a-zA-Z0-9]+$\n' %sys.argv[0])
     
         elif sys.argv[1] == 'add':
             if not len(sys.argv) == 5:
@@ -154,4 +143,9 @@ if __name__ == '__main__':
                 pipadd(sys.argv[2], int(sys.argv[3]))
 
         elif sys.argv[1] == 'pipremove':
-            print('to implement...')
+            if not len(sys.argv) == 3:
+                print('Error: invalid number of parameters. Use "%s help" to see all options' %sys.argv[0])
+            elif not re.match(name_pattern, sys.argv[2]):
+                print('Error: one or more invalid parameters. Use "%s help" to see all options' %sys.argv[0])
+            else:
+                pipremove(sys.argv[2])

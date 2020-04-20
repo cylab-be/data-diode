@@ -185,6 +185,8 @@ class UploadersController extends Controller
 
     public function del(Request $request)
     {
+        // first remove pip module
+        $this::removePip($request);
         // uploader check
         if ($request->uploader == null) {
             return response()->json(['message' => 'You must specify an uploader\'s name.'], 422);
@@ -280,8 +282,33 @@ class UploadersController extends Controller
             $process->mustRun();
             return response()->json(['message' => 'Successfully added a pip module to ' . $request->uploader . '\'s channel.'], 200);
         } catch (ProcessFailedException $exception) {
-            //return response()->json(['message' => 'Failed to add a pip module to ' . $request->uploader . '\'s channel.'], 400);
-            return response()->json(['message' => $exception->getMessage()], 400);
+            return response()->json(['message' => 'Failed to add a pip module to ' . $request->uploader . '\'s channel.'], 400);
         }
+    }
+
+    public function removePip(Request $request) {
+        // uploader check
+        if ($request->uploader == null) {
+            return response()->json(['message' => 'You must specify an uploader\'s name.'], 422);
+        } else if (!is_string($request->uploader)) {
+            return response()->json(['message' => 'The uploader\'s name must be a string of characters.'], 422);
+        } else if (!preg_match("/^[a-zA-Z0-9]+$/", $request->uploader)) {
+            return response()->json(['message' => 'The uploader\'s name must be composed of alphabetical characters only.'], 422);
+        }
+        // checking uploader's name existing
+        $count = Uploader::where('name', '=', $request->uploader)->count();
+        if ($count == 0) {
+            return response()->json(['message' => 'This uploader does not exist.'], 400);
+        }
+        // removing pip
+        $cmd = 'sudo python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py pipremove ' . $request->uploader;
+        $process = new Process($cmd);
+        try {
+            $process->mustRun();
+            return response()->json(['message' => 'Successfully removed ' . $request->uploader . '\'s channel pip module.'], 200);
+        } catch (ProcessFailedException $exception) {
+            return response()->json(['message' => 'Failed to remove ' . $request->uploader . '\'s channel pip module.'], 400);
+        }
+        
     }
 }

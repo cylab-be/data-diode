@@ -44047,7 +44047,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n.add-package-button[data-v-28b1c574] {\n    height: 2em;\n    border: none;\n    background-color: #007bff;\n    border-radius: 0.3em;\n}\n.add-package-button-icon[data-v-28b1c574] {\n    margin: auto;\n    color: #ddd;\n}\n.port-input[data-v-28b1c574] {\n    padding-left: 0.5em;\n    padding-right: 0.5em;\n    width: 5.5em;\n    height: 2em;\n}\n\n", ""]);
+exports.push([module.i, "\n.add-package-button[data-v-28b1c574] {\n    height: 2em;\n    border: none;\n    background-color: #007bff;\n    border-radius: 0.3em;\n}\n.remove-package-button[data-v-28b1c574] {\n    height: 2em;\n    border: none;\n    background-color: #dc3545;\n    border-radius: 0.3em;\n}\n.add-package-button-icon[data-v-28b1c574] {\n    margin: auto;\n    color: #ddd;\n}\n.port-input[data-v-28b1c574] {\n    padding-left: 0.5em;\n    padding-right: 0.5em;\n    width: 5.5em;\n    height: 2em;\n}\n\n", ""]);
 
 // exports
 
@@ -44058,6 +44058,9 @@ exports.push([module.i, "\n.add-package-button[data-v-28b1c574] {\n    height: 2
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
 //
 //
 //
@@ -44153,6 +44156,24 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             };
             axios(options).then(function (response) {
                 me.isPipModule = true;
+                toastr.success(response.data.message);
+            }).catch(function (error) {
+                toastr.error(error.response.data.message);
+            });
+        },
+        removePip: function removePip() {
+            var me = this;
+            var url = '/removePip';
+            var options = {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                url: url,
+                data: {
+                    uploader: me.item.name
+                }
+            };
+            axios(options).then(function (response) {
+                me.isPipModule = false;
                 toastr.success(response.data.message);
             }).catch(function (error) {
                 toastr.error(error.response.data.message);
@@ -44271,6 +44292,15 @@ var render = function() {
           _c("p", [
             _vm._v("[module running on port " + _vm._s(_vm.pipport) + "]")
           ]),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "remove-package-button",
+              on: { click: _vm.removePip }
+            },
+            [_c("i", { staticClass: "fas fa-times add-package-button-icon" })]
+          ),
           _vm._v(" "),
           _c("input", {
             directives: [
