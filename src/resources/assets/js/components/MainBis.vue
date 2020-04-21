@@ -5,7 +5,7 @@
             <i class="fas fa-search query-icon"></i>
         </div>
         <br/>
-        <div class="add-uploader-main">
+        <div v-if="diodein" class="add-uploader-main">
             <input class="add-uploader-name-input" v-model="name" placeholder='name'>
             <input class="add-uploader-port-input" v-model="port" placeholder='port'>
             <button class="add-uploader-button" :disabled="addDisabled" v-on:click="addUploader">
@@ -30,6 +30,7 @@
                 v-on:del="del"
                 :max-upload-size="maxUploadSize"
                 :max-upload-size-error-message="maxUploadSizeErrorMessage"
+                :diodein="diodein"
             >
             </uploader>
         </transition-group>
@@ -50,7 +51,7 @@ export default {
         //items: Array,
         //statuses: Array,
         interval: Number,
-        //diodein: Boolean,
+        diodein: Boolean,
         maxUploadSize: Number,
         maxUploadSizeErrorMessage: String,
     },

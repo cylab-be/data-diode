@@ -26,6 +26,7 @@
             v-on:stop="stop"
             v-on:restart="restart"
             v-on:del="del"
+            :diodein="diodein"
         ></param-window>
     </div>
 </template>
@@ -36,6 +37,7 @@ export default {
         item: Object,
         maxUploadSize: Number,
         maxUploadSizeErrorMessage: String,
+        diodein: Boolean,
     },
     data() {
         return {

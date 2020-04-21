@@ -32,21 +32,21 @@
                     </div>
                     <div :style="{float:'right', marginRight:'2em'}">
                         <empty-button v-on:empty="empty" ref="emptyButton"></empty-button>
-                        <del-button v-on:del="del" ref="delButton"></del-button>
+                        <del-button v-if="diodein" v-on:del="del" ref="delButton"></del-button>
                     </div>
                 </div>
             </span>
-            <span v-show="param == 'ftp'">
+            <span v-if="diodein" v-show="param == 'ftp'">
                 <upload 
                     :item="item"
                     :max-upload-size="maxUploadSize"
                     :max-upload-size-error-message="maxUploadSizeErrorMessage"
                 ></upload>                
             </span>
-            <span v-show="param == 'pip'">
+            <span v-if="diodein" v-show="param == 'pip'">
                 <python-pip :item="item"></python-pip>
             </span>
-            <div class="row" :style="{position: 'absolute', bottom: '1em', width: '100%', margin: 'auto'}">
+            <div  v-if="diodein" v-show="diodein" class="row" :style="{position: 'absolute', bottom: '1em', width: '100%', margin: 'auto'}">
                 <hr class="window-title-bottom-bar"/>
                 <button class="param-button" v-on:click="param = 'config'">CONFIG</button><!-- This comment 
                 avoids spaces --><button class="param-button" v-on:click="param = 'ftp'">FTP</button><!-- This comment 
@@ -62,6 +62,7 @@ export default {
         item: Object,
         maxUploadSize: Number,
         maxUploadSizeErrorMessage: String,
+        diodein: Boolean,
     },
     data() {
         return {

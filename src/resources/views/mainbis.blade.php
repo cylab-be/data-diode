@@ -23,12 +23,21 @@
 @section("content")
     <div class="container">
         <div class="tab-v1">
-            <!-- The following info about upload can come from PHP (ex: from .env) -->
+            <!-- The following info about upload can come from PHP (ex: from .env) -->            
+            @if (env("DIODE_IN", true))
+            <main-bis 
+              :interval=10000
+              :max-upload-size="{{1024 * 1024 * 1024}}"
+              diodein
+              max-upload-size-error-message="You cannot upload more than 1GB at once!"
+            ></main-bis>
+            @else
             <main-bis 
               :interval=10000
               :max-upload-size="{{1024 * 1024 * 1024}}"
               max-upload-size-error-message="You cannot upload more than 1GB at once!"
             ></main-bis>
+            @endif
         </div>
     </div>
 @endsection

@@ -45059,13 +45059,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
         //items: Array,
         //statuses: Array,
         interval: Number,
-        //diodein: Boolean,
+        diodein: Boolean,
         maxUploadSize: Number,
         maxUploadSizeErrorMessage: String
     },
@@ -45289,66 +45290,68 @@ var render = function() {
       _vm._v(" "),
       _c("br"),
       _vm._v(" "),
-      _c("div", { staticClass: "add-uploader-main" }, [
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.name,
-              expression: "name"
-            }
-          ],
-          staticClass: "add-uploader-name-input",
-          attrs: { placeholder: "name" },
-          domProps: { value: _vm.name },
-          on: {
-            input: function($event) {
-              if ($event.target.composing) {
-                return
+      _vm.diodein
+        ? _c("div", { staticClass: "add-uploader-main" }, [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.name,
+                  expression: "name"
+                }
+              ],
+              staticClass: "add-uploader-name-input",
+              attrs: { placeholder: "name" },
+              domProps: { value: _vm.name },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.name = $event.target.value
+                }
               }
-              _vm.name = $event.target.value
-            }
-          }
-        }),
-        _vm._v(" "),
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.port,
-              expression: "port"
-            }
-          ],
-          staticClass: "add-uploader-port-input",
-          attrs: { placeholder: "port" },
-          domProps: { value: _vm.port },
-          on: {
-            input: function($event) {
-              if ($event.target.composing) {
-                return
+            }),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.port,
+                  expression: "port"
+                }
+              ],
+              staticClass: "add-uploader-port-input",
+              attrs: { placeholder: "port" },
+              domProps: { value: _vm.port },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.port = $event.target.value
+                }
               }
-              _vm.port = $event.target.value
-            }
-          }
-        }),
-        _vm._v(" "),
-        _c(
-          "button",
-          {
-            staticClass: "add-uploader-button",
-            attrs: { disabled: _vm.addDisabled },
-            on: { click: _vm.addUploader }
-          },
-          [
-            _c("i", {
-              staticClass: "fas fa-plus add-uploader-button-icon",
-              class: _vm.blinkClass
-            })
-          ]
-        )
-      ]),
+            }),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "add-uploader-button",
+                attrs: { disabled: _vm.addDisabled },
+                on: { click: _vm.addUploader }
+              },
+              [
+                _c("i", {
+                  staticClass: "fas fa-plus add-uploader-button-icon",
+                  class: _vm.blinkClass
+                })
+              ]
+            )
+          ])
+        : _vm._e(),
       _vm._v(" "),
       _vm.loadingUploaders
         ? _c("i", { staticClass: "fas fa-sync fa-spin" })
@@ -45370,7 +45373,9 @@ var render = function() {
                   "data-index": index,
                   item: item,
                   "max-upload-size": _vm.maxUploadSize,
-                  "max-upload-size-error-message": _vm.maxUploadSizeErrorMessage
+                  "max-upload-size-error-message":
+                    _vm.maxUploadSizeErrorMessage,
+                  diodein: _vm.diodein
                 },
                 on: { del: _vm.del }
               })
@@ -45550,7 +45555,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     props: {
         item: Object,
         maxUploadSize: Number,
-        maxUploadSizeErrorMessage: String
+        maxUploadSizeErrorMessage: String,
+        diodein: Boolean
     },
     data: function data() {
         return {
@@ -45801,7 +45807,12 @@ var render = function() {
                       on: { empty: _vm.empty }
                     }),
                     _vm._v(" "),
-                    _c("del-button", { ref: "delButton", on: { del: _vm.del } })
+                    _vm.diodein
+                      ? _c("del-button", {
+                          ref: "delButton",
+                          on: { del: _vm.del }
+                        })
+                      : _vm._e()
                   ],
                   1
                 )
@@ -45810,98 +45821,113 @@ var render = function() {
           ]
         ),
         _vm._v(" "),
-        _c(
-          "span",
-          {
-            directives: [
+        _vm.diodein
+          ? _c(
+              "span",
               {
-                name: "show",
-                rawName: "v-show",
-                value: _vm.param == "ftp",
-                expression: "param == 'ftp'"
-              }
-            ]
-          },
-          [
-            _c("upload", {
-              attrs: {
-                item: _vm.item,
-                "max-upload-size": _vm.maxUploadSize,
-                "max-upload-size-error-message": _vm.maxUploadSizeErrorMessage
-              }
-            })
-          ],
-          1
-        ),
-        _vm._v(" "),
-        _c(
-          "span",
-          {
-            directives: [
-              {
-                name: "show",
-                rawName: "v-show",
-                value: _vm.param == "pip",
-                expression: "param == 'pip'"
-              }
-            ]
-          },
-          [_c("python-pip", { attrs: { item: _vm.item } })],
-          1
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "row",
-            style: {
-              position: "absolute",
-              bottom: "1em",
-              width: "100%",
-              margin: "auto"
-            }
-          },
-          [
-            _c("hr", { staticClass: "window-title-bottom-bar" }),
-            _vm._v(" "),
-            _c(
-              "button",
-              {
-                staticClass: "param-button",
-                on: {
-                  click: function($event) {
-                    _vm.param = "config"
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: _vm.param == "ftp",
+                    expression: "param == 'ftp'"
                   }
-                }
+                ]
               },
-              [_vm._v("CONFIG")]
-            ),
-            _c(
-              "button",
-              {
-                staticClass: "param-button",
-                on: {
-                  click: function($event) {
-                    _vm.param = "ftp"
+              [
+                _c("upload", {
+                  attrs: {
+                    item: _vm.item,
+                    "max-upload-size": _vm.maxUploadSize,
+                    "max-upload-size-error-message":
+                      _vm.maxUploadSizeErrorMessage
                   }
-                }
-              },
-              [_vm._v("FTP")]
-            ),
-            _c(
-              "button",
-              {
-                staticClass: "param-button",
-                on: {
-                  click: function($event) {
-                    _vm.param = "pip"
-                  }
-                }
-              },
-              [_vm._v("PIP")]
+                })
+              ],
+              1
             )
-          ]
-        )
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.diodein
+          ? _c(
+              "span",
+              {
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: _vm.param == "pip",
+                    expression: "param == 'pip'"
+                  }
+                ]
+              },
+              [_c("python-pip", { attrs: { item: _vm.item } })],
+              1
+            )
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.diodein
+          ? _c(
+              "div",
+              {
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: _vm.diodein,
+                    expression: "diodein"
+                  }
+                ],
+                staticClass: "row",
+                style: {
+                  position: "absolute",
+                  bottom: "1em",
+                  width: "100%",
+                  margin: "auto"
+                }
+              },
+              [
+                _c("hr", { staticClass: "window-title-bottom-bar" }),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "param-button",
+                    on: {
+                      click: function($event) {
+                        _vm.param = "config"
+                      }
+                    }
+                  },
+                  [_vm._v("CONFIG")]
+                ),
+                _c(
+                  "button",
+                  {
+                    staticClass: "param-button",
+                    on: {
+                      click: function($event) {
+                        _vm.param = "ftp"
+                      }
+                    }
+                  },
+                  [_vm._v("FTP")]
+                ),
+                _c(
+                  "button",
+                  {
+                    staticClass: "param-button",
+                    on: {
+                      click: function($event) {
+                        _vm.param = "pip"
+                      }
+                    }
+                  },
+                  [_vm._v("PIP")]
+                )
+              ]
+            )
+          : _vm._e()
       ])
     ]
   )
@@ -46307,12 +46333,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
         item: Object,
         maxUploadSize: Number,
-        maxUploadSizeErrorMessage: String
+        maxUploadSizeErrorMessage: String,
+        diodein: Boolean
     },
     data: function data() {
         return {
@@ -46423,7 +46451,8 @@ var render = function() {
         attrs: {
           item: _vm.item,
           "max-upload-size": _vm.maxUploadSize,
-          "max-upload-size-error-message": _vm.maxUploadSizeErrorMessage
+          "max-upload-size-error-message": _vm.maxUploadSizeErrorMessage,
+          diodein: _vm.diodein
         },
         on: { stop: _vm.stop, restart: _vm.restart, del: _vm.del }
       })
