@@ -24,5 +24,6 @@ Vue.component('toggler', require('./components/Toggler.vue'));
 Vue.component('uploader', require('./components/Uploader.vue'));
 Vue.component('empty-button', require('./components/EmptyButton.vue'));
 Vue.component('del-button', require('./components/DelButton.vue'));
+Vue.component('add-button', require('./components/AddButton.vue'));
 Vue.component('upload', require('./components/Upload.vue'));
 Vue.component('upload-toggler', require('./components/UploadToggler.vue'));

@@ -9,7 +9,7 @@
             <input class="add-uploader-name-input" v-model="name" placeholder='name'>
             <input class="add-uploader-port-input" v-model="port" placeholder='port'>
             <button class="add-uploader-button" :disabled="addDisabled" v-on:click="addUploader">
-                <i class="fas fa-plus add-uploader-button-icon"></i>
+                <i class="fas fa-plus add-uploader-button-icon" :class="blinkClass"></i>
             </button>
         </div>
         <i v-if="loadingUploaders" class="fas fa-sync fa-spin"></i>
@@ -63,6 +63,7 @@ export default {
             canUpdate: true,
             addDisabled: false,
             loadingUploaders: true,
+            blinkClass: '',
         }
     },
     computed: {
@@ -194,7 +195,11 @@ export default {
             }, delay)
         },
         addUploader() {
-            var me = this
+            var me = this            
+            if (isNaN(me.port)) {
+                toastr.error('The port must be a number.')
+                return
+            }            
             me.addDisabled = true
             const url = '/channelAdd'
             const options = {
@@ -206,6 +211,7 @@ export default {
                     port: parseInt(me.port)
                 },
             }
+            this.blinkClass = 'blink-me'
             axios(options)
             .then(function(response) {
                 const name = me.name
@@ -220,10 +226,12 @@ export default {
                 me.name = ''
                 me.port = ''
                 me.addDisabled = false
+                me.blinkClass = ''
             })
             .catch(function(error) {
                 toastr.error(error.response.data.message)
                 me.addDisabled = false
+                me.blinkClass = ''
             })
         },
     },
@@ -314,6 +322,16 @@ export default {
     width: 100%;
     text-align: center;
     margin: auto;
+}
+
+.blink-me {
+  animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
 }
 
 </style>

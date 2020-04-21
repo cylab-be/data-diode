@@ -21,18 +21,14 @@
             <span v-show="param == 'config'">
                 <div class="row" :style="{paddingBottom:'0.5em'}">
                     <div class="text" :style="{float:'left', marginLeft: '2em', width: '12em'}">
-                        {{
-                            'Click to toggle the FTP channel status'
-                        }}
+                        Click to toggle the FTP channel status
                     </div>
                     <toggler :style="{float:'right', marginRight:'2em'}" v-on:toggled="toggle" ref="toggler"></toggler>
                 </div>
                 <hr class="window-title-bottom-bar"/>
                 <div class="row" :style="{paddingBottom:'0.5em'}">
                     <div class="text" :style="{float:'left', marginLeft: '2em', width: '12em'}">
-                        {{
-                            'Click to empty - delete the FTP channel'
-                        }}
+                            Click to empty - delete the FTP channel
                     </div>
                     <div :style="{float:'right', marginRight:'2em'}">
                         <empty-button v-on:empty="empty" ref="emptyButton"></empty-button>
@@ -83,7 +79,6 @@ export default {
             this.$refs.toggler.setStatus(this.item.status == 'running' ? 'ON' : 'OFF')
         },
         close() {
-            console.log('close')
             return new Promise((resolve, reject) => {
                 if (!this.closeDisabled) {
                     this.windowVisible = false
@@ -181,17 +176,17 @@ export default {
             this.closeDisabled = true
             this.$refs.delButton.startSpin()
             this.act('del', this.item.name).then(() => {
+                me.$refs.delButton.stopSpin()
+                toastr.success('Successfully deleted ' + this.item.name + '\'s channel!')
+                me.closeDisabled = false
                 me.close().then(() => {
                     me.$emit('del')
                 })  //  Promise is necessary otherwise this ParamWindow's ref
                     //  could be lost when the associated Uploader is deleted,
                     //  making the complete closing of the ParamWindow 
-                    //  impossible.
-                this.$refs.delButton.stopSpin()
-                toastr.success('Successfully deleted ' + this.item.name + '\'s channel!')
-                me.closeDisabled = false
+                    //  impossible.                
             }).catch(error => {
-                this.$refs.delButton.stopSpin()
+                me.$refs.delButton.stopSpin()
                 me.closeDisabled = false
             })
         },

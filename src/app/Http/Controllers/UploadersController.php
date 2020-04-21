@@ -241,11 +241,11 @@ class UploadersController extends Controller
         }
         // port check
         if ($request->port == null) {
-            return response()->json(['message' => 'You must specify an uploader\'s port.'], 422);
+            return response()->json(['message' => 'You must specify a pip port.'], 422);
         } else if (!is_integer($request->port)) {
-            return response()->json(['message' => 'The uploader\'s port must be an integer.'], 422);
+            return response()->json(['message' => 'The pip port must be an integer.'], 422);
         } else if ($request->port < 1025 || $request->port > 65535) {
-            return response()->json(['message' => 'The uploader\'s port must be between 1025 and 65535.'], 422);
+            return response()->json(['message' => 'The pip port must be between 1025 and 65535.'], 422);
         }
         // checking uploader's name existing
         $count = Uploader::where('name', '=', $request->uploader)->count();

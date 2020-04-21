@@ -65,6 +65,115 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports) {
+
+/* globals __VUE_SSR_CONTEXT__ */
+
+// IMPORTANT: Do NOT use ES2015 features in this file.
+// This module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle.
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier /* server only */
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+    options._compiled = true
+  }
+
+  // functional template
+  if (functionalTemplate) {
+    options.functional = true
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+
+    if (!functional) {
+      // inject component registration as beforeCreate hook
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      // for template-only hot-reload because in that case the render fn doesn't
+      // go through the normalizer
+      options._injectStyles = hook
+      // register for functioal component in vue file
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -371,115 +480,6 @@ module.exports = {
   extend: extend,
   trim: trim
 };
-
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports) {
-
-/* globals __VUE_SSR_CONTEXT__ */
-
-// IMPORTANT: Do NOT use ES2015 features in this file.
-// This module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle.
-
-module.exports = function normalizeComponent (
-  rawScriptExports,
-  compiledTemplate,
-  functionalTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier /* server only */
-) {
-  var esModule
-  var scriptExports = rawScriptExports = rawScriptExports || {}
-
-  // ES6 modules interop
-  var type = typeof rawScriptExports.default
-  if (type === 'object' || type === 'function') {
-    esModule = rawScriptExports
-    scriptExports = rawScriptExports.default
-  }
-
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // render functions
-  if (compiledTemplate) {
-    options.render = compiledTemplate.render
-    options.staticRenderFns = compiledTemplate.staticRenderFns
-    options._compiled = true
-  }
-
-  // functional template
-  if (functionalTemplate) {
-    options.functional = true
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = scopeId
-  }
-
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = injectStyles
-  }
-
-  if (hook) {
-    var functional = options.functional
-    var existing = functional
-      ? options.render
-      : options.beforeCreate
-
-    if (!functional) {
-      // inject component registration as beforeCreate hook
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    } else {
-      // for template-only hot-reload because in that case the render fn doesn't
-      // go through the normalizer
-      options._injectStyles = hook
-      // register for functioal component in vue file
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return existing(h, context)
-      }
-    }
-  }
-
-  return {
-    esModule: esModule,
-    exports: scriptExports,
-    options: options
-  }
-}
 
 
 /***/ }),
@@ -826,7 +826,7 @@ module.exports = g;
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 var normalizeHeaderName = __webpack_require__(23);
 
 var DEFAULT_CONTENT_TYPE = {
@@ -1134,7 +1134,7 @@ process.umask = function() { return 0; };
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 var settle = __webpack_require__(24);
 var buildURL = __webpack_require__(26);
 var parseHeaders = __webpack_require__(27);
@@ -1382,7 +1382,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(13);
-module.exports = __webpack_require__(100);
+module.exports = __webpack_require__(105);
 
 
 /***/ }),
@@ -1415,8 +1415,9 @@ Vue.component('toggler', __webpack_require__(72));
 Vue.component('uploader', __webpack_require__(77));
 Vue.component('empty-button', __webpack_require__(82));
 Vue.component('del-button', __webpack_require__(87));
-Vue.component('upload', __webpack_require__(92));
-Vue.component('upload-toggler', __webpack_require__(95));
+Vue.component('add-button', __webpack_require__(92));
+Vue.component('upload', __webpack_require__(97));
+Vue.component('upload-toggler', __webpack_require__(100));
 
 /***/ }),
 /* 14 */
@@ -31384,7 +31385,7 @@ module.exports = __webpack_require__(20);
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 var bind = __webpack_require__(6);
 var Axios = __webpack_require__(22);
 var defaults = __webpack_require__(5);
@@ -31471,7 +31472,7 @@ function isSlowBuffer (obj) {
 
 
 var defaults = __webpack_require__(5);
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 var InterceptorManager = __webpack_require__(31);
 var dispatchRequest = __webpack_require__(32);
 var isAbsoluteURL = __webpack_require__(34);
@@ -31563,7 +31564,7 @@ module.exports = Axios;
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 
 module.exports = function normalizeHeaderName(headers, normalizedName) {
   utils.forEach(headers, function processHeader(value, name) {
@@ -31643,7 +31644,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 
 function encode(val) {
   return encodeURIComponent(val).
@@ -31718,7 +31719,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 
 /**
  * Parse headers into an object
@@ -31762,7 +31763,7 @@ module.exports = function parseHeaders(headers) {
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 
 module.exports = (
   utils.isStandardBrowserEnv() ?
@@ -31880,7 +31881,7 @@ module.exports = btoa;
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 
 module.exports = (
   utils.isStandardBrowserEnv() ?
@@ -31940,7 +31941,7 @@ module.exports = (
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 
 function InterceptorManager() {
   this.handlers = [];
@@ -31999,7 +32000,7 @@ module.exports = InterceptorManager;
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 var transformData = __webpack_require__(33);
 var isCancel = __webpack_require__(10);
 var defaults = __webpack_require__(5);
@@ -32085,7 +32086,7 @@ module.exports = function dispatchRequest(config) {
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 
 /**
  * Transform the data for a request or a response
@@ -43483,7 +43484,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(42)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(45)
 /* template */
@@ -43795,7 +43796,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(48)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(50)
 /* template */
@@ -43970,7 +43971,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(53)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(55)
 /* template */
@@ -44047,7 +44048,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n.add-package-button[data-v-28b1c574] {\n    height: 2em;\n    border: none;\n    background-color: #007bff;\n    border-radius: 0.3em;\n}\n.remove-package-button[data-v-28b1c574] {\n    height: 2em;\n    border: none;\n    background-color: #dc3545;\n    border-radius: 0.3em;\n}\n.add-package-button-icon[data-v-28b1c574] {\n    margin: auto;\n    color: #ddd;\n}\n.port-input[data-v-28b1c574] {\n    padding-left: 0.5em;\n    padding-right: 0.5em;\n    width: 5.5em;\n    height: 2em;\n}\n\n", ""]);
+exports.push([module.i, "\n.add-package-button[data-v-28b1c574] {\n    height: 4em;\n    width: 4em;\n    border: none;\n    background-color: #007bff;\n    border-radius: 0.3em;\n}\n.remove-package-button[data-v-28b1c574] {\n    height: 4em;\n    width: 4em;\n    border: none;\n    background-color: #dc3545;\n    border-radius: 0.3em;\n}\n.add-package-button-icon[data-v-28b1c574] {\n    margin: auto;\n    color: #ddd;\n    font-size: 3em;\n}\n.port-input[data-v-28b1c574] {\n    padding-left: 0.1em;\n    padding-right: 0.1em;\n    width: 4.5em;\n    height: 2em;\n}\n.package-input[data-v-28b1c574] {\n    padding-left: 0.1em;\n    padding-right: 0.1em;\n    width: 11em;\n    height: 2em;\n    text-align: center;\n}\n.text[data-v-28b1c574] {\n    width: 16em;\n    font-size: 1.33em;\n    margin: auto;\n    margin-bottom: 0.5em;\n}\n.window-title-bottom-bar[data-v-28b1c574] {\n    margin-left: auto;\n    margin-right: auto;\n    border: 0.16em dashed #aaa;\n    border-bottom-width: 0;\n    border-left-width: 0;\n    border-right-width: 0;\n    padding: 0;\n    height: 0;\n    width: 93%;\n}\n\n", ""]);
 
 // exports
 
@@ -44058,13 +44059,6 @@ exports.push([module.i, "\n.add-package-button[data-v-28b1c574] {\n    height: 2
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -44134,7 +44128,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         };
         axios(options).then(function (response) {
             me.isPipModule = response.data.pipport != 0;
-            me.pipport = response.data.pipport;
+            if (me.pipport != 0) {
+                me.pipport = response.data.pipport;
+            }
         }).catch(function (error) {
             toastr.error('Unable to get the ' + me.item.name + '\'s channel pip port module');
         });
@@ -44143,8 +44139,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     methods: {
         addPip: function addPip() {
             var me = this;
-            var url = '/addPip';
+            if (isNaN(me.pipport)) {
+                toastr.error('The pip port must be a number.');
+                return;
+            }
+            this.$refs.addButton.startBlink();
             var port = parseInt(me.pipport);
+            var url = '/addPip';
             var options = {
                 method: 'POST',
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
@@ -44157,8 +44158,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             axios(options).then(function (response) {
                 me.isPipModule = true;
                 toastr.success(response.data.message);
+                me.$refs.addButton.stopBlink();
             }).catch(function (error) {
                 toastr.error(error.response.data.message);
+                me.$refs.addButton.stopBlink();
             });
         },
         removePip: function removePip() {
@@ -44172,11 +44175,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     uploader: me.item.name
                 }
             };
+            this.$refs.delButton.startSpin();
             axios(options).then(function (response) {
                 me.isPipModule = false;
                 toastr.success(response.data.message);
+                me.$refs.delButton.stopSpin();
             }).catch(function (error) {
                 toastr.error(error.response.data.message);
+                me.$refs.delButton.stopSpin();
             });
         },
         downloadPackage: function downloadPackage() {
@@ -44201,18 +44207,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
                 this.downloadedData.push('Downloading ' + this.packageName + '...');
                 var name = this.packageName;
-                this.packageName = '';
+                this.$refs.addPackage.startBlink();
                 send(name).then(function (response) {
                     me.downloadedData.push(response.data.output);
                     if (response.data.output.startsWith('Failed')) {
                         toastr.error('The download of the ' + name + ' package failed.');
                     } else {
                         toastr.success('The ' + name + ' package has been successfully downloaded and added to the ' + me.item.name + '\'s channel.');
+
                         me.item.state = '1';
                     }
                     me.cannotDownload = false;
+                    me.$refs.addPackage.stopBlink();
+                    me.packageName = '';
                 }).catch(function (error) {
                     toastr.error(error.response.data.message);
+                    me.$refs.addPackage.stopBlink();
+                    me.packageName = '';
                 });
             } else {
                 toastr.error('You must specify at least one package.');
@@ -44243,36 +44254,42 @@ var render = function() {
         ]
       },
       [
-        _c("p", [_vm._v("[add a new module below]")]),
-        _vm._v(" "),
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.pipport,
-              expression: "pipport"
-            }
-          ],
-          staticClass: "port-input",
-          attrs: { placeholder: "port" },
-          domProps: { value: _vm.pipport },
-          on: {
-            input: function($event) {
-              if ($event.target.composing) {
-                return
-              }
-              _vm.pipport = $event.target.value
-            }
-          }
-        }),
-        _vm._v(" "),
         _c(
-          "button",
-          { staticClass: "add-package-button", on: { click: _vm.addPip } },
-          [_c("i", { staticClass: "fas fa-plus add-package-button-icon" })]
-        )
-      ]
+          "div",
+          {
+            staticClass: "text",
+            style: { float: "left", marginLeft: "2em", width: "12em" }
+          },
+          [
+            _vm._v("\n            Choose a "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.pipport,
+                  expression: "pipport"
+                }
+              ],
+              staticClass: "port-input",
+              attrs: { placeholder: "port" },
+              domProps: { value: _vm.pipport },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.pipport = $event.target.value
+                }
+              }
+            }),
+            _vm._v(" and click to add a new PIP module\n        ")
+          ]
+        ),
+        _vm._v(" "),
+        _c("add-button", { ref: "addButton", on: { add: _vm.addPip } })
+      ],
+      1
     ),
     _vm._v(" "),
     _c(
@@ -44288,55 +44305,86 @@ var render = function() {
         ]
       },
       [
-        _c("div", { style: { marginBottom: "0.5em" } }, [
-          _c("p", [
-            _vm._v("[module running on port " + _vm._s(_vm.pipport) + "]")
-          ]),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "remove-package-button",
-              on: { click: _vm.removePip }
-            },
-            [_c("i", { staticClass: "fas fa-times add-package-button-icon" })]
-          ),
-          _vm._v(" "),
-          _c("input", {
-            directives: [
+        _c(
+          "div",
+          { style: { marginBottom: "0.5em" } },
+          [
+            _c(
+              "div",
               {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.packageName,
-                expression: "packageName"
-              }
-            ],
-            attrs: { placeholder: "package name" },
-            domProps: { value: _vm.packageName },
-            on: {
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.packageName = $event.target.value
-              }
-            }
-          }),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "add-package-button",
-              attrs: { type: "button", disabled: _vm.cannotDownload },
-              on: { click: _vm.downloadPackage }
-            },
-            [_c("i", { staticClass: "fas fa-plus add-package-button-icon" })]
-          )
-        ]),
+                staticClass: "text",
+                style: { float: "left", marginLeft: "2em", width: "12em" }
+              },
+              [
+                _vm._v(
+                  "\n                Module running on port " +
+                    _vm._s(_vm.pipport) +
+                    ". Click to remove\n            "
+                )
+              ]
+            ),
+            _vm._v(" "),
+            _c("del-button", { ref: "delButton", on: { del: _vm.removePip } }),
+            _vm._v(" "),
+            _c("hr", { staticClass: "window-title-bottom-bar" }),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                staticClass: "text",
+                style: { float: "left", marginLeft: "2em", width: "12em" }
+              },
+              [
+                _vm._v("\n                Add a "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.packageName,
+                      expression: "packageName"
+                    }
+                  ],
+                  staticClass: "package-input",
+                  attrs: {
+                    disabled: _vm.cannotDownload,
+                    placeholder: "package name"
+                  },
+                  domProps: { value: _vm.packageName },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.packageName = $event.target.value
+                    }
+                  }
+                }),
+                _vm._v(" and click to download\n            ")
+              ]
+            ),
+            _vm._v(" "),
+            _c("add-button", {
+              ref: "addPackage",
+              style: { marginTop: "2em" },
+              attrs: { disabled: _vm.cannotDownload },
+              on: { add: _vm.downloadPackage }
+            })
+          ],
+          1
+        ),
         _vm._v(" "),
         _c(
           "div",
           {
+            directives: [
+              {
+                name: "show",
+                rawName: "v-show",
+                value: false,
+                expression: "false"
+              }
+            ],
             style: {
               width: "100%",
               overflow: "scroll",
@@ -44380,7 +44428,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(58)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(60)
 /* template */
@@ -44877,7 +44925,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(63)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(65)
 /* template */
@@ -44954,7 +45002,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, "\n.main[data-v-0651932c] {\n    width: 24em;\n    text-align: center;\n    margin: auto;\n    margin-bottom: 4em;\n}\n.query[data-v-0651932c] {\n    width: 10em;\n    height: 3em;\n    padding: 0.5em;\n    margin-left: 3em;\n    margin-right: 0;\n    margin-top: 0;\n    margin-bottom: 0;\n}\n.query-main[data-v-0651932c] {\n    width: 100%;\n    text-align: center;\n}\n.query-icon[data-v-0651932c] {\n    width: 3em;\n    font-size: 1em;\n    height: 3em;\n    padding: 0;\n    margin: 0;\n}\n.add-uploader-main[data-v-0651932c] {\n    background-color: #007bff00;\n    border: 0.1em dashed #aaa;\n    border-radius: 0.7em;  \n    font-size: 1em;\n    text-align: center;\n    margin-left: auto;\n    margin-right: auto;\n    height: 3.6em;\n    width: 24em;\n    margin-bottom: 1em;\n}\n.add-uploader-name-input[data-v-0651932c] {\n    float: left;\n    margin-left: 2em;\n    padding-left: 0.5em;\n    padding-right: 0.5em;\n    margin-top: 0.7em;\n    width: 8em;\n    height: 2em;\n}\n.add-uploader-port-input[data-v-0651932c] {\n    float: left;\n    margin-left: 1.5em;\n    padding-left: 0.5em;\n    padding-right: 0.5em;\n    margin-top: 0.7em;\n    width: 5.5em;\n    height: 2em;\n}\n.add-uploader-button[data-v-0651932c] {\n    margin-top: 0.7em;\n    margin-right: 2em;\n    height: 2em;\n    float: right;\n    border: none;\n    background-color: #007bff;\n    border-radius: 0.3em;\n}\n.add-uploader-button-icon[data-v-0651932c] {\n    margin: auto;\n    color: #ddd;\n}\n.items[data-v-0651932c] {\n    width: 100%;\n    text-align: center;\n    margin: auto;\n}\n\n", ""]);
+exports.push([module.i, "\n.main[data-v-0651932c] {\n    width: 24em;\n    text-align: center;\n    margin: auto;\n    margin-bottom: 4em;\n}\n.query[data-v-0651932c] {\n    width: 10em;\n    height: 3em;\n    padding: 0.5em;\n    margin-left: 3em;\n    margin-right: 0;\n    margin-top: 0;\n    margin-bottom: 0;\n}\n.query-main[data-v-0651932c] {\n    width: 100%;\n    text-align: center;\n}\n.query-icon[data-v-0651932c] {\n    width: 3em;\n    font-size: 1em;\n    height: 3em;\n    padding: 0;\n    margin: 0;\n}\n.add-uploader-main[data-v-0651932c] {\n    background-color: #007bff00;\n    border: 0.1em dashed #aaa;\n    border-radius: 0.7em;  \n    font-size: 1em;\n    text-align: center;\n    margin-left: auto;\n    margin-right: auto;\n    height: 3.6em;\n    width: 24em;\n    margin-bottom: 1em;\n}\n.add-uploader-name-input[data-v-0651932c] {\n    float: left;\n    margin-left: 2em;\n    padding-left: 0.5em;\n    padding-right: 0.5em;\n    margin-top: 0.7em;\n    width: 8em;\n    height: 2em;\n}\n.add-uploader-port-input[data-v-0651932c] {\n    float: left;\n    margin-left: 1.5em;\n    padding-left: 0.5em;\n    padding-right: 0.5em;\n    margin-top: 0.7em;\n    width: 5.5em;\n    height: 2em;\n}\n.add-uploader-button[data-v-0651932c] {\n    margin-top: 0.7em;\n    margin-right: 2em;\n    height: 2em;\n    float: right;\n    border: none;\n    background-color: #007bff;\n    border-radius: 0.3em;\n}\n.add-uploader-button-icon[data-v-0651932c] {\n    margin: auto;\n    color: #ddd;\n}\n.items[data-v-0651932c] {\n    width: 100%;\n    text-align: center;\n    margin: auto;\n}\n.blink-me[data-v-0651932c] {\n  -webkit-animation: blinker-data-v-0651932c 1s linear infinite;\n          animation: blinker-data-v-0651932c 1s linear infinite;\n}\n@-webkit-keyframes blinker-data-v-0651932c {\n50% {\n    opacity: 0;\n}\n}\n@keyframes blinker-data-v-0651932c {\n50% {\n    opacity: 0;\n}\n}\n\n", ""]);
 
 // exports
 
@@ -45029,7 +45077,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             port: '',
             canUpdate: true,
             addDisabled: false,
-            loadingUploaders: true
+            loadingUploaders: true,
+            blinkClass: ''
         };
     },
 
@@ -45162,6 +45211,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         addUploader: function addUploader() {
             var me = this;
+            if (isNaN(me.port)) {
+                toastr.error('The port must be a number.');
+                return;
+            }
             me.addDisabled = true;
             var url = '/channelAdd';
             var options = {
@@ -45173,6 +45226,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     port: parseInt(me.port)
                 }
             };
+            this.blinkClass = 'blink-me';
             axios(options).then(function (response) {
                 var name = me.name;
                 var port = me.port;
@@ -45186,9 +45240,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 me.name = '';
                 me.port = '';
                 me.addDisabled = false;
+                me.blinkClass = '';
             }).catch(function (error) {
                 toastr.error(error.response.data.message);
                 me.addDisabled = false;
+                me.blinkClass = '';
             });
         }
     }
@@ -45285,7 +45341,12 @@ var render = function() {
             attrs: { disabled: _vm.addDisabled },
             on: { click: _vm.addUploader }
           },
-          [_c("i", { staticClass: "fas fa-plus add-uploader-button-icon" })]
+          [
+            _c("i", {
+              staticClass: "fas fa-plus add-uploader-button-icon",
+              class: _vm.blinkClass
+            })
+          ]
         )
       ]),
       _vm._v(" "),
@@ -45338,7 +45399,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(68)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(70)
 /* template */
@@ -45484,10 +45545,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
@@ -45513,7 +45570,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         close: function close() {
             var _this = this;
 
-            console.log('close');
             return new Promise(function (resolve, reject) {
                 if (!_this.closeDisabled) {
                     _this.windowVisible = false;
@@ -45614,17 +45670,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.closeDisabled = true;
             this.$refs.delButton.startSpin();
             this.act('del', this.item.name).then(function () {
+                me.$refs.delButton.stopSpin();
+                toastr.success('Successfully deleted ' + _this3.item.name + '\'s channel!');
+                me.closeDisabled = false;
                 me.close().then(function () {
                     me.$emit('del');
                 }); //  Promise is necessary otherwise this ParamWindow's ref
                 //  could be lost when the associated Uploader is deleted,
                 //  making the complete closing of the ParamWindow 
-                //  impossible.
-                _this3.$refs.delButton.stopSpin();
-                toastr.success('Successfully deleted ' + _this3.item.name + '\'s channel!');
-                me.closeDisabled = false;
+                //  impossible.                
             }).catch(function (error) {
-                _this3.$refs.delButton.stopSpin();
+                me.$refs.delButton.stopSpin();
                 me.closeDisabled = false;
             });
         }
@@ -45703,9 +45759,7 @@ var render = function() {
                   },
                   [
                     _vm._v(
-                      "\n                    " +
-                        _vm._s("Click to toggle the FTP channel status") +
-                        "\n                "
+                      "\n                    Click to toggle the FTP channel status\n                "
                     )
                   ]
                 ),
@@ -45733,9 +45787,7 @@ var render = function() {
                   },
                   [
                     _vm._v(
-                      "\n                    " +
-                        _vm._s("Click to empty - delete the FTP channel") +
-                        "\n                "
+                      "\n                        Click to empty - delete the FTP channel\n                "
                     )
                   ]
                 ),
@@ -45873,7 +45925,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(73)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(75)
 /* template */
@@ -46135,7 +46187,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(78)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(80)
 /* template */
@@ -46398,7 +46450,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(83)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(85)
 /* template */
@@ -46592,7 +46644,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(88)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(90)
 /* template */
@@ -46782,11 +46834,205 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(1)
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(93)
+}
+var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(93)
+var __vue_script__ = __webpack_require__(95)
 /* template */
-var __vue_template__ = __webpack_require__(94)
+var __vue_template__ = __webpack_require__(96)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-5fa2bd8c"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/AddButton.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-5fa2bd8c", Component.options)
+  } else {
+    hotAPI.reload("data-v-5fa2bd8c", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 93 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(94);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(3)("1fdaa6a7", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-5fa2bd8c\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./AddButton.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-5fa2bd8c\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./AddButton.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 94 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(2)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.blink-me[data-v-5fa2bd8c] {\n  -webkit-animation: blinker-data-v-5fa2bd8c 1s linear infinite;\n          animation: blinker-data-v-5fa2bd8c 1s linear infinite;\n}\n@-webkit-keyframes blinker-data-v-5fa2bd8c {\n50% {\n    opacity: 0;\n}\n}\n@keyframes blinker-data-v-5fa2bd8c {\n50% {\n    opacity: 0;\n}\n}\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 95 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {
+            backgroundStyle: {
+                backgroundColor: '#bdc3c7',
+                borderRadius: '1em',
+                border: 'none',
+                width: '4em',
+                height: '4em',
+                position: 'relative',
+                overflow: 'hidden'
+            },
+            iconStyle: {
+                margin: 'auto',
+                position: 'absolute',
+                marginTop: '-0.5em',
+                marginLeft: '-1.5em',
+                fontSize: '3em',
+                width: '3em',
+                height: '3em',
+                color: '#007bff',
+                opacity: 0.6
+            },
+            emptyBlinkClass: ''
+        };
+    },
+
+    methods: {
+        empty: function empty() {
+            if (this.emptyBlinkClass == '') {
+                this.$emit('add');
+            }
+        },
+        startBlink: function startBlink() {
+            this.emptyBlinkClass = 'blink-me';
+        },
+        stopBlink: function stopBlink() {
+            this.emptyBlinkClass = '';
+        }
+    }
+});
+
+/***/ }),
+/* 96 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "button",
+    {
+      style: _vm.backgroundStyle,
+      on: {
+        click: _vm.empty,
+        mouseenter: function($event) {
+          _vm.iconStyle.opacity = 1
+          _vm.backgroundStyle.backgroundColor = "#aaa"
+        },
+        mouseleave: function($event) {
+          _vm.iconStyle.opacity = 0.6
+          _vm.backgroundStyle.backgroundColor = "#bdc3c7"
+        }
+      }
+    },
+    [
+      _c("i", {
+        staticClass: "fas fa-plus",
+        class: _vm.emptyBlinkClass,
+        style: _vm.iconStyle
+      })
+    ]
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-5fa2bd8c", module.exports)
+  }
+}
+
+/***/ }),
+/* 97 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(98)
+/* template */
+var __vue_template__ = __webpack_require__(99)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -46825,7 +47071,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 93 */
+/* 98 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47073,7 +47319,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 });
 
 /***/ }),
-/* 94 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -47218,19 +47464,19 @@ if (false) {
 }
 
 /***/ }),
-/* 95 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(96)
+  __webpack_require__(101)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(98)
+var __vue_script__ = __webpack_require__(103)
 /* template */
-var __vue_template__ = __webpack_require__(99)
+var __vue_template__ = __webpack_require__(104)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -47269,13 +47515,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 96 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(97);
+var content = __webpack_require__(102);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -47295,7 +47541,7 @@ if(false) {
 }
 
 /***/ }),
-/* 97 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(2)(false);
@@ -47309,7 +47555,7 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 
 /***/ }),
-/* 98 */
+/* 103 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47452,7 +47698,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 99 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -47517,7 +47763,7 @@ if (false) {
 }
 
 /***/ }),
-/* 100 */
+/* 105 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
