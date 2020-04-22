@@ -185,6 +185,22 @@ class StorageService {
     }
 
     /**
+     * Download file
+     *
+     * @param Request $request
+     *
+     * @return StreamedResponse
+     * @throws StorageException
+     */
+    public function download( Request $request )
+    {
+        $path = $request->path;
+        //$this->checkExists( $path );
+        return $this->storage->download( $path );
+    }
+
+
+    /**
      * Upload file(s) in the 'diode_local' filesystem.
      *
      * @param Request the request.

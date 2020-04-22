@@ -28,7 +28,12 @@
                 <hr class="window-title-bottom-bar"/>
                 <div class="row" :style="{paddingBottom:'0.5em'}">
                     <div class="text" :style="{float:'left', marginLeft: '2em', width: '12em'}">
-                            Click to empty - delete the FTP channel
+                            {{
+                                diodein ?
+                                    'Click to empty - delete the FTP channel'
+                                :
+                                    'Click to empty the FTP channel'
+                            }}
                     </div>
                     <div :style="{float:'right', marginRight:'2em'}">
                         <empty-button v-on:empty="empty" ref="emptyButton"></empty-button>
@@ -52,6 +57,14 @@
                 avoids spaces --><button class="param-button" v-on:click="param = 'ftp'">FTP</button><!-- This comment 
                 avoids spaces --><button class="param-button" v-on:click="param = 'pip'">PIP</button>
             </div>
+            <span v-if="!diodein">
+                <hr class="window-title-bottom-bar"/>
+                <button 
+                    class="button"
+                    :style="{verticalAlign: 'middle'}"
+                    v-on:click="toStorage"
+                ><span>STORAGE </span></button>
+            </span>
         </div>
     </div>
 </template>
@@ -191,6 +204,9 @@ export default {
                 me.closeDisabled = false
             })
         },
+        toStorage() {
+            window.location.href = '/storage/' + this.item.name
+        }
     }
 }
 </script>
@@ -283,6 +299,46 @@ export default {
   50% {
     opacity: 0;
   }
+}
+
+.button {
+  display: inline-block;
+  border-radius: 1em;
+  background-color: #007bff;
+  border: none;
+  color: #FFFFFF;
+  text-align: center;
+  font-size: 1.33em;
+  padding: 0.8em;
+  width: 8em;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 0.4em;
+}
+
+.button span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.button span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -0.8em;
+  transition: 0.5s;
+}
+
+.button:hover span {
+  padding-right: 1em;
+}
+
+.button:hover span:after {
+  opacity: 1;
+  right: 0;
 }
 
 </style>

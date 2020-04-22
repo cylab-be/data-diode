@@ -49,6 +49,7 @@ if (!env('DIODE_IN', false)) {
     // DIODE OUT
     Route::get('/storage', 'StorageController@listView');
     Route::get('/storage/{path}', 'StorageController@listView')->where('path', '(.*)'); // The "where" method permits the usage of a slash in the path variable
+    Route::post('/download', 'StorageController@download');
 } else {
     // DIODE IN
     Route::get('/upload', 'StorageController@uploadIndex');

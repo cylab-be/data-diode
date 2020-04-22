@@ -27,3 +27,8 @@ Vue.component('del-button', require('./components/DelButton.vue'));
 Vue.component('add-button', require('./components/AddButton.vue'));
 Vue.component('upload', require('./components/Upload.vue'));
 Vue.component('upload-toggler', require('./components/UploadToggler.vue'));
+Vue.component('storage', require('./components/Storage.vue'));
+Vue.component('root-folder-card', require('./components/RootFolderCard.vue'));
+Vue.component('folder-card', require('./components/FolderCard.vue'));
+Vue.component('file-card', require('./components/FileCard.vue'));
+Vue.component('nav-path', require('./components/NavPath.vue'));

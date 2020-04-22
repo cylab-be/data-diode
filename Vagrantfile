@@ -9,7 +9,6 @@ Vagrant.configure("2") do |config|
   config.vm.define "diodein" do |diodein|
     diodein.vm.box = "ubuntu/xenial64"
     diodein.vm.network "forwarded_port", guest: 80, host: 8081, host_ip: "127.0.0.1"
-    diodein.vm.network "forwarded_port", guest: 80, host: 8083, host_ip: "192.168.178.85"    
     diodein.vm.network "private_network", ip: "192.168.100.11"
     diodein.vm.network "private_network", ip: "192.168.101.1"
     diodein.vm.provision "shell", path: "vagrant/diode-in.sh"
