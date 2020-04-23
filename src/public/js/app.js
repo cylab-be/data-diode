@@ -48522,6 +48522,34 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
@@ -48532,8 +48560,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return {
             textPrimaryClass: '',
             selected: false,
-            downloadIconClass: 'fa-folder',
-            downloading: false
+            mainIconClass: 'fa-folder',
+            downloading: false,
+            deleting: false,
+            showOptions: false,
+            confirmDownload: false,
+            confirmRemove: false
         };
     },
 
@@ -48549,39 +48581,47 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.$emit('change-path', this.dirPath, false);
         },
         click: function click() {
-            if (!this.downloading) {
+            this.showOptions = false;
+            if (!this.downloading && !this.deleting) {
                 this.textPrimaryClass = '';
                 window.location.href = '/storage/' + this.folder.path;
             }
         },
         downloadFolder: function downloadFolder(event) {
             event.stopPropagation();
+            if (!this.confirmDownload) {
+                this.confirmDownload = true;
+                return;
+            }
             var me = this;
             var path = this.dirPath + '/' + this.folder.name;
-            this.downloadIconClass = 'fa-file-archive blink-me';
+            this.mainIconClass = 'fa-file-archive blink-me';
             this.downloading = true;
+            var time = new Date().getTime();
             axios({
-                url: '/download', //your url
+                url: '/zip', //your url
                 method: 'POST',
                 data: {
+                    time: time,
                     name: me.folder.name,
-                    path: path,
-                    type: 'folder'
+                    path: path
                 }
             }).then(function (response) {
-                me.downloadIconClass = 'fa-download blink-me';
-                //toastr.success(me.folder.name + ' has been successfully compressed!')
+                me.mainIconClass = 'fa-download blink-me';
                 axios({
-                    url: '/download', //your url
+                    url: '/getzip', //your url
                     method: 'POST',
                     responseType: 'blob', // important
                     data: {
-                        path: path + '.zip',
-                        type: 'file'
+                        time: time,
+                        name: me.folder.name
                     }
                 }).then(function (response) {
-                    me.downloadIconClass = 'fa-folder';
+                    me.mainIconClass = 'fa-folder';
                     me.downloading = false;
+                    me.showOptions = false;
+                    me.confirmDownload = false;
+                    me.confirmRemove = false;
                     var url = window.URL.createObjectURL(new Blob([response.data]));
                     var link = document.createElement('a');
                     link.href = url;
@@ -48589,15 +48629,57 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     document.body.appendChild(link);
                     link.click();
                 }).catch(function (error) {
-                    me.downloadIconClass = 'fa-folder';
+                    me.mainIconClass = 'fa-folder';
                     me.downloading = false;
+                    me.showOptions = false;
+                    me.confirmDownload = false;
+                    me.confirmRemove = false;
                     toastr.error('An error occured. Impossible to download ' + me.folder.name + '.zip');
                 });
             }).catch(function (error) {
-                me.downloadIconClass = 'fa-folder';
+                me.mainIconClass = 'fa-folder';
                 me.downloading = false;
+                me.showOptions = false;
+                me.confirmDownload = false;
+                me.confirmRemove = false;
                 toastr.error(error.response.data.message);
             });
+        },
+        removeFolder: function removeFolder(event) {
+            event.stopPropagation();
+            if (!this.confirmRemove) {
+                this.confirmRemove = true;
+                return;
+            }
+            var me = this;
+            var path = this.dirPath + '/' + this.folder.name;
+            this.mainIconClass = 'fa-trash blink-me';
+            this.deleting = true;
+            axios({
+                url: '/remove', //your url
+                method: 'POST',
+                data: {
+                    path: path
+                }
+            }).then(function (response) {
+                me.mainIconClass = 'fa-folder';
+                me.showOptions = false;
+                me.confirmDownload = false;
+                me.confirmRemove = false;
+                me.deleting = false;
+                window.location.reload();
+            }).catch(function (error) {
+                me.mainIconClass = 'fa-folder';
+                me.showOptions = false;
+                me.confirmDownload = false;
+                me.confirmRemove = false;
+                me.deleting = false;
+                toastr.error('An error occured. Impossible to remove ' + me.folder.name);
+            });
+        },
+        startShowOptions: function startShowOptions(event) {
+            event.stopPropagation();
+            this.showOptions = true;
         }
     }
 });
@@ -48618,34 +48700,98 @@ var render = function() {
         cursor: "pointer",
         position: "relative"
       },
-      on: { mouseover: _vm.mouseOver, mouseout: _vm.mouseOut, click: _vm.click }
+      on: {
+        mouseover: _vm.mouseOver,
+        mouseout: _vm.mouseOut,
+        mouseleave: function($event) {
+          _vm.showOptions = false
+          _vm.confirmDownload = false
+          _vm.confirmRemove = false
+        },
+        click: _vm.click
+      }
     },
     [
       _c("i", {
         staticClass: "fa fa-4x",
-        class: [_vm.textPrimaryClass, _vm.downloadIconClass]
+        class: [_vm.textPrimaryClass, _vm.mainIconClass]
       }),
       _vm._v(" "),
-      _c(
-        "button",
-        {
-          directives: [
+      !_vm.showOptions
+        ? _c(
+            "button",
             {
-              name: "show",
-              rawName: "v-show",
-              value: _vm.selected && !_vm.downloading,
-              expression: "selected && !downloading"
-            }
-          ],
-          style: {
-            float: "right",
-            position: "absolute"
-          },
-          attrs: { disabled: _vm.downloading },
-          on: { click: _vm.downloadFolder }
-        },
-        [_c("i", { staticClass: "fas fa-arrow-up" })]
-      ),
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.selected && !_vm.downloading && !_vm.deleting,
+                  expression: "selected && !downloading && !deleting"
+                }
+              ],
+              style: {
+                float: "right",
+                position: "absolute"
+              },
+              attrs: { disabled: _vm.downloading || _vm.deleting },
+              on: { click: _vm.startShowOptions }
+            },
+            [_c("i", { staticClass: "fas fa-ellipsis-v" })]
+          )
+        : _c(
+            "span",
+            {
+              style: {
+                float: "right",
+                position: "absolute"
+              }
+            },
+            [
+              _c(
+                "button",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.selected && !_vm.downloading && !_vm.deleting,
+                      expression: "selected && !downloading && !deleting"
+                    }
+                  ],
+                  attrs: { disabled: _vm.downloading || _vm.deleting },
+                  on: { click: _vm.downloadFolder }
+                },
+                [
+                  _vm.confirmDownload
+                    ? _c("span", [_vm._v("Confirm")])
+                    : _c("i", { staticClass: "fas fa-arrow-down" })
+                ]
+              ),
+              _vm._v(" "),
+              _c("br"),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.selected && !_vm.downloading && !_vm.deleting,
+                      expression: "selected && !downloading && !deleting"
+                    }
+                  ],
+                  attrs: { disabled: _vm.downloading || _vm.deleting },
+                  on: { click: _vm.removeFolder }
+                },
+                [
+                  _vm.confirmRemove
+                    ? _c("span", [_vm._v("Confirm")])
+                    : _c("i", { staticClass: "fas fa-times" })
+                ]
+              )
+            ]
+          ),
       _vm._v(" "),
       _c(
         "div",
@@ -48772,7 +48918,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -48783,6 +48929,44 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -48830,33 +49014,53 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 display: 'inline-block',
                 maxWidth: '100%',
                 color: 'darkgray'
-            }
+            },
+            selected: false,
+            mainIconClass: 'fa-file',
+            downloading: false,
+            deleting: false,
+            showOptions: false,
+            confirmDownload: false,
+            confirmRemove: false
         };
     },
 
     methods: {
         mouseOver: function mouseOver() {
+            this.selected = true;
             this.iconStyle.color = 'lightblue';
             this.paragraphStyle.color = 'lightblue';
             this.$emit('change-path', this.dirPath + '/' + this.file.name, true);
         },
         mouseOut: function mouseOut() {
+            this.selected = false;
             this.iconStyle.color = 'darkgray';
             this.paragraphStyle.color = 'darkgray';
             this.$emit('change-path', this.dirPath, false);
         },
-        click: function click() {
+        downloadFile: function downloadFile() {
+            event.stopPropagation();
+            if (!this.confirmDownload) {
+                this.confirmDownload = true;
+                return;
+            }
             var me = this;
+            this.mainIconClass = 'fa-file-archive blink-me';
+            this.downloading = true;
             var path = this.dirPath + '/' + this.file.name;
             axios({
                 url: '/download', //your url
                 method: 'POST',
                 responseType: 'blob', // important
                 data: {
-                    path: path,
-                    type: 'file'
+                    path: path
                 }
             }).then(function (response) {
+                me.mainIconClass = 'fa-file';
+                me.downloading = false;
+                me.showOptions = false;
+                me.confirmDownload = false;
+                me.confirmRemove = false;
                 var url = window.URL.createObjectURL(new Blob([response.data]));
                 var link = document.createElement('a');
                 link.href = url;
@@ -48864,8 +49068,49 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 document.body.appendChild(link);
                 link.click();
             }).catch(function (error) {
+                me.mainIconClass = 'fa-file';
+                me.downloading = false;
+                me.showOptions = false;
+                me.confirmDownload = false;
+                me.confirmRemove = false;
                 toastr.error('An error occured. Impossible to download ' + me.file.name);
             });
+        },
+        removeFile: function removeFile(event) {
+            event.stopPropagation();
+            if (!this.confirmRemove) {
+                this.confirmRemove = true;
+                return;
+            }
+            var me = this;
+            var path = this.dirPath + '/' + this.file.name;
+            this.mainIconClass = 'fa-trash blink-me';
+            this.deleting = true;
+            axios({
+                url: '/remove', //your url
+                method: 'POST',
+                data: {
+                    path: path
+                }
+            }).then(function (response) {
+                me.mainIconClass = 'fa-file';
+                me.showOptions = false;
+                me.confirmDownload = false;
+                me.confirmRemove = false;
+                me.deleting = false;
+                window.location.reload();
+            }).catch(function (error) {
+                me.mainIconClass = 'fa-file';
+                me.showOptions = false;
+                me.confirmDownload = false;
+                me.confirmRemove = false;
+                me.deleting = false;
+                toastr.error('An error occured. Impossible to remove ' + me.file.name);
+            });
+        },
+        startShowOptions: function startShowOptions(event) {
+            event.stopPropagation();
+            this.showOptions = true;
         }
     }
 });
@@ -48884,13 +49129,98 @@ var render = function() {
       staticClass: "card text-center",
       style: { cursor: "pointer" },
       attrs: { title: _vm.dirPath + "/" + _vm.file.name },
-      on: { mouseover: _vm.mouseOver, mouseout: _vm.mouseOut, click: _vm.click }
+      on: {
+        mouseover: _vm.mouseOver,
+        mouseout: _vm.mouseOut,
+        mouseleave: function($event) {
+          _vm.showOptions = false
+          _vm.confirmDownload = false
+          _vm.confirmRemove = false
+        }
+      }
     },
     [
       _c("i", {
-        staticClass: "fa fa-file fa-4x text-muted",
+        staticClass: "fa fa-4x text-muted",
+        class: [_vm.mainIconClass],
         style: _vm.iconStyle
       }),
+      _vm._v(" "),
+      !_vm.showOptions
+        ? _c(
+            "button",
+            {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.selected && !_vm.downloading && !_vm.deleting,
+                  expression: "selected && !downloading && !deleting"
+                }
+              ],
+              style: {
+                float: "right",
+                position: "absolute"
+              },
+              attrs: { disabled: _vm.downloading || _vm.deleting },
+              on: { click: _vm.startShowOptions }
+            },
+            [_c("i", { staticClass: "fas fa-ellipsis-v" })]
+          )
+        : _c(
+            "span",
+            {
+              style: {
+                float: "right",
+                position: "absolute"
+              }
+            },
+            [
+              _c(
+                "button",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.selected && !_vm.downloading && !_vm.deleting,
+                      expression: "selected && !downloading && !deleting"
+                    }
+                  ],
+                  attrs: { disabled: _vm.downloading || _vm.deleting },
+                  on: { click: _vm.downloadFile }
+                },
+                [
+                  _vm.confirmDownload
+                    ? _c("span", [_vm._v("Confirm")])
+                    : _c("i", { staticClass: "fas fa-arrow-down" })
+                ]
+              ),
+              _vm._v(" "),
+              _c("br"),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.selected && !_vm.downloading && !_vm.deleting,
+                      expression: "selected && !downloading && !deleting"
+                    }
+                  ],
+                  attrs: { disabled: _vm.downloading || _vm.deleting },
+                  on: { click: _vm.removeFile }
+                },
+                [
+                  _vm.confirmRemove
+                    ? _c("span", [_vm._v("Confirm")])
+                    : _c("i", { staticClass: "fas fa-times" })
+                ]
+              )
+            ]
+          ),
       _vm._v(" "),
       _c(
         "div",

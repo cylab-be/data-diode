@@ -199,6 +199,11 @@ class StorageService {
         return $this->storage->download( $path );
     }
 
+    public function downloadZippedFolder(String $path) 
+    {
+        return $this->storage->download( $path );
+    }
+
 
     /**
      * Upload file(s) in the 'diode_local' filesystem.

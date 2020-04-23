@@ -78,20 +78,42 @@ class StorageController extends Controller {
      */
     public function download( Request $request )
     {
-        if ($request->type != null && $request->type == 'file') {
-            return $this->storageService->download( $request );
-        } elseif ($request->type != null && $request->type == 'folder') {
-            $folderPath = base_path('storage') . '/app/files' . $request->path;
-            $cmd = 'cd ' . $folderPath . ' && cd .. && sudo zip -r ' . $request->name . '.zip ' . $request->name;
-            $process = new Process($cmd);
-            try {
-                $process->mustRun();
-            } catch (ProcessFailedException $exception) {
-                return response()->json(['message' => 'Failed to compress ' . $request->name], 400);
-            }
-        } else {
-            return response()->json(['message' => 'The requested content must be flagged as a file or a folder.'], 400);
-        }
+        return $this->storageService->download( $request );
     }    
+
+    public function zip( Request $request ) 
+    {
+        // The double quotes are here to avoid errors with paths containing spaces
+        $folderPath = '"' . base_path('storage') . '/app/files' . $request->path . '"';
+        $destPath = base_path('storage') . '/app/files/.zips/';
+        $cmd = 'cd ' . $folderPath . ' && cd .. && sudo zip -r "' . $destPath . $request->name . '_' . $request->time . '.zip" "' . $request->name . '"';
+        $process = new Process($cmd);
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException $exception) {
+            return response()->json(['message' => 'Failed to compress ' . $request->name, 'exception' => $exception->getMessage()], 400);
+        }
+    }
+
+    public function getZip( Request $request ) 
+    {
+        return $this->storageService->downloadZippedFolder( '.zips/' . $request->name . '_' . $request->time . '.zip' );
+    }
+
+    public function remove( Request $request )
+    {
+        // The double quotes are here to avoid errors with paths containing spaces
+        $cmd = 'sudo rm -rf "' . base_path('storage') . '/app/files' . $request->path . '"';
+        if ($request->path == './.zips') {
+            $cmd = 'sudo rm -rf ' . base_path('storage') . '/app/files/.zips/*';
+        }
+        $cmd = $cmd ;
+        $process = new Process($cmd);
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException $exception) {
+            return response()->json(['message' => 'Failed to remove ' . $request->name, 'exception' => $exception->getMessage()], 400);
+        }
+    }
 
 }
