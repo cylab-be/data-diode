@@ -78,15 +78,34 @@ class StorageController extends Controller {
      */
     public function download( Request $request )
     {
+        if ($request->path == null) {
+            return response()->json(['message' => 'Path missing.'], 400);
+        }
+        if ($this::badPath($request->path)) {
+            return response()->json(['message' => 'Invalid path.'], 400);
+        }
         return $this->storageService->download( $request );
     }    
 
     public function zip( Request $request ) 
     {
+        if ($request->path == null) {
+            return response()->json(['message' => 'Path missing.'], 400);
+        }
+        if ($request->name == null || $request->time == null) {
+            return response()->json(['message' => 'Folder name missing.'], 400);
+        }        
+        if ($this::badPath($request->path)) {
+            return response()->json(['message' => 'Invalid path.'], 400);
+        }
+        if ($this::badName($request->name)) {
+            return response()->json(['message' => 'Invalid folder name.'], 400);
+        }
         // The double quotes are here to avoid errors with paths containing spaces
-        $folderPath = '"' . base_path('storage') . '/app/files' . $request->path . '"';
+        $folderPath = base_path('storage') . '/app/files' . $request->path;        
         $destPath = base_path('storage') . '/app/files/.zips/';
-        $cmd = 'cd ' . $folderPath . ' && cd .. && sudo zip -r "' . $destPath . $request->name . '_' . $request->time . '.zip" "' . $request->name . '"';
+        $destZip = $destPath . $request->name . '_' . $request->time . '.zip';
+        $cmd = 'sudo ' . base_path('app/Scripts') . '/zipFolder.sh "' . $folderPath . '" "' . $destZip . '" "' . $request->name . '"';
         $process = new Process($cmd);
         try {
             $process->mustRun();
@@ -97,23 +116,58 @@ class StorageController extends Controller {
 
     public function getZip( Request $request ) 
     {
+        if ($request->name == null) {
+            return response()->json(['message' => 'Folder name missing.'], 400);
+        }
+        if ($request->time == null) {
+            return response()->json(['message' => 'Folder name missing.'], 400);
+        }
+        if ($this::badName($request->name) || $this::badName($request->time)) {
+            return response()->json(['message' => 'Invalid folder name.'], 400);
+        }
         return $this->storageService->downloadZippedFolder( '.zips/' . $request->name . '_' . $request->time . '.zip' );
     }
 
     public function remove( Request $request )
     {
-        // The double quotes are here to avoid errors with paths containing spaces
-        $cmd = 'sudo rm -rf "' . base_path('storage') . '/app/files' . $request->path . '"';
-        if ($request->path == './.zips') {
-            $cmd = 'sudo rm -rf ' . base_path('storage') . '/app/files/.zips/*';
+        if ($request->path == null) {
+            return response()->json(['message' => 'Path missing.'], 400);
         }
-        $cmd = $cmd ;
+        if ($request->name == null) {
+            return response()->json(['message' => 'Target name missing.'], 400);
+        }
+        if ($this::badPath($request->path) || $this::badName($request->name)) {
+            return response()->json(['message' => 'Invalid path.'], 400);
+        }
+        // The double quotes are here to avoid errors with paths containing spaces
+        $cmd = 'sudo ' . base_path('app/Scripts') . '/removeFileOrFolder.sh "' . base_path('storage') . '/app/files' . $request->path . '"';
+        if ($request->path == './.zips') {
+            $cmd = 'sudo ' . base_path('app/Scripts') . '/removeFileOrFolder.sh ' . base_path('storage') . '/app/files/.zips/*';
+        }
         $process = new Process($cmd);
         try {
             $process->mustRun();
         } catch (ProcessFailedException $exception) {
             return response()->json(['message' => 'Failed to remove ' . $request->name, 'exception' => $exception->getMessage()], 400);
         }
+    }
+
+    private function badPath( String $path )
+    {
+        // A path cannot contain '..'
+        if (preg_match('/^.*\.\..*$/', $path)){
+            return true;
+        }
+        return false;
+    }
+
+    private function badName( String $name )
+    {
+        // A name cannot contain '..' or '/'
+        if (preg_match('/^.*\.\..*$/', $name) || preg_match('/^.*\/.*$/', $name)){
+            return true;
+        }
+        return false;
     }
 
 }

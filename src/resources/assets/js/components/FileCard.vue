@@ -1,7 +1,10 @@
 <template>
     <div 
         class="card text-center"
-        :style="{cursor: 'pointer'}"
+        :style="{
+            cursor: 'pointer',
+            position: 'relative',
+        }"
         :title="dirPath + '/' + file.name"
         v-on:mouseover="mouseOver"
         v-on:mouseout="mouseOut"
@@ -16,37 +19,42 @@
             v-if="!showOptions"
             v-show="selected && !downloading && !deleting"
             v-on:click="startShowOptions"
-            :style="{
-                float: 'right',
-                position: 'absolute',
-            }"
+            :style="optionsButtonStyle"
             :disabled="downloading || deleting"
+            v-on:mouseover="optionsButtonStyle.opacity = 1; optionsIconStyle.color = '#fff'"
+            v-on:mouseleave="optionsButtonStyle.opacity = 0.6; optionsIconStyle.color = '#ddd'"            
         >
-            <i class="fas fa-ellipsis-v"></i>
+            <i class="fas fa-ellipsis-v" :style="optionsIconStyle"></i>
         </button>
         <span 
             v-else
             :style="{
-                    float: 'right',
-                    position: 'absolute',
-                }"
+                float: 'right',
+                position: 'absolute',
+            }"
         >
             <button
                 v-show="selected && !downloading && !deleting"
                 v-on:click="downloadFile"
                 :disabled="downloading || deleting"
+                :style="downloadButtonStyle"
+                v-on:mouseover="downloadButtonStyle.opacity = 1; downloadIconStyle.color = '#fff'"
+                v-on:mouseleave="downloadButtonStyle.opacity = 0.6; downloadIconStyle.color = '#ddd'; confirmDownload = false"
             >
-                <span v-if="confirmDownload">Confirm</span>
-                <i v-else class="fas fa-arrow-down"></i>
+                <span v-if="confirmDownload" :style="downloadIconStyle">Confirm</span>
+                <i v-else class="fas fa-arrow-down" :style="downloadIconStyle"></i>
             </button>
             <br/>
             <button
                 v-show="selected && !downloading && !deleting"
                 v-on:click="removeFile"
                 :disabled="downloading || deleting"
+                :style="removeButtonStyle"
+                v-on:mouseover="removeButtonStyle.opacity = 1; removeIconStyle.color = '#fff'"
+                v-on:mouseleave="removeButtonStyle.opacity = 0.6; removeIconStyle.color = '#ddd'; confirmRemove = false"
             >
-                <span v-if="confirmRemove">Confirm</span>
-                <i v-else class="fas fa-times"></i>
+                <span v-if="confirmRemove" :style="removeIconStyle">Confirm</span>
+                <i v-else class="fas fa-times" :style="removeIconStyle"></i>
             </button>
         </span>        
         <div 
@@ -73,6 +81,43 @@ export default {
     },
     data() {
         return {
+            optionsButtonStyle: {
+                float: 'right',
+                position: 'absolute',
+                border: 'none',
+                backgroundColor: '#999',
+                borderRadius: '0.5em',
+                opacity: 0.6,
+                minWidth: '2em',
+                height: '2em',
+            },
+            optionsIconStyle: {
+                color: '#ddd',
+            },
+            downloadButtonStyle: {                
+                border: 'none',
+                backgroundColor: '#007bff',
+                borderRadius: '0.5em',
+                opacity: 0.6,
+                minWidth: '2em',
+                height: '2em',
+                float: 'left',
+            },
+            downloadIconStyle: {
+                color: '#ddd',
+            },
+            removeButtonStyle: {
+                border: 'none',
+                backgroundColor: '#dc3545',
+                borderRadius: '0.5em',
+                opacity: 0.6,
+                minWidth: '2em',
+                height: '2em',
+                float: 'left',
+            },
+            removeIconStyle: {
+                color: '#ddd',
+            },
             iconStyle: {
                 color:'darkgray',
             },
@@ -108,6 +153,7 @@ export default {
         },
         downloadFile() {
             event.stopPropagation()
+            this.confirmRemove = false
             if (!this.confirmDownload) {
                 this.confirmDownload = true
                 return
@@ -146,6 +192,7 @@ export default {
         },
         removeFile(event) {
             event.stopPropagation()
+            this.confirmDownload = false
             if (!this.confirmRemove) {
                 this.confirmRemove = true
                 return
@@ -159,6 +206,7 @@ export default {
                 method: 'POST',
                 data: {
                     path: path,
+                    name: me.file.name
                 }
             }).then((response) => {
                 me.mainIconClass = 'fa-file'

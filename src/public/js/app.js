@@ -48550,6 +48550,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
@@ -48558,6 +48563,43 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
     data: function data() {
         return {
+            optionsButtonStyle: {
+                float: 'right',
+                position: 'absolute',
+                border: 'none',
+                backgroundColor: '#999',
+                borderRadius: '0.5em',
+                opacity: 0.6,
+                minWidth: '2em',
+                height: '2em'
+            },
+            optionsIconStyle: {
+                color: '#ddd'
+            },
+            downloadButtonStyle: {
+                border: 'none',
+                backgroundColor: '#007bff',
+                borderRadius: '0.5em',
+                opacity: 0.6,
+                minWidth: '2em',
+                height: '2em',
+                float: 'left'
+            },
+            downloadIconStyle: {
+                color: '#ddd'
+            },
+            removeButtonStyle: {
+                border: 'none',
+                backgroundColor: '#dc3545',
+                borderRadius: '0.5em',
+                opacity: 0.6,
+                minWidth: '2em',
+                height: '2em',
+                float: 'left'
+            },
+            removeIconStyle: {
+                color: '#ddd'
+            },
             textPrimaryClass: '',
             selected: false,
             mainIconClass: 'fa-folder',
@@ -48589,6 +48631,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         downloadFolder: function downloadFolder(event) {
             event.stopPropagation();
+            this.confirmRemove = false;
             if (!this.confirmDownload) {
                 this.confirmDownload = true;
                 return;
@@ -48647,6 +48690,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         removeFolder: function removeFolder(event) {
             event.stopPropagation();
+            this.confirmDownload = false;
             if (!this.confirmRemove) {
                 this.confirmRemove = true;
                 return;
@@ -48659,7 +48703,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 url: '/remove', //your url
                 method: 'POST',
                 data: {
-                    path: path
+                    path: path,
+                    name: me.folder.name
                 }
             }).then(function (response) {
                 me.mainIconClass = 'fa-folder';
@@ -48729,14 +48774,26 @@ var render = function() {
                   expression: "selected && !downloading && !deleting"
                 }
               ],
-              style: {
-                float: "right",
-                position: "absolute"
-              },
+              style: _vm.optionsButtonStyle,
               attrs: { disabled: _vm.downloading || _vm.deleting },
-              on: { click: _vm.startShowOptions }
+              on: {
+                click: _vm.startShowOptions,
+                mouseover: function($event) {
+                  _vm.optionsButtonStyle.opacity = 1
+                  _vm.optionsIconStyle.color = "#fff"
+                },
+                mouseleave: function($event) {
+                  _vm.optionsButtonStyle.opacity = 0.6
+                  _vm.optionsIconStyle.color = "#ddd"
+                }
+              }
             },
-            [_c("i", { staticClass: "fas fa-ellipsis-v" })]
+            [
+              _c("i", {
+                staticClass: "fas fa-ellipsis-v",
+                style: _vm.optionsIconStyle
+              })
+            ]
           )
         : _c(
             "span",
@@ -48758,13 +48815,30 @@ var render = function() {
                       expression: "selected && !downloading && !deleting"
                     }
                   ],
+                  style: _vm.downloadButtonStyle,
                   attrs: { disabled: _vm.downloading || _vm.deleting },
-                  on: { click: _vm.downloadFolder }
+                  on: {
+                    click: _vm.downloadFolder,
+                    mouseover: function($event) {
+                      _vm.downloadButtonStyle.opacity = 1
+                      _vm.downloadIconStyle.color = "#fff"
+                    },
+                    mouseleave: function($event) {
+                      _vm.downloadButtonStyle.opacity = 0.6
+                      _vm.downloadIconStyle.color = "#ddd"
+                      _vm.confirmDownload = false
+                    }
+                  }
                 },
                 [
                   _vm.confirmDownload
-                    ? _c("span", [_vm._v("Confirm")])
-                    : _c("i", { staticClass: "fas fa-arrow-down" })
+                    ? _c("span", { style: _vm.downloadIconStyle }, [
+                        _vm._v("Confirm")
+                      ])
+                    : _c("i", {
+                        staticClass: "fas fa-arrow-down",
+                        style: _vm.downloadIconStyle
+                      })
                 ]
               ),
               _vm._v(" "),
@@ -48781,13 +48855,30 @@ var render = function() {
                       expression: "selected && !downloading && !deleting"
                     }
                   ],
+                  style: _vm.removeButtonStyle,
                   attrs: { disabled: _vm.downloading || _vm.deleting },
-                  on: { click: _vm.removeFolder }
+                  on: {
+                    click: _vm.removeFolder,
+                    mouseover: function($event) {
+                      _vm.removeButtonStyle.opacity = 1
+                      _vm.removeIconStyle.color = "#fff"
+                    },
+                    mouseleave: function($event) {
+                      _vm.removeButtonStyle.opacity = 0.6
+                      _vm.removeIconStyle.color = "#ddd"
+                      _vm.confirmRemove = false
+                    }
+                  }
                 },
                 [
                   _vm.confirmRemove
-                    ? _c("span", [_vm._v("Confirm")])
-                    : _c("i", { staticClass: "fas fa-times" })
+                    ? _c("span", { style: _vm.removeIconStyle }, [
+                        _vm._v("Confirm")
+                      ])
+                    : _c("i", {
+                        staticClass: "fas fa-times",
+                        style: _vm.removeIconStyle
+                      })
                 ]
               )
             ]
@@ -48918,7 +49009,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -48996,6 +49087,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
@@ -49004,6 +49103,43 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
     data: function data() {
         return {
+            optionsButtonStyle: {
+                float: 'right',
+                position: 'absolute',
+                border: 'none',
+                backgroundColor: '#999',
+                borderRadius: '0.5em',
+                opacity: 0.6,
+                minWidth: '2em',
+                height: '2em'
+            },
+            optionsIconStyle: {
+                color: '#ddd'
+            },
+            downloadButtonStyle: {
+                border: 'none',
+                backgroundColor: '#007bff',
+                borderRadius: '0.5em',
+                opacity: 0.6,
+                minWidth: '2em',
+                height: '2em',
+                float: 'left'
+            },
+            downloadIconStyle: {
+                color: '#ddd'
+            },
+            removeButtonStyle: {
+                border: 'none',
+                backgroundColor: '#dc3545',
+                borderRadius: '0.5em',
+                opacity: 0.6,
+                minWidth: '2em',
+                height: '2em',
+                float: 'left'
+            },
+            removeIconStyle: {
+                color: '#ddd'
+            },
             iconStyle: {
                 color: 'darkgray'
             },
@@ -49040,6 +49176,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         downloadFile: function downloadFile() {
             event.stopPropagation();
+            this.confirmRemove = false;
             if (!this.confirmDownload) {
                 this.confirmDownload = true;
                 return;
@@ -49078,6 +49215,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         removeFile: function removeFile(event) {
             event.stopPropagation();
+            this.confirmDownload = false;
             if (!this.confirmRemove) {
                 this.confirmRemove = true;
                 return;
@@ -49090,7 +49228,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 url: '/remove', //your url
                 method: 'POST',
                 data: {
-                    path: path
+                    path: path,
+                    name: me.file.name
                 }
             }).then(function (response) {
                 me.mainIconClass = 'fa-file';
@@ -49127,7 +49266,10 @@ var render = function() {
     "div",
     {
       staticClass: "card text-center",
-      style: { cursor: "pointer" },
+      style: {
+        cursor: "pointer",
+        position: "relative"
+      },
       attrs: { title: _vm.dirPath + "/" + _vm.file.name },
       on: {
         mouseover: _vm.mouseOver,
@@ -49158,14 +49300,26 @@ var render = function() {
                   expression: "selected && !downloading && !deleting"
                 }
               ],
-              style: {
-                float: "right",
-                position: "absolute"
-              },
+              style: _vm.optionsButtonStyle,
               attrs: { disabled: _vm.downloading || _vm.deleting },
-              on: { click: _vm.startShowOptions }
+              on: {
+                click: _vm.startShowOptions,
+                mouseover: function($event) {
+                  _vm.optionsButtonStyle.opacity = 1
+                  _vm.optionsIconStyle.color = "#fff"
+                },
+                mouseleave: function($event) {
+                  _vm.optionsButtonStyle.opacity = 0.6
+                  _vm.optionsIconStyle.color = "#ddd"
+                }
+              }
             },
-            [_c("i", { staticClass: "fas fa-ellipsis-v" })]
+            [
+              _c("i", {
+                staticClass: "fas fa-ellipsis-v",
+                style: _vm.optionsIconStyle
+              })
+            ]
           )
         : _c(
             "span",
@@ -49187,13 +49341,30 @@ var render = function() {
                       expression: "selected && !downloading && !deleting"
                     }
                   ],
+                  style: _vm.downloadButtonStyle,
                   attrs: { disabled: _vm.downloading || _vm.deleting },
-                  on: { click: _vm.downloadFile }
+                  on: {
+                    click: _vm.downloadFile,
+                    mouseover: function($event) {
+                      _vm.downloadButtonStyle.opacity = 1
+                      _vm.downloadIconStyle.color = "#fff"
+                    },
+                    mouseleave: function($event) {
+                      _vm.downloadButtonStyle.opacity = 0.6
+                      _vm.downloadIconStyle.color = "#ddd"
+                      _vm.confirmDownload = false
+                    }
+                  }
                 },
                 [
                   _vm.confirmDownload
-                    ? _c("span", [_vm._v("Confirm")])
-                    : _c("i", { staticClass: "fas fa-arrow-down" })
+                    ? _c("span", { style: _vm.downloadIconStyle }, [
+                        _vm._v("Confirm")
+                      ])
+                    : _c("i", {
+                        staticClass: "fas fa-arrow-down",
+                        style: _vm.downloadIconStyle
+                      })
                 ]
               ),
               _vm._v(" "),
@@ -49210,13 +49381,30 @@ var render = function() {
                       expression: "selected && !downloading && !deleting"
                     }
                   ],
+                  style: _vm.removeButtonStyle,
                   attrs: { disabled: _vm.downloading || _vm.deleting },
-                  on: { click: _vm.removeFile }
+                  on: {
+                    click: _vm.removeFile,
+                    mouseover: function($event) {
+                      _vm.removeButtonStyle.opacity = 1
+                      _vm.removeIconStyle.color = "#fff"
+                    },
+                    mouseleave: function($event) {
+                      _vm.removeButtonStyle.opacity = 0.6
+                      _vm.removeIconStyle.color = "#ddd"
+                      _vm.confirmRemove = false
+                    }
+                  }
                 },
                 [
                   _vm.confirmRemove
-                    ? _c("span", [_vm._v("Confirm")])
-                    : _c("i", { staticClass: "fas fa-times" })
+                    ? _c("span", { style: _vm.removeIconStyle }, [
+                        _vm._v("Confirm")
+                      ])
+                    : _c("i", {
+                        staticClass: "fas fa-times",
+                        style: _vm.removeIconStyle
+                      })
                 ]
               )
             ]
