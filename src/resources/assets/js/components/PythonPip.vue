@@ -120,6 +120,7 @@ export default {
             this.$refs.delButton.startSpin()
             axios(options)
             .then(function(response) {
+                me.pipport = ''
                 me.isPipModule = false
                 toastr.success(response.data.message)
                 me.$refs.delButton.stopSpin()

@@ -13,13 +13,15 @@
                 </div>
                 <del-button ref="delButton" v-on:del="removeApt"></del-button>
                 <hr class="window-title-bottom-bar"/>
-                <input 
-                    class="mirror-input"
-                    v-model="mirrorUrl"
-                    :disabled="downloading"
-                    placeholder="mirror url"
-                >
-                <add-button :style="{marginTop: '2em'}" :disabled="downloading" ref="addMirror" v-on:add="downloadMirror"></add-button>
+                <div class="text" :style="{float:'center', width: '19em'}">
+                    <input 
+                        class="mirror-input"
+                        v-model="mirrorUrl"
+                        :disabled="downloading"
+                        placeholder="mirror url"
+                    >
+                </div>
+                <add-button :style="{marginTop: '0.5em'}" :disabled="downloading" ref="addMirror" v-on:add="downloadMirror"></add-button>
             </div>
             <div
                 v-show="false" 
@@ -125,6 +127,7 @@ export default {
             this.$refs.delButton.startSpin()
             axios(options)
             .then(function(response) {
+                me.aptport = ''
                 me.isAptModule = false
                 toastr.success(response.data.message)
                 me.$refs.delButton.stopSpin()
@@ -179,6 +182,7 @@ export default {
     padding-right: 0.1em;
     width: 18em;
     height: 2em;
+    text-align: center;
 }
 
 .text {

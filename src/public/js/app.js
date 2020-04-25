@@ -44183,6 +44183,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             };
             this.$refs.delButton.startSpin();
             axios(options).then(function (response) {
+                me.pipport = '';
                 me.isPipModule = false;
                 toastr.success(response.data.message);
                 me.$refs.delButton.stopSpin();
@@ -49764,7 +49765,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\n.port-input[data-v-5cdde01d] {\n    padding-left: 0.1em;\n    padding-right: 0.1em;\n    width: 4.5em;\n    height: 2em;\n}\n.mirror-input[data-v-5cdde01d] {\n    padding-left: 0.1em;\n    padding-right: 0.1em;\n    width: 18em;\n    height: 2em;\n}\n.text[data-v-5cdde01d] {\n    width: 16em;\n    font-size: 1.33em;\n    margin: auto;\n    margin-bottom: 0.5em;\n}\n.window-title-bottom-bar[data-v-5cdde01d] {\n    margin-left: auto;\n    margin-right: auto;\n    border: 0.16em dashed #aaa;\n    border-bottom-width: 0;\n    border-left-width: 0;\n    border-right-width: 0;\n    padding: 0;\n    height: 0;\n    width: 93%;\n}\n.blink-me[data-v-5cdde01d] {\n  -webkit-animation: blinker-data-v-5cdde01d 1s linear infinite;\n          animation: blinker-data-v-5cdde01d 1s linear infinite;\n}\n@-webkit-keyframes blinker-data-v-5cdde01d {\n50% {\n    opacity: 0;\n}\n}\n@keyframes blinker-data-v-5cdde01d {\n50% {\n    opacity: 0;\n}\n}\n\n", ""]);
+exports.push([module.i, "\n.port-input[data-v-5cdde01d] {\n    padding-left: 0.1em;\n    padding-right: 0.1em;\n    width: 4.5em;\n    height: 2em;\n}\n.mirror-input[data-v-5cdde01d] {\n    padding-left: 0.1em;\n    padding-right: 0.1em;\n    width: 18em;\n    height: 2em;\n    text-align: center;\n}\n.text[data-v-5cdde01d] {\n    width: 16em;\n    font-size: 1.33em;\n    margin: auto;\n    margin-bottom: 0.5em;\n}\n.window-title-bottom-bar[data-v-5cdde01d] {\n    margin-left: auto;\n    margin-right: auto;\n    border: 0.16em dashed #aaa;\n    border-bottom-width: 0;\n    border-left-width: 0;\n    border-right-width: 0;\n    padding: 0;\n    height: 0;\n    width: 93%;\n}\n.blink-me[data-v-5cdde01d] {\n  -webkit-animation: blinker-data-v-5cdde01d 1s linear infinite;\n          animation: blinker-data-v-5cdde01d 1s linear infinite;\n}\n@-webkit-keyframes blinker-data-v-5cdde01d {\n50% {\n    opacity: 0;\n}\n}\n@keyframes blinker-data-v-5cdde01d {\n50% {\n    opacity: 0;\n}\n}\n\n", ""]);
 
 // exports
 
@@ -49775,6 +49776,8 @@ exports.push([module.i, "\n.port-input[data-v-5cdde01d] {\n    padding-left: 0.1
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
 //
 //
 //
@@ -49898,6 +49901,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             };
             this.$refs.delButton.startSpin();
             axios(options).then(function (response) {
+                me.aptport = '';
                 me.isAptModule = false;
                 toastr.success(response.data.message);
                 me.$refs.delButton.stopSpin();
@@ -50030,31 +50034,43 @@ var render = function() {
             _vm._v(" "),
             _c("hr", { staticClass: "window-title-bottom-bar" }),
             _vm._v(" "),
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.mirrorUrl,
-                  expression: "mirrorUrl"
-                }
-              ],
-              staticClass: "mirror-input",
-              attrs: { disabled: _vm.downloading, placeholder: "mirror url" },
-              domProps: { value: _vm.mirrorUrl },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
+            _c(
+              "div",
+              {
+                staticClass: "text",
+                style: { float: "center", width: "19em" }
+              },
+              [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.mirrorUrl,
+                      expression: "mirrorUrl"
+                    }
+                  ],
+                  staticClass: "mirror-input",
+                  attrs: {
+                    disabled: _vm.downloading,
+                    placeholder: "mirror url"
+                  },
+                  domProps: { value: _vm.mirrorUrl },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.mirrorUrl = $event.target.value
+                    }
                   }
-                  _vm.mirrorUrl = $event.target.value
-                }
-              }
-            }),
+                })
+              ]
+            ),
             _vm._v(" "),
             _c("add-button", {
               ref: "addMirror",
-              style: { marginTop: "2em" },
+              style: { marginTop: "0.5em" },
               attrs: { disabled: _vm.downloading },
               on: { add: _vm.downloadMirror }
             })
