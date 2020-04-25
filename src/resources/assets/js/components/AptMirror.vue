@@ -13,10 +13,13 @@
                 </div>
                 <del-button ref="delButton" v-on:del="removeApt"></del-button>
                 <hr class="window-title-bottom-bar"/>
-                <input v-model="mirrorUrl">
-                <button v-on:click="downloadMirror" placeholder="mirror url">
-                    <i class="fas" :class="aptIconClass"></i>
-                </button>                
+                <input 
+                    class="mirror-input"
+                    v-model="mirrorUrl"
+                    :disabled="downloading"
+                    placeholder="mirror url"
+                >
+                <add-button :style="{marginTop: '2em'}" :disabled="downloading" ref="addMirror" v-on:add="downloadMirror"></add-button>
             </div>
             <div
                 v-show="false" 
@@ -53,7 +56,7 @@ export default {
             aptport: '',
             isAptModule: false,
             mirrorUrl: '',
-            aptIconClass: 'fa-plus',
+            downloading: false,
         }
     },
     mounted() {
@@ -70,7 +73,7 @@ export default {
         axios(options)
         .then(function(response) {
             me.isAptModule = response.data.aptport != 0
-            if (me.aptport != 0) {
+            if (response.data.aptport != 0) {
                 me.aptport = response.data.aptport
             }
         })
@@ -134,7 +137,8 @@ export default {
         downloadMirror() {
             var me = this
             this.item.state = '1'
-            this.aptIconClass = 'fa-arrow-down blink-me'
+            this.downloading = true
+            this.$refs.addMirror.startBlink()
             const url = '/addMirror'
             const options = {
                 method: 'POST',
@@ -147,11 +151,13 @@ export default {
             }
             axios(options)
             .then(function(response) {                    
-                me.aptIconClass = 'fa-plus'
+                me.$refs.addMirror.stopBlink()
+                me.downloading = false
                 toastr.success('Mirror successfully downloaded.')
             })
             .catch(function(error) {
-                me.aptIconClass = 'fa-plus'
+                me.$refs.addMirror.stopBlink()
+                me.downloading = false
                 toastr.error(error.response.data.message)
             })
         },
@@ -165,6 +171,13 @@ export default {
     padding-left: 0.1em;
     padding-right: 0.1em;
     width: 4.5em;
+    height: 2em;
+}
+
+.mirror-input {
+    padding-left: 0.1em;
+    padding-right: 0.1em;
+    width: 18em;
     height: 2em;
 }
 

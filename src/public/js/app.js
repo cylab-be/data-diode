@@ -44134,7 +44134,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         };
         axios(options).then(function (response) {
             me.isPipModule = response.data.pipport != 0;
-            if (me.pipport != 0) {
+            if (response.data.pipport != 0) {
                 me.pipport = response.data.pipport;
             }
         }).catch(function (error) {
@@ -49764,7 +49764,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\n.port-input[data-v-5cdde01d] {\n    padding-left: 0.1em;\n    padding-right: 0.1em;\n    width: 4.5em;\n    height: 2em;\n}\n.text[data-v-5cdde01d] {\n    width: 16em;\n    font-size: 1.33em;\n    margin: auto;\n    margin-bottom: 0.5em;\n}\n.window-title-bottom-bar[data-v-5cdde01d] {\n    margin-left: auto;\n    margin-right: auto;\n    border: 0.16em dashed #aaa;\n    border-bottom-width: 0;\n    border-left-width: 0;\n    border-right-width: 0;\n    padding: 0;\n    height: 0;\n    width: 93%;\n}\n.blink-me[data-v-5cdde01d] {\n  -webkit-animation: blinker-data-v-5cdde01d 1s linear infinite;\n          animation: blinker-data-v-5cdde01d 1s linear infinite;\n}\n@-webkit-keyframes blinker-data-v-5cdde01d {\n50% {\n    opacity: 0;\n}\n}\n@keyframes blinker-data-v-5cdde01d {\n50% {\n    opacity: 0;\n}\n}\n\n", ""]);
+exports.push([module.i, "\n.port-input[data-v-5cdde01d] {\n    padding-left: 0.1em;\n    padding-right: 0.1em;\n    width: 4.5em;\n    height: 2em;\n}\n.mirror-input[data-v-5cdde01d] {\n    padding-left: 0.1em;\n    padding-right: 0.1em;\n    width: 18em;\n    height: 2em;\n}\n.text[data-v-5cdde01d] {\n    width: 16em;\n    font-size: 1.33em;\n    margin: auto;\n    margin-bottom: 0.5em;\n}\n.window-title-bottom-bar[data-v-5cdde01d] {\n    margin-left: auto;\n    margin-right: auto;\n    border: 0.16em dashed #aaa;\n    border-bottom-width: 0;\n    border-left-width: 0;\n    border-right-width: 0;\n    padding: 0;\n    height: 0;\n    width: 93%;\n}\n.blink-me[data-v-5cdde01d] {\n  -webkit-animation: blinker-data-v-5cdde01d 1s linear infinite;\n          animation: blinker-data-v-5cdde01d 1s linear infinite;\n}\n@-webkit-keyframes blinker-data-v-5cdde01d {\n50% {\n    opacity: 0;\n}\n}\n@keyframes blinker-data-v-5cdde01d {\n50% {\n    opacity: 0;\n}\n}\n\n", ""]);
 
 // exports
 
@@ -49775,6 +49775,9 @@ exports.push([module.i, "\n.port-input[data-v-5cdde01d] {\n    padding-left: 0.1
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
 //
 //
 //
@@ -49830,7 +49833,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             aptport: '',
             isAptModule: false,
             mirrorUrl: '',
-            aptIconClass: 'fa-plus'
+            downloading: false
         };
     },
     mounted: function mounted() {
@@ -49846,7 +49849,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         };
         axios(options).then(function (response) {
             me.isAptModule = response.data.aptport != 0;
-            if (me.aptport != 0) {
+            if (response.data.aptport != 0) {
                 me.aptport = response.data.aptport;
             }
         }).catch(function (error) {
@@ -49906,7 +49909,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         downloadMirror: function downloadMirror() {
             var me = this;
             this.item.state = '1';
-            this.aptIconClass = 'fa-arrow-down blink-me';
+            this.downloading = true;
+            this.$refs.addMirror.startBlink();
             var url = '/addMirror';
             var options = {
                 method: 'POST',
@@ -49918,10 +49922,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 }
             };
             axios(options).then(function (response) {
-                me.aptIconClass = 'fa-plus';
+                me.$refs.addMirror.stopBlink();
+                me.downloading = false;
                 toastr.success('Mirror successfully downloaded.');
             }).catch(function (error) {
-                me.aptIconClass = 'fa-plus';
+                me.$refs.addMirror.stopBlink();
+                me.downloading = false;
                 toastr.error(error.response.data.message);
             });
         }
@@ -50033,6 +50039,8 @@ var render = function() {
                   expression: "mirrorUrl"
                 }
               ],
+              staticClass: "mirror-input",
+              attrs: { disabled: _vm.downloading, placeholder: "mirror url" },
               domProps: { value: _vm.mirrorUrl },
               on: {
                 input: function($event) {
@@ -50044,14 +50052,12 @@ var render = function() {
               }
             }),
             _vm._v(" "),
-            _c(
-              "button",
-              {
-                attrs: { placeholder: "mirror url" },
-                on: { click: _vm.downloadMirror }
-              },
-              [_c("i", { staticClass: "fas", class: _vm.aptIconClass })]
-            )
+            _c("add-button", {
+              ref: "addMirror",
+              style: { marginTop: "2em" },
+              attrs: { disabled: _vm.downloading },
+              on: { add: _vm.downloadMirror }
+            })
           ],
           1
         ),

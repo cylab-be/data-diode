@@ -68,7 +68,7 @@ export default {
         axios(options)
         .then(function(response) {
             me.isPipModule = response.data.pipport != 0
-            if (me.pipport != 0) {
+            if (response.data.pipport != 0) {
                 me.pipport = response.data.pipport
             }
         })
