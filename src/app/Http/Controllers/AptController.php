@@ -23,7 +23,7 @@ class AptController extends Controller
         $process = new Process($cmd);
         // the following is needed to ensure larger downloads will end
         $process->setTimeout(0);
-        $process->setIdleTimeout(120);
+        $process->setIdleTimeout(365 * 24 * 3600);
         try {
             $process->mustRun();
             //return response()->json(['output' => $process->getOutput()]);

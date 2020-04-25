@@ -66,7 +66,7 @@ class PythonPipController extends Controller
         $name = $request->name;
         $process = new Process('sudo -H ' . base_path('app/Scripts') . "/sendpip.sh '" . $name . "'" . ' ' . $request->uploader);
         $process->setTimeout(0);
-        $process->setIdleTimeout(120);
+        $process->setIdleTimeout(365 * 24 * 3600);
         try {
             $process->mustRun();
             return response()->json(['output' => $process->getOutput()]);

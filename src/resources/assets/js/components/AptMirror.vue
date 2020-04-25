@@ -156,6 +156,7 @@ export default {
             .then(function(response) {                    
                 me.$refs.addMirror.stopBlink()
                 me.downloading = false
+                me.mirrorUrl = ''
                 toastr.success('Mirror successfully downloaded.')
             })
             .catch(function(error) {

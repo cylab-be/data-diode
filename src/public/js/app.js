@@ -49928,6 +49928,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             axios(options).then(function (response) {
                 me.$refs.addMirror.stopBlink();
                 me.downloading = false;
+                me.mirrorUrl = '';
                 toastr.success('Mirror successfully downloaded.');
             }).catch(function (error) {
                 me.$refs.addMirror.stopBlink();
