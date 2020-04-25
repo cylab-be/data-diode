@@ -45486,7 +45486,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\n.main[data-v-452b8014] {\n    /* position: absolute avoids the\n       \"stacking contexts\" effect between \n       this  component's z-index and the\n       transform css prop used by the \n       fa-spin classes of the Uploaders\n       components */\n    position: absolute; \n    padding: 0;\n    margin: 0;\n}\n.veil-main[data-v-452b8014] {\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background-color: #666;\n    opacity: 0.7;\n    z-index: 998;\n}\n.window-main[data-v-452b8014] {\n    position: fixed;\n    top: calc(50% - 15em);\n    left: calc(50% - 15em);\n    z-index: 999;\n    width: 30em;\n    height: 30em;\n    background-color: #f5f8fa;\n    border: 0.1em dashed #aaa;\n    border-radius: 0.7em;\n}\n.window-title[data-v-452b8014] {\n    margin-left: 2em;\n    margin-top: 0.8em;\n    float: left;\n    font-size: 1.33em;\n}\n.window-close-button[data-v-452b8014] {\n    margin-top: 1.0em;\n    margin-right: 2em;\n    height: 2em;\n    float: right;\n    border: none;\n    background-color: #dc3545;\n    border-radius: 0.3em;\n}\n.window-close-button-icon[data-v-452b8014] {\n    margin: auto;\n    color: #ddd;\n}\n.window-title-bottom-bar[data-v-452b8014] {\n    margin-left: auto;\n    margin-right: auto;\n    border: 0.16em dashed #aaa;\n    border-bottom-width: 0;\n    border-left-width: 0;\n    border-right-width: 0;\n    padding: 0;\n    height: 0;\n    width: 93%;\n}\n.text[data-v-452b8014] {\n    font-size: 1.33em;\n}\n.param-button[data-v-452b8014] {\n    width: 30%;\n    height: 4em;\n}\n.blink-me[data-v-452b8014] {\n  -webkit-animation: blinker-data-v-452b8014 1s linear infinite;\n          animation: blinker-data-v-452b8014 1s linear infinite;\n}\n@-webkit-keyframes blinker-data-v-452b8014 {\n50% {\n    opacity: 0;\n}\n}\n@keyframes blinker-data-v-452b8014 {\n50% {\n    opacity: 0;\n}\n}\n.button[data-v-452b8014] {\n  display: inline-block;\n  border-radius: 1em;\n  background-color: #007bff;\n  border: none;\n  color: #FFFFFF;\n  text-align: center;\n  font-size: 1.33em;\n  padding: 0.8em;\n  width: 8em;\n  -webkit-transition: all 0.5s;\n  transition: all 0.5s;\n  cursor: pointer;\n  margin: 0.4em;\n}\n.button span[data-v-452b8014] {\n  cursor: pointer;\n  display: inline-block;\n  position: relative;\n  -webkit-transition: 0.5s;\n  transition: 0.5s;\n}\n.button span[data-v-452b8014]:after {\n  content: '\\BB';\n  position: absolute;\n  opacity: 0;\n  top: 0;\n  right: -0.8em;\n  -webkit-transition: 0.5s;\n  transition: 0.5s;\n}\n.button:hover span[data-v-452b8014] {\n  padding-right: 1em;\n}\n.button:hover span[data-v-452b8014]:after {\n  opacity: 1;\n  right: 0;\n}\n\n", ""]);
+exports.push([module.i, "\n.main[data-v-452b8014] {\n    /* position: absolute avoids the\n       \"stacking contexts\" effect between \n       this  component's z-index and the\n       transform css prop used by the \n       fa-spin classes of the Uploaders\n       components */\n    position: absolute; \n    padding: 0;\n    margin: 0;\n}\n.veil-main[data-v-452b8014] {\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background-color: #666;\n    opacity: 0.7;\n    z-index: 998;\n}\n.window-main[data-v-452b8014] {\n    position: fixed;\n    top: calc(50% - 15em);\n    left: calc(50% - 15em);\n    z-index: 999;\n    width: 30em;\n    height: 30em;\n    background-color: #f5f8fa;\n    border: 0.1em dashed #aaa;\n    border-radius: 0.7em;\n}\n.window-title[data-v-452b8014] {\n    margin-left: 2em;\n    margin-top: 0.8em;\n    float: left;\n    font-size: 1.33em;\n}\n.window-close-button[data-v-452b8014] {\n    margin-top: 1.0em;\n    margin-right: 2em;\n    height: 2em;\n    float: right;\n    border: none;\n    background-color: #dc3545;\n    border-radius: 0.3em;\n}\n.window-close-button-icon[data-v-452b8014] {\n    margin: auto;\n    color: #ddd;\n}\n.window-title-bottom-bar[data-v-452b8014] {\n    margin-left: auto;\n    margin-right: auto;\n    border: 0.16em dashed #aaa;\n    border-bottom-width: 0;\n    border-left-width: 0;\n    border-right-width: 0;\n    padding: 0;\n    height: 0;\n    width: 93%;\n}\n.text[data-v-452b8014] {\n    font-size: 1.33em;\n}\n.param-button[data-v-452b8014] {\n    width: 24%;\n    height: 4em;\n}\n.blink-me[data-v-452b8014] {\n  -webkit-animation: blinker-data-v-452b8014 1s linear infinite;\n          animation: blinker-data-v-452b8014 1s linear infinite;\n}\n@-webkit-keyframes blinker-data-v-452b8014 {\n50% {\n    opacity: 0;\n}\n}\n@keyframes blinker-data-v-452b8014 {\n50% {\n    opacity: 0;\n}\n}\n.button[data-v-452b8014] {\n  display: inline-block;\n  border-radius: 1em;\n  background-color: #007bff;\n  border: none;\n  color: #FFFFFF;\n  text-align: center;\n  font-size: 1.33em;\n  padding: 0.8em;\n  width: 8em;\n  -webkit-transition: all 0.5s;\n  transition: all 0.5s;\n  cursor: pointer;\n  margin: 0.4em;\n}\n.button span[data-v-452b8014] {\n  cursor: pointer;\n  display: inline-block;\n  position: relative;\n  -webkit-transition: 0.5s;\n  transition: 0.5s;\n}\n.button span[data-v-452b8014]:after {\n  content: '\\BB';\n  position: absolute;\n  opacity: 0;\n  top: 0;\n  right: -0.8em;\n  -webkit-transition: 0.5s;\n  transition: 0.5s;\n}\n.button:hover span[data-v-452b8014] {\n  padding-right: 1em;\n}\n.button:hover span[data-v-452b8014]:after {\n  opacity: 1;\n  right: 0;\n}\n\n", ""]);
 
 // exports
 
@@ -45497,6 +45497,11 @@ exports.push([module.i, "\n.main[data-v-452b8014] {\n    /* position: absolute a
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
 //
 //
 //
@@ -45581,7 +45586,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             windowVisible: false,
             blinkClass: '',
             closeDisabled: false,
-            param: 'config'
+            param: 'config',
+            // apt
+            mirrorUrl: '',
+            aptIconClass: 'fa-plus'
         };
     },
     mounted: function mounted() {},
@@ -45710,6 +45718,30 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         toStorage: function toStorage() {
             window.location.href = '/storage/' + this.item.name;
+        },
+
+        // apt
+        downloadMirror: function downloadMirror() {
+            var me = this;
+            this.item.state = '1';
+            this.aptIconClass = 'fa-arrow-down blink-me';
+            var url = '/addMirror';
+            var options = {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                url: url,
+                data: {
+                    uploader: me.item.name,
+                    url: me.mirrorUrl
+                }
+            };
+            axios(options).then(function (response) {
+                me.aptIconClass = 'fa-plus';
+                toastr.success('Mirror successfully downloaded.');
+            }).catch(function (error) {
+                me.aptIconClass = 'fa-plus';
+                toastr.error(error.response.data.message);
+            });
         }
     }
 });
@@ -45895,6 +45927,47 @@ var render = function() {
         _vm._v(" "),
         _vm.diodein
           ? _c(
+              "span",
+              {
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: _vm.param == "apt",
+                    expression: "param == 'apt'"
+                  }
+                ]
+              },
+              [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.mirrorUrl,
+                      expression: "mirrorUrl"
+                    }
+                  ],
+                  domProps: { value: _vm.mirrorUrl },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.mirrorUrl = $event.target.value
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c("button", { on: { click: _vm.downloadMirror } }, [
+                  _c("i", { staticClass: "fas", class: _vm.aptIconClass })
+                ])
+              ]
+            )
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.diodein
+          ? _c(
               "div",
               {
                 directives: [
@@ -45951,6 +46024,18 @@ var render = function() {
                     }
                   },
                   [_vm._v("PIP")]
+                ),
+                _c(
+                  "button",
+                  {
+                    staticClass: "param-button",
+                    on: {
+                      click: function($event) {
+                        _vm.param = "apt"
+                      }
+                    }
+                  },
+                  [_vm._v("APT")]
                 )
               ]
             )

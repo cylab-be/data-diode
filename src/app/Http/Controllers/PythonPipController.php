@@ -71,7 +71,7 @@ class PythonPipController extends Controller
             $process->mustRun();
             return response()->json(['output' => $process->getOutput()]);
         } catch (ProcessFailedException $exception) {
-            return response()->json(['message' => $exception], 400);
+            return response()->json(['message' => $exception->getMessage()], 400);
         }
     }
 

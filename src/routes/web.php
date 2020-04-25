@@ -64,6 +64,7 @@ if (!env('DIODE_IN', false)) {
     Route::post('/addPip', 'UploadersController@addPip');
     Route::post('/getPipPort', 'UploadersController@getPipPort');
     Route::post('/removePip', 'UploadersController@removePip');
+    Route::post('/addMirror', 'AptController@addMirror');
 }
 
 Route::get('/channels', 'UploadersController@index');
