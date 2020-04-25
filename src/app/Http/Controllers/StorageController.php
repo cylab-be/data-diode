@@ -105,7 +105,7 @@ class StorageController extends Controller {
         $folderPath = base_path('storage') . '/app/files' . $request->path;        
         $destPath = base_path('storage') . '/app/files/.zips/';
         $destZip = $destPath . $request->name . '_' . $request->time . '.zip';
-        $cmd = 'sudo ' . base_path('app/Scripts') . '/zipFolder.sh "' . $folderPath . '" "' . $destZip . '" "' . $request->name . '"';
+        $cmd = 'sudo ' . base_path('app/Scripts') . '/zip-folder.sh "' . $folderPath . '" "' . $destZip . '" "' . $request->name . '"';
         $process = new Process($cmd);
         try {
             $process->mustRun();
@@ -140,9 +140,9 @@ class StorageController extends Controller {
             return response()->json(['message' => 'Invalid path.'], 400);
         }
         // The double quotes are here to avoid errors with paths containing spaces
-        $cmd = 'sudo ' . base_path('app/Scripts') . '/removeFileOrFolder.sh "' . base_path('storage') . '/app/files' . $request->path . '"';
+        $cmd = 'sudo ' . base_path('app/Scripts') . '/remove-file-or-folder.sh "' . base_path('storage') . '/app/files' . $request->path . '"';
         if ($request->path == './.zips') {
-            $cmd = 'sudo ' . base_path('app/Scripts') . '/removeFileOrFolder.sh ' . base_path('storage') . '/app/files/.zips/*';
+            $cmd = 'sudo ' . base_path('app/Scripts') . '/remove-file-or-folder.sh ' . base_path('storage') . '/app/files/.zips/*';
         }
         $process = new Process($cmd);
         try {

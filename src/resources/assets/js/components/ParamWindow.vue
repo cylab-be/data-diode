@@ -52,8 +52,7 @@
                 <python-pip :item="item"></python-pip>
             </span>
             <span v-if="diodein" v-show="param == 'apt'">
-                <input v-model="mirrorUrl">
-                <button v-on:click="downloadMirror"><i class="fas" :class="aptIconClass"></i></button>
+                <apt-mirror :item="item"></apt-mirror>
             </span>
             <div  v-if="diodein" v-show="diodein" class="row" :style="{position: 'absolute', bottom: '1em', width: '100%', margin: 'auto'}">
                 <hr class="window-title-bottom-bar"/>
@@ -88,9 +87,6 @@ export default {
             blinkClass: '',
             closeDisabled: false,
             param: 'config',
-            // apt
-            mirrorUrl: '',
-            aptIconClass: 'fa-plus',
         }
     },
     mounted() {
@@ -214,31 +210,6 @@ export default {
         },
         toStorage() {
             window.location.href = '/storage/' + this.item.name
-        },
-        // apt
-        downloadMirror() {
-            var me = this
-            this.item.state = '1'
-            this.aptIconClass = 'fa-arrow-down blink-me'
-            const url = '/addMirror'
-            const options = {
-                method: 'POST',
-                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-                url,
-                data: {
-                    uploader: me.item.name,
-                    url: me.mirrorUrl,
-                },
-            }
-            axios(options)
-            .then(function(response) {                    
-                me.aptIconClass = 'fa-plus'
-                toastr.success('Mirror successfully downloaded.')
-            })
-            .catch(function(error) {
-                me.aptIconClass = 'fa-plus'
-                toastr.error(error.response.data.message)
-            })
         },
     }
 }

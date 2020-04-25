@@ -27,6 +27,8 @@ def main():
             del_pattern = '^del:[a-zA-Z0-9]+$'
             pipadd_pattern = '^pipadd:[a-zA-Z0-9]+:[0-9]+$'
             pipremove_pattern = '^pipremove:[a-zA-Z0-9]+'
+            aptadd_pattern = '^aptadd:[a-zA-Z0-9]+:[0-9]+$'
+            aptremove_pattern = '^aptremove:[a-zA-Z0-9]+'
             ts = data.decode('utf-8')
 
             if re.match(pattern, ts):
@@ -70,6 +72,26 @@ def main():
                     pipport = get_uploader_pipport(conn, sql_uploader_pipport, uploader)
                     change_uploader_attribute(conn, sql_change_uploader_pipport, uploader, 0)
                     result = subprocess.run("sudo /var/www/data-diode/src/app/Scripts/pipremove-out.sh %s %s" %(uploader, pipport), shell=True, stdout=subprocess.PIPE)
+                    print(result.stdout)
+                else:
+                    print('This uploader does not exist.')
+
+            elif re.match(aptadd_pattern, ts):
+                _, uploader, aptport = ts.split(':')
+                aptport = int(aptport)
+                if uploader_exists(conn, sql_uploader_exists, uploader):
+                    change_uploader_attribute(conn, sql_change_uploader_aptport, uploader, aptport)
+                    result = subprocess.run("sudo /var/www/data-diode/src/app/Scripts/aptadd-out.sh %s %s" %(uploader, str(aptport)), shell=True, stdout=subprocess.PIPE)
+                    print(result.stdout)
+                else:
+                    print('This uploader does not exist.')
+
+            elif re.match(aptremove_pattern, ts):
+                _, uploader = ts.split(':')
+                if uploader_exists(conn, sql_uploader_exists, uploader):
+                    aptport = get_uploader_aptport(conn, sql_uploader_aptport, uploader)
+                    change_uploader_attribute(conn, sql_change_uploader_aptport, uploader, 0)
+                    result = subprocess.run("sudo /var/www/data-diode/src/app/Scripts/aptremove-out.sh %s %s" %(uploader, aptport), shell=True, stdout=subprocess.PIPE)
                     print(result.stdout)
                 else:
                     print('This uploader does not exist.')

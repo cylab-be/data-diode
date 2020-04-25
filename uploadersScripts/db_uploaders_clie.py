@@ -5,6 +5,44 @@ import sys
 import re
 from db_management import *
 
+
+def aptremove(uploader):
+    conn = create_connection(database)
+    if conn is not None:
+        aptport = get_uploader_aptport(conn, sql_uploader_aptport, uploader)
+        change_uploader_attribute(conn, sql_change_uploader_aptport, uploader, 0)
+
+        # Information sent to "diode out"
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect((HOST, PORT))
+        msg = 'aptremove' + ':' + uploader
+        s.sendall(msg) # s.sendall(bytes(msg, 'utf-8')) # Working with Python3 but not Python2
+        s.close()
+    else:
+        print("Error! cannot create the database connection.")
+
+    # Close or the database may remain locked
+    if conn is not None:
+        conn.close()
+
+def aptadd(uploader, aptport):
+    conn = create_connection(database)
+    if conn is not None:
+        change_uploader_attribute(conn, sql_change_uploader_aptport, uploader, aptport)
+
+        # Information sent to "diode out"
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect((HOST, PORT))
+        msg = 'aptadd' + ':' + uploader + ':' + str(aptport)
+        s.sendall(msg) # s.sendall(bytes(msg, 'utf-8')) # Working with Python3 but not Python2
+        s.close()
+    else:
+        print("Error! cannot create the database connection.")
+
+    # Close or the database may remain locked
+    if conn is not None:
+        conn.close()
+
 def pipremove(uploader):
     conn = create_connection(database)
     if conn is not None:
@@ -89,7 +127,7 @@ def add(uploader, state, port):
 
 if __name__ == '__main__':
     
-    options = ['help', 'add', 'update', 'remove', 'pipadd', 'pipremove']
+    options = ['help', 'add', 'update', 'remove', 'pipadd', 'pipremove', 'aptadd', 'aptremove']
 
     name_pattern = '^[a-zA-Z0-9]+$'
     state_pattern = '^[0-1]$'
@@ -109,6 +147,8 @@ if __name__ == '__main__':
             print('%s remove name\n\tremove an uploader with:\n\t\t name regex ^[a-zA-Z0-9]+$\n' %sys.argv[0])
             print('%s pipadd name port\n\tadd a pip module to an uploader with:\n\t\tname regex ^[a-zA-Z0-9]+$\n\t\tport in [1025, 65535]\n' %sys.argv[0])
             print('%s pipremove name\n\tremove a pip module from an uploader with:\n\t\tname regex ^[a-zA-Z0-9]+$\n' %sys.argv[0])
+            print('%s aptadd name port\n\tadd an apt module to an uploader with:\n\t\tname regex ^[a-zA-Z0-9]+$\n\t\tport in [1025, 65535]\n' %sys.argv[0])
+            print('%s aptremove name\n\tremove an apt module from an uploader with:\n\t\tname regex ^[a-zA-Z0-9]+$\n' %sys.argv[0])
     
         elif sys.argv[1] == 'add':
             if not len(sys.argv) == 5:
@@ -149,3 +189,19 @@ if __name__ == '__main__':
                 print('Error: one or more invalid parameters. Use "%s help" to see all options' %sys.argv[0])
             else:
                 pipremove(sys.argv[2])
+
+        elif sys.argv[1] == 'aptadd':
+            if not len(sys.argv) == 4:
+                print('Error: invalid number of parameters. Use "%s help" to see all options' %sys.argv[0])
+            elif not re.match(name_pattern, sys.argv[2]) or not (1025 <= int(sys.argv[3]) and int(sys.argv[3]) <= 65355):
+                print('Error: one or more invalid parameters. Use "%s help" to see all options' %sys.argv[0])
+            else:
+                aptadd(sys.argv[2], int(sys.argv[3]))
+
+        elif sys.argv[1] == 'aptremove':
+            if not len(sys.argv) == 3:
+                print('Error: invalid number of parameters. Use "%s help" to see all options' %sys.argv[0])
+            elif not re.match(name_pattern, sys.argv[2]):
+                print('Error: one or more invalid parameters. Use "%s help" to see all options' %sys.argv[0])
+            else:
+                aptremove(sys.argv[2])

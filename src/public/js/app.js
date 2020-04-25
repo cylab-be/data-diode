@@ -1382,7 +1382,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(13);
-module.exports = __webpack_require__(130);
+module.exports = __webpack_require__(135);
 
 
 /***/ }),
@@ -1423,6 +1423,7 @@ Vue.component('root-folder-card', __webpack_require__(110));
 Vue.component('folder-card', __webpack_require__(115));
 Vue.component('file-card', __webpack_require__(120));
 Vue.component('nav-path', __webpack_require__(125));
+Vue.component('apt-mirror', __webpack_require__(130));
 
 /***/ }),
 /* 14 */
@@ -45572,7 +45573,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
@@ -45586,10 +45586,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             windowVisible: false,
             blinkClass: '',
             closeDisabled: false,
-            param: 'config',
-            // apt
-            mirrorUrl: '',
-            aptIconClass: 'fa-plus'
+            param: 'config'
         };
     },
     mounted: function mounted() {},
@@ -45718,30 +45715,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         toStorage: function toStorage() {
             window.location.href = '/storage/' + this.item.name;
-        },
-
-        // apt
-        downloadMirror: function downloadMirror() {
-            var me = this;
-            this.item.state = '1';
-            this.aptIconClass = 'fa-arrow-down blink-me';
-            var url = '/addMirror';
-            var options = {
-                method: 'POST',
-                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-                url: url,
-                data: {
-                    uploader: me.item.name,
-                    url: me.mirrorUrl
-                }
-            };
-            axios(options).then(function (response) {
-                me.aptIconClass = 'fa-plus';
-                toastr.success('Mirror successfully downloaded.');
-            }).catch(function (error) {
-                me.aptIconClass = 'fa-plus';
-                toastr.error(error.response.data.message);
-            });
         }
     }
 });
@@ -45938,31 +45911,8 @@ var render = function() {
                   }
                 ]
               },
-              [
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.mirrorUrl,
-                      expression: "mirrorUrl"
-                    }
-                  ],
-                  domProps: { value: _vm.mirrorUrl },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.mirrorUrl = $event.target.value
-                    }
-                  }
-                }),
-                _vm._v(" "),
-                _c("button", { on: { click: _vm.downloadMirror } }, [
-                  _c("i", { staticClass: "fas", class: _vm.aptIconClass })
-                ])
-              ]
+              [_c("apt-mirror", { attrs: { item: _vm.item } })],
+              1
             )
           : _vm._e(),
         _vm._v(" "),
@@ -49730,6 +49680,429 @@ if (false) {
 
 /***/ }),
 /* 130 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(131)
+}
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(133)
+/* template */
+var __vue_template__ = __webpack_require__(134)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-5cdde01d"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/AptMirror.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-5cdde01d", Component.options)
+  } else {
+    hotAPI.reload("data-v-5cdde01d", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 131 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(132);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("1a848bec", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-5cdde01d\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./AptMirror.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-5cdde01d\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./AptMirror.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 132 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.port-input[data-v-5cdde01d] {\n    padding-left: 0.1em;\n    padding-right: 0.1em;\n    width: 4.5em;\n    height: 2em;\n}\n.text[data-v-5cdde01d] {\n    width: 16em;\n    font-size: 1.33em;\n    margin: auto;\n    margin-bottom: 0.5em;\n}\n.window-title-bottom-bar[data-v-5cdde01d] {\n    margin-left: auto;\n    margin-right: auto;\n    border: 0.16em dashed #aaa;\n    border-bottom-width: 0;\n    border-left-width: 0;\n    border-right-width: 0;\n    padding: 0;\n    height: 0;\n    width: 93%;\n}\n.blink-me[data-v-5cdde01d] {\n  -webkit-animation: blinker-data-v-5cdde01d 1s linear infinite;\n          animation: blinker-data-v-5cdde01d 1s linear infinite;\n}\n@-webkit-keyframes blinker-data-v-5cdde01d {\n50% {\n    opacity: 0;\n}\n}\n@keyframes blinker-data-v-5cdde01d {\n50% {\n    opacity: 0;\n}\n}\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 133 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: {
+        item: Object
+    },
+    data: function data() {
+        return {
+            packageName: '',
+            downloadedData: [],
+            cannotDownload: false,
+            aptport: '',
+            isAptModule: false,
+            mirrorUrl: '',
+            aptIconClass: 'fa-plus'
+        };
+    },
+    mounted: function mounted() {
+        var me = this;
+        var url = '/getAptPort';
+        var options = {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            url: url,
+            data: {
+                uploader: me.item.name
+            }
+        };
+        axios(options).then(function (response) {
+            me.isAptModule = response.data.aptport != 0;
+            if (me.aptport != 0) {
+                me.aptport = response.data.aptport;
+            }
+        }).catch(function (error) {
+            toastr.error('Unable to get the ' + me.item.name + '\'s channel apt port module');
+        });
+    },
+
+    methods: {
+        addApt: function addApt() {
+            var me = this;
+            if (isNaN(me.aptport)) {
+                toastr.error('The apt port must be a number.');
+                return;
+            }
+            this.$refs.addButton.startBlink();
+            var port = parseInt(me.aptport);
+            var url = '/addApt';
+            var options = {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                url: url,
+                data: {
+                    uploader: me.item.name,
+                    port: port
+                }
+            };
+            axios(options).then(function (response) {
+                me.isAptModule = true;
+                toastr.success(response.data.message);
+                me.$refs.addButton.stopBlink();
+            }).catch(function (error) {
+                toastr.error(error.response.data.message);
+                me.$refs.addButton.stopBlink();
+            });
+        },
+        removeApt: function removeApt() {
+            var me = this;
+            var url = '/removeApt';
+            var options = {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                url: url,
+                data: {
+                    uploader: me.item.name
+                }
+            };
+            this.$refs.delButton.startSpin();
+            axios(options).then(function (response) {
+                me.isAptModule = false;
+                toastr.success(response.data.message);
+                me.$refs.delButton.stopSpin();
+            }).catch(function (error) {
+                toastr.error(error.response.data.message);
+                me.$refs.delButton.stopSpin();
+            });
+        },
+        downloadMirror: function downloadMirror() {
+            var me = this;
+            this.item.state = '1';
+            this.aptIconClass = 'fa-arrow-down blink-me';
+            var url = '/addMirror';
+            var options = {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                url: url,
+                data: {
+                    uploader: me.item.name,
+                    url: me.mirrorUrl
+                }
+            };
+            axios(options).then(function (response) {
+                me.aptIconClass = 'fa-plus';
+                toastr.success('Mirror successfully downloaded.');
+            }).catch(function (error) {
+                me.aptIconClass = 'fa-plus';
+                toastr.error(error.response.data.message);
+            });
+        }
+    }
+});
+
+/***/ }),
+/* 134 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", [
+    _c(
+      "span",
+      {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: !_vm.isAptModule,
+            expression: "!isAptModule"
+          }
+        ]
+      },
+      [
+        _c(
+          "div",
+          {
+            staticClass: "text",
+            style: { float: "left", marginLeft: "2em", width: "12em" }
+          },
+          [
+            _vm._v("\n            Choose a "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.aptport,
+                  expression: "aptport"
+                }
+              ],
+              staticClass: "port-input",
+              attrs: { placeholder: "port" },
+              domProps: { value: _vm.aptport },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.aptport = $event.target.value
+                }
+              }
+            }),
+            _vm._v(" and click to add a new APT module\n        ")
+          ]
+        ),
+        _vm._v(" "),
+        _c("add-button", { ref: "addButton", on: { add: _vm.addApt } })
+      ],
+      1
+    ),
+    _vm._v(" "),
+    _c(
+      "span",
+      {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: _vm.isAptModule,
+            expression: "isAptModule"
+          }
+        ]
+      },
+      [
+        _c(
+          "div",
+          { style: { marginBottom: "0.5em" } },
+          [
+            _c(
+              "div",
+              {
+                staticClass: "text",
+                style: { float: "left", marginLeft: "2em", width: "12em" }
+              },
+              [
+                _vm._v(
+                  "\n                Module running on port " +
+                    _vm._s(_vm.aptport) +
+                    ". Click to remove\n            "
+                )
+              ]
+            ),
+            _vm._v(" "),
+            _c("del-button", { ref: "delButton", on: { del: _vm.removeApt } }),
+            _vm._v(" "),
+            _c("hr", { staticClass: "window-title-bottom-bar" }),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.mirrorUrl,
+                  expression: "mirrorUrl"
+                }
+              ],
+              domProps: { value: _vm.mirrorUrl },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.mirrorUrl = $event.target.value
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                attrs: { placeholder: "mirror url" },
+                on: { click: _vm.downloadMirror }
+              },
+              [_c("i", { staticClass: "fas", class: _vm.aptIconClass })]
+            )
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            directives: [
+              {
+                name: "show",
+                rawName: "v-show",
+                value: false,
+                expression: "false"
+              }
+            ],
+            style: {
+              width: "100%",
+              overflow: "scroll",
+              height: "12em"
+            }
+          },
+          _vm._l(_vm.downloadedData, function(item, index) {
+            return _c(
+              "div",
+              {
+                key: index,
+                style: {
+                  width: "95%",
+                  whiteSpace: "pre-wrap"
+                }
+              },
+              [_c("p", [_vm._v(_vm._s(item))])]
+            )
+          })
+        )
+      ]
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-5cdde01d", module.exports)
+  }
+}
+
+/***/ }),
+/* 135 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

@@ -19,6 +19,7 @@ class CreateUploadersTable extends Migration
             $table->integer('state');
             $table->integer('port')->unique();
             $table->integer('pipport')->default(0);
+            $table->integer('aptport')->default(0);
         });
     }
 

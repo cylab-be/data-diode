@@ -69,14 +69,14 @@ sysctl -p /etc/sysctl.conf
 echo "www-data ALL=NOPASSWD: /bin/netstat, /bin/rm, /usr/bin/python, /usr/bin/python3, /var/www/data-diode/src/app/Scripts/*, /usr/local/bin/supervisord" | EDITOR="tee -a" visudo
 
 # apt server
-cat > /etc/apache2/sites-available/deb-mirror.conf << EOF
-<VirtualHost *:8001>
-        DocumentRoot /var/www/data-diode/src/storage/app/files/apt
-</VirtualHost>
-EOF
-sed -i '/Listen 8001/d' /etc/apache2/ports.conf # delete lines
-sed -i '/Listen 80/a Listen 8001' /etc/apache2/ports.conf # add a line under an existing one
-a2ensite deb-mirror
+#cat > /etc/apache2/sites-available/deb-mirror.conf << EOF
+#<VirtualHost *:8001>
+#        DocumentRoot /var/www/data-diode/src/storage/app/files/apt
+#</VirtualHost>
+#EOF
+#sed -i '/Listen 8001/d' /etc/apache2/ports.conf # delete lines
+#sed -i '/Listen 80/a Listen 8001' /etc/apache2/ports.conf # add a line under an existing one
+#a2ensite deb-mirror
 
 systemctl restart apache2
 

@@ -154,6 +154,8 @@ class UploadersController extends Controller
                 return response()->json(['message' => 'This port number is already used by another uploader.'], 400);
             } elseif ($u->pipport == $request->port) {
                 return response()->json(['message' => 'This port number is already used by a pip module.'], 400);
+            } elseif ($u->aptport == $request->port) {
+                return response()->json(['message' => 'This port number is already used by an apt module.'], 400);
             }
         }
         $cmd = 'sudo netstat -peanut | grep ":' . strval($request->port) . ' "';
@@ -185,8 +187,9 @@ class UploadersController extends Controller
 
     public function del(Request $request)
     {
-        // first remove pip module
+        // first remove all modules
         $this::removePip($request);
+        $this::removeApt($request);
         // uploader check
         if ($request->uploader == null) {
             return response()->json(['message' => 'You must specify an uploader\'s name.'], 422);
@@ -230,6 +233,25 @@ class UploadersController extends Controller
         return response()->json(['name' =>$uploader->name, 'pipport' => $uploader->pipport], 200);
     }
 
+    public function getAptPort(Request $request) {
+        // uploader check
+        if ($request->uploader == null) {
+            return response()->json(['message' => 'You must specify an uploader\'s name.'], 422);
+        } else if (!is_string($request->uploader)) {
+            return response()->json(['message' => 'The uploader\'s name must be a string of characters.'], 422);
+        } else if (!preg_match("/^[a-zA-Z0-9]+$/", $request->uploader)) {
+            return response()->json(['message' => 'The uploader\'s name must be composed of alphabetical characters only.'], 422);
+        }
+        // checking uploader's name existing
+        $count = Uploader::where('name', '=', $request->uploader)->count();
+        if ($count == 0) {
+            return response()->json(['message' => 'This uploader does not exist.'], 400);
+        }
+        // sending apt
+        $uploader = Uploader::where('name', '=', $request->uploader)->first();
+        return response()->json(['name' =>$uploader->name, 'aptport' => $uploader->aptport], 200);
+    }
+
     public function addPip(Request $request) {
         // uploader check
         if ($request->uploader == null) {
@@ -259,6 +281,8 @@ class UploadersController extends Controller
                 return response()->json(['message' => 'This port number is already used by another uploader.'], 400);
             } elseif ($u->pipport == $request->port) {
                 return response()->json(['message' => 'This port number is already used by a pip module.'], 400);
+            } elseif ($u->aptport == $request->port) {
+                return response()->json(['message' => 'This port number is already used by an apt module.'], 400);
             }
         }
         $cmd = 'sudo netstat -peanut | grep ":' . strval($request->port) . ' "';
@@ -286,6 +310,64 @@ class UploadersController extends Controller
         }
     }
 
+    public function addApt(Request $request) {
+        // uploader check
+        if ($request->uploader == null) {
+            return response()->json(['message' => 'You must specify an uploader\'s name.'], 422);
+        } else if (!is_string($request->uploader)) {
+            return response()->json(['message' => 'The uploader\'s name must be a string of characters.'], 422);
+        } else if (!preg_match("/^[a-zA-Z0-9]+$/", $request->uploader)) {
+            return response()->json(['message' => 'The uploader\'s name must be composed of alphabetical characters only.'], 422);
+        }
+        // port check
+        if ($request->port == null) {
+            return response()->json(['message' => 'You must specify an apt port.'], 422);
+        } else if (!is_integer($request->port)) {
+            return response()->json(['message' => 'The apt port must be an integer.'], 422);
+        } else if ($request->port < 1025 || $request->port > 65535) {
+            return response()->json(['message' => 'The apt port must be between 1025 and 65535.'], 422);
+        }
+        // checking uploader's name existing
+        $count = Uploader::where('name', '=', $request->uploader)->count();
+        if ($count == 0) {
+            return response()->json(['message' => 'This uploader does not exist.'], 400);
+        }
+        // checking port not already used
+        $uploaders = Uploader::all();
+        foreach ($uploaders as $u) {
+            if ($u->port == $request->port) {
+                return response()->json(['message' => 'This port number is already used by another uploader.'], 400);
+            } elseif ($u->pipport == $request->port) {
+                return response()->json(['message' => 'This port number is already used by a pip module.'], 400);
+            } elseif ($u->aptport == $request->port) {
+                return response()->json(['message' => 'This port number is already used by an apt module.'], 400);
+            }
+        }
+        $cmd = 'sudo netstat -peanut | grep ":' . strval($request->port) . ' "';
+        $process = new Process($cmd);
+        try {
+            $process->mustRun();
+            $output = $process->getOutput();
+            if (strlen($output) > 1) {
+                return response()->json(['message' => 'This port number is already used by another program.'], 400);
+            }
+        } catch (ProcessFailedException $exception) {
+            $output = $process->getOutput();
+            if (strlen($output) > 1) {
+                return response()->json(['message' => 'A problem appeared while checking if the port number is already used.'], 400);
+            } // else there is no real error, just an empty output considered as one.
+        }
+        // adding apt module
+        $cmd = 'sudo python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py aptadd ' . $request->uploader . ' ' . strval($request->port);
+        $process = new Process($cmd);
+        try {
+            $process->mustRun();
+            return response()->json(['message' => 'Successfully added an apt module to ' . $request->uploader . '\'s channel.'], 200);
+        } catch (ProcessFailedException $exception) {
+            return response()->json(['message' => 'Failed to add an apt module to ' . $request->uploader . '\'s channel.'], 400);
+        }
+    }
+
     public function removePip(Request $request) {
         // uploader check
         if ($request->uploader == null) {
@@ -308,7 +390,32 @@ class UploadersController extends Controller
             return response()->json(['message' => 'Successfully removed ' . $request->uploader . '\'s channel pip module.'], 200);
         } catch (ProcessFailedException $exception) {
             return response()->json(['message' => 'Failed to remove ' . $request->uploader . '\'s channel pip module.'], 400);
-        }
-        
+        }        
     }
+
+    public function removeApt(Request $request) {
+        // uploader check
+        if ($request->uploader == null) {
+            return response()->json(['message' => 'You must specify an uploader\'s name.'], 422);
+        } else if (!is_string($request->uploader)) {
+            return response()->json(['message' => 'The uploader\'s name must be a string of characters.'], 422);
+        } else if (!preg_match("/^[a-zA-Z0-9]+$/", $request->uploader)) {
+            return response()->json(['message' => 'The uploader\'s name must be composed of alphabetical characters only.'], 422);
+        }
+        // checking uploader's name existing
+        $count = Uploader::where('name', '=', $request->uploader)->count();
+        if ($count == 0) {
+            return response()->json(['message' => 'This uploader does not exist.'], 400);
+        }
+        // removing apt
+        $cmd = 'sudo python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py aptremove ' . $request->uploader;
+        $process = new Process($cmd);
+        try {
+            $process->mustRun();
+            return response()->json(['message' => 'Successfully removed ' . $request->uploader . '\'s channel apt module.'], 200);
+        } catch (ProcessFailedException $exception) {
+            return response()->json(['message' => 'Failed to remove ' . $request->uploader . '\'s channel apt module.', 'message', $exception->getMessage()], 400);
+        }        
+    }
+
 }
