@@ -66,7 +66,7 @@
                                 float: 'left',
                             }"
                         >
-                            1. Write the <input placeholder="package name" v-model="packageName" :style="{width: '10em'}">
+                            <b>1.</b> Write the <input placeholder="package name" v-model="packageName" :style="{width: '10em'}">
                         </li>
                         <li
                             v-if="!copyError"
@@ -76,7 +76,7 @@
                                 float: 'left',
                             }"
                         >
-                            2. <button v-on:click="copyMe">CLICK ME</button> to copy the pip install command 
+                            <b>2.</b> <button v-on:click="copyMe">CLICK</button> to copy the pip install command 
                         </li>
                         <li
                             v-else
@@ -86,7 +86,7 @@
                                 float: 'left',
                             }"
                         >
-                            2. Copy <input :value="command + packageName">
+                            <b>2.</b> Copy <input :value="command + packageName">
                         </li>                        
                         <li
                             :style="{
@@ -95,7 +95,7 @@
                                 float: 'left',
                             }"
                         >
-                            3. Paste and launch the copied command in a terminal!
+                            <b>3.</b> Paste and launch the copied command in a terminal
                         </li>                        
                     </ul>
                 </div>

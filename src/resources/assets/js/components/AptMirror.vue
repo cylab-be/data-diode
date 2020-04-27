@@ -48,8 +48,105 @@
             <span v-if="aptport == ''" class="text">
                 There is no APT module on this channel.
             </span>
-            <span v-else class="text">
-                APT module running on port {{ aptport }}
+            <span v-else class="text" >
+                <div 
+                    :style="{
+                        width: '90%',
+                        textAlign: 'left',
+                        margin: 'auto',
+                    }"
+                >
+                    <b>Add a repository:</b> {{ scrollValue }}/{{ maxScrollValue }}
+                    <button :disabled="scrollValue == 1" v-on:click="scrollValue = scrollValue - 1 <= 1 ? 1 : scrollValue - 1"><i class="fas fa-arrow-left"></i></button>
+                    <button :disabled="scrollValue == maxScrollValue" v-on:click="scrollValue = scrollValue + 1 >= maxScrollValue ? maxScrollValue : scrollValue + 1"><i class="fas fa-arrow-right"></i></button>
+                    <br/>
+                    <br/>
+                    <ul
+                        :style="{
+                            margin: 0,
+                            padding: 0,
+                            listStyle: 'none',
+                        }"
+                    >
+                        <li
+                            v-if="scrollValue == 1"
+                            :style="{
+                                margin: 0,
+                                padding: 0,
+                                float: 'left',
+                            }"
+                        >
+                            Write the 
+                            <input placeholder="repository url" v-model="mirrorUrl" :style="{width: '100%'}">
+                            (without the <i>http://</i> prefix)
+                        </li>
+                        <li
+                            v-if="scrollValue == 2"
+                            :style="{
+                                margin: 0,
+                                padding: 0,
+                                float: 'left',
+                            }"
+                        >
+                            Add the
+                            <input placeholder="release options" v-model="mirrorOptions" :style="{width: '100%'}">
+                            separated by spaces (ex: <i>stable non-free</i> or <i>bionic universe</i>...)
+                        </li>
+                        <li
+                            v-if="scrollValue == 3 && !copyError"
+                            :style="{
+                                margin: 0,
+                                padding: 0,
+                                float: 'left',
+                            }"
+                        >
+                            <button v-on:click="copyMe">CLICK</button> to copy the deb
+                        </li>
+                        <li
+                            v-if="scrollValue == 3 && copyError"
+                            :style="{
+                                margin: 0,
+                                padding: 0,
+                                float: 'left',
+                            }"
+                        >
+                            Copy <input :value="command + ' ' + mirrorUrl + ' ' + mirrorOptions">
+                        </li>
+                        <li
+                            v-if="scrollValue == 4"
+                            :style="{
+                                margin: 0,
+                                padding: 0,
+                                float: 'left',
+                            }"
+                        >
+                            Append the copied repository url to the file located at:<br/><br/>
+                            <i>/etc/apt/sources.list</i>
+                        </li>
+                        <li
+                            v-if="scrollValue == 5"
+                            :style="{
+                                margin: 0,
+                                padding: 0,
+                                float: 'left',
+                            }"
+                        >
+                            If a key is needed, open a terminal at your key location and use:<br/><br/>
+                            <i>sudo apt-key add [your_key_name]</i>
+                        </li>
+                        <li
+                            v-if="scrollValue == 6"
+                            :style="{
+                                margin: 0,
+                                padding: 0,
+                                float: 'left',
+                            }"
+                        >
+                            Update the sources list:<br/><br/>
+                            <i>sudo apt update</i>
+                        </li>
+                    </ul>
+                </div>                
             </span>
         </span>
     </div>
@@ -69,7 +166,12 @@ export default {
             aptport: '',
             isAptModule: false,
             mirrorUrl: '',
+            mirrorOptions: '',
             downloading: false,
+            command: '',
+            copyError: false,
+            scrollValue: 1,
+            maxScrollValue: 6,
         }
     },
     mounted() {
@@ -88,6 +190,11 @@ export default {
             me.isAptModule = response.data.aptport != 0
             if (response.data.aptport != 0) {
                 me.aptport = response.data.aptport
+                var ip = '192.168.102.1'
+                var command = 'deb [trusted=yes] '
+                command += 'http://' + ip + ':'
+                command += response.data.aptport
+                me.command = command
             }
         })
         .catch(function(error) {
@@ -176,6 +283,18 @@ export default {
                 toastr.error(error.response.data.message)
             })
         },
+        copyMe() {
+            //this.$refs.copyText.select()
+            //this.$refs.copyText.setSelectionRange(0, 99999)
+            //document.execCommand('copy')
+            var me = this
+            navigator.clipboard.writeText(this.command + '/' +this.mirrorUrl + ' ' + this.mirrorOptions).then(() => {
+                toastr.success('Successfully copied: ' + me.command + '/' +me.mirrorUrl + ' ' + me.mirrorOptions)
+            }).catch(error => {
+                me.copyError = true
+                toastr.error('Impossible to copy to clipboard. Select and copy the text instead.')
+            })
+        },        
     },
 }
 </script>

@@ -40,8 +40,8 @@ arp -s 192.168.102.1 00:aa:bb:bb:aa:00 # pour que le client trouve le serveur NT
 
 # Opera deb test
 apt install -y libfontconfig1 libgstreamer-plugins-base0.10-0 libgstreamer0.10-0 libice6 libsm6 libxrender1 gstreamer0.10-plugins-good fonts-liberation ttf-liberation ttf-mscorefonts-installer flashplugin-nonfree cups-client # needed to install opera
-cat > /etc/apt/sources.list << EOF
-deb [trusted=yes] http://192.168.101.2:8001/deb.opera.com/opera stable non-free
-EOF
-sudo wget -O - http://deb.opera.com/archive.key | sudo apt-key add -
+#cat > /etc/apt/sources.list << EOF
+#deb [trusted=yes] http://192.168.101.2:8001/deb.opera.com/opera stable non-free
+#EOF
+#sudo wget -O - http://deb.opera.com/archive.key | sudo apt-key add -
 #apt update

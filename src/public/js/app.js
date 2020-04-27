@@ -44547,7 +44547,8 @@ var render = function() {
                             }
                           },
                           [
-                            _vm._v("\n                        1. Write the "),
+                            _c("b", [_vm._v("1.")]),
+                            _vm._v(" Write the "),
                             _c("input", {
                               directives: [
                                 {
@@ -44583,9 +44584,10 @@ var render = function() {
                                 }
                               },
                               [
-                                _vm._v("\n                        2. "),
+                                _c("b", [_vm._v("2.")]),
+                                _vm._v(" "),
                                 _c("button", { on: { click: _vm.copyMe } }, [
-                                  _vm._v("CLICK ME")
+                                  _vm._v("CLICK")
                                 ]),
                                 _vm._v(
                                   " to copy the pip install command \n                    "
@@ -44602,7 +44604,8 @@ var render = function() {
                                 }
                               },
                               [
-                                _vm._v("\n                        2. Copy "),
+                                _c("b", [_vm._v("2.")]),
+                                _vm._v(" Copy "),
                                 _c("input", {
                                   domProps: {
                                     value: _vm.command + _vm.packageName
@@ -44621,8 +44624,9 @@ var render = function() {
                             }
                           },
                           [
+                            _c("b", [_vm._v("3.")]),
                             _vm._v(
-                              "\n                        3. Paste and launch the copied command in a terminal!\n                    "
+                              " Paste and launch the copied command in a terminal\n                    "
                             )
                           ]
                         )
@@ -50095,6 +50099,103 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
@@ -50109,7 +50210,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             aptport: '',
             isAptModule: false,
             mirrorUrl: '',
-            downloading: false
+            mirrorOptions: '',
+            downloading: false,
+            command: '',
+            copyError: false,
+            scrollValue: 1,
+            maxScrollValue: 6
         };
     },
     mounted: function mounted() {
@@ -50127,6 +50233,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             me.isAptModule = response.data.aptport != 0;
             if (response.data.aptport != 0) {
                 me.aptport = response.data.aptport;
+                var ip = '192.168.102.1';
+                var command = 'deb [trusted=yes] ';
+                command += 'http://' + ip + ':';
+                command += response.data.aptport;
+                me.command = command;
             }
         }).catch(function (error) {
             toastr.error('Unable to get the ' + me.item.name + '\'s channel apt port module');
@@ -50207,6 +50318,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 me.$refs.addMirror.stopBlink();
                 me.downloading = false;
                 toastr.error(error.response.data.message);
+            });
+        },
+        copyMe: function copyMe() {
+            //this.$refs.copyText.select()
+            //this.$refs.copyText.setSelectionRange(0, 99999)
+            //document.execCommand('copy')
+            var me = this;
+            navigator.clipboard.writeText(this.command + '/' + this.mirrorUrl + ' ' + this.mirrorOptions).then(function () {
+                toastr.success('Successfully copied: ' + me.command + '/' + me.mirrorUrl + ' ' + me.mirrorOptions);
+            }).catch(function (error) {
+                me.copyError = true;
+                toastr.error('Impossible to copy to clipboard. Select and copy the text instead.');
             });
         }
     }
@@ -50399,10 +50522,275 @@ var render = function() {
                 )
               ])
             : _c("span", { staticClass: "text" }, [
-                _vm._v(
-                  "\n            APT module running on port " +
-                    _vm._s(_vm.aptport) +
-                    "\n        "
+                _c(
+                  "div",
+                  {
+                    style: {
+                      width: "90%",
+                      textAlign: "left",
+                      margin: "auto"
+                    }
+                  },
+                  [
+                    _c("b", [_vm._v("Add a repository:")]),
+                    _vm._v(
+                      " " +
+                        _vm._s(_vm.scrollValue) +
+                        "/" +
+                        _vm._s(_vm.maxScrollValue) +
+                        "\n                "
+                    ),
+                    _c(
+                      "button",
+                      {
+                        attrs: { disabled: _vm.scrollValue == 1 },
+                        on: {
+                          click: function($event) {
+                            _vm.scrollValue =
+                              _vm.scrollValue - 1 <= 1 ? 1 : _vm.scrollValue - 1
+                          }
+                        }
+                      },
+                      [_c("i", { staticClass: "fas fa-arrow-left" })]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        attrs: {
+                          disabled: _vm.scrollValue == _vm.maxScrollValue
+                        },
+                        on: {
+                          click: function($event) {
+                            _vm.scrollValue =
+                              _vm.scrollValue + 1 >= _vm.maxScrollValue
+                                ? _vm.maxScrollValue
+                                : _vm.scrollValue + 1
+                          }
+                        }
+                      },
+                      [_c("i", { staticClass: "fas fa-arrow-right" })]
+                    ),
+                    _vm._v(" "),
+                    _c("br"),
+                    _vm._v(" "),
+                    _c("br"),
+                    _vm._v(" "),
+                    _c(
+                      "ul",
+                      {
+                        style: {
+                          margin: 0,
+                          padding: 0,
+                          listStyle: "none"
+                        }
+                      },
+                      [
+                        _vm.scrollValue == 1
+                          ? _c(
+                              "li",
+                              {
+                                style: {
+                                  margin: 0,
+                                  padding: 0,
+                                  float: "left"
+                                }
+                              },
+                              [
+                                _vm._v(
+                                  "\n                        Write the \n                        "
+                                ),
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.mirrorUrl,
+                                      expression: "mirrorUrl"
+                                    }
+                                  ],
+                                  style: { width: "100%" },
+                                  attrs: { placeholder: "repository url" },
+                                  domProps: { value: _vm.mirrorUrl },
+                                  on: {
+                                    input: function($event) {
+                                      if ($event.target.composing) {
+                                        return
+                                      }
+                                      _vm.mirrorUrl = $event.target.value
+                                    }
+                                  }
+                                }),
+                                _vm._v(
+                                  "\n                        (without the "
+                                ),
+                                _c("i", [_vm._v("http://")]),
+                                _vm._v(" prefix)\n                    ")
+                              ]
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.scrollValue == 2
+                          ? _c(
+                              "li",
+                              {
+                                style: {
+                                  margin: 0,
+                                  padding: 0,
+                                  float: "left"
+                                }
+                              },
+                              [
+                                _vm._v(
+                                  "\n                        Add the\n                        "
+                                ),
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.mirrorOptions,
+                                      expression: "mirrorOptions"
+                                    }
+                                  ],
+                                  style: { width: "100%" },
+                                  attrs: { placeholder: "release options" },
+                                  domProps: { value: _vm.mirrorOptions },
+                                  on: {
+                                    input: function($event) {
+                                      if ($event.target.composing) {
+                                        return
+                                      }
+                                      _vm.mirrorOptions = $event.target.value
+                                    }
+                                  }
+                                }),
+                                _vm._v(
+                                  "\n                        separated by spaces (ex: "
+                                ),
+                                _c("i", [_vm._v("stable non-free")]),
+                                _vm._v(" or "),
+                                _c("i", [_vm._v("bionic universe")]),
+                                _vm._v("...)\n                    ")
+                              ]
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.scrollValue == 3 && !_vm.copyError
+                          ? _c(
+                              "li",
+                              {
+                                style: {
+                                  margin: 0,
+                                  padding: 0,
+                                  float: "left"
+                                }
+                              },
+                              [
+                                _c("button", { on: { click: _vm.copyMe } }, [
+                                  _vm._v("CLICK")
+                                ]),
+                                _vm._v(" to copy the deb\n                    ")
+                              ]
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.scrollValue == 3 && _vm.copyError
+                          ? _c(
+                              "li",
+                              {
+                                style: {
+                                  margin: 0,
+                                  padding: 0,
+                                  float: "left"
+                                }
+                              },
+                              [
+                                _vm._v("\n                        Copy "),
+                                _c("input", {
+                                  domProps: {
+                                    value:
+                                      _vm.command +
+                                      " " +
+                                      _vm.mirrorUrl +
+                                      " " +
+                                      _vm.mirrorOptions
+                                  }
+                                })
+                              ]
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.scrollValue == 4
+                          ? _c(
+                              "li",
+                              {
+                                style: {
+                                  margin: 0,
+                                  padding: 0,
+                                  float: "left"
+                                }
+                              },
+                              [
+                                _vm._v(
+                                  "\n                        Append the copied repository url to the file located at:"
+                                ),
+                                _c("br"),
+                                _c("br"),
+                                _vm._v(" "),
+                                _c("i", [_vm._v("/etc/apt/sources.list")])
+                              ]
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.scrollValue == 5
+                          ? _c(
+                              "li",
+                              {
+                                style: {
+                                  margin: 0,
+                                  padding: 0,
+                                  float: "left"
+                                }
+                              },
+                              [
+                                _vm._v(
+                                  "\n                        If a key is needed, open a terminal at your key location and use:"
+                                ),
+                                _c("br"),
+                                _c("br"),
+                                _vm._v(" "),
+                                _c("i", [
+                                  _vm._v("sudo apt-key add [your_key_name]")
+                                ])
+                              ]
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.scrollValue == 6
+                          ? _c(
+                              "li",
+                              {
+                                style: {
+                                  margin: 0,
+                                  padding: 0,
+                                  float: "left"
+                                }
+                              },
+                              [
+                                _vm._v(
+                                  "\n                        Update the sources list:"
+                                ),
+                                _c("br"),
+                                _c("br"),
+                                _vm._v(" "),
+                                _c("i", [_vm._v("sudo apt update")])
+                              ]
+                            )
+                          : _vm._e()
+                      ]
+                    )
+                  ]
                 )
               ])
         ])
