@@ -45,3 +45,7 @@ apt install -y libfontconfig1 libgstreamer-plugins-base0.10-0 libgstreamer0.10-0
 #EOF
 #sudo wget -O - http://deb.opera.com/archive.key | sudo apt-key add -
 #apt update
+
+# emptying /etc/apt/sources.list
+sh -c "cat > /etc/apt/sources.list << EOF
+EOF"

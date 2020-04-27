@@ -41,6 +41,8 @@ php artisan migrate
 php artisan config:reset
 cp -r /vagrant/BlindFTP_0.37 ..
 
+systemctl restart apache2
+
 #update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1 # to make pip act as pip3 (better than a simple alias)
 #pip install --upgrade pip
 python3 -m pip install --upgrade pip
@@ -76,13 +78,6 @@ sed -i -e "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g" /etc/sysctl.conf
 sysctl -p /etc/sysctl.conf
 echo "www-data ALL=NOPASSWD: /bin/netstat, /bin/rm, /usr/bin/python, /var/www/data-diode/src/app/Scripts/*, /usr/local/bin/supervisord" | EDITOR="tee -a" visudo
 
-systemctl restart apache2
-
 (crontab -l 2>/dev/null; echo "*/10 * * * * $(which python3) /var/www/data-diode/fakeNTP/sntp-clie.py 2>&1") | crontab -
 
 timedatectl set-timezone Europe/Brussels
-
-# ftp, apt and pip added in db (diode in and diode out)
-#python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py add ftp 0 36016
-python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py add apt 0 36017
-#python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py add pip 0 36018

@@ -3,6 +3,9 @@
         <div class="query-main">
             <input class="query" v-model="query">
             <i class="fas fa-search query-icon"></i>
+            <button v-on:click="goToForwardConfig" :style="{float:'right'}">
+                <i class="fas fa-cog"></i>
+            </button>
         </div>
         <br/>
         <div v-if="diodein" class="add-uploader-main">
@@ -235,6 +238,9 @@ export default {
                 me.blinkClass = ''
             })
         },
+        goToForwardConfig() {
+            window.location.href = '/config'
+        }
     },
 }
 </script>

@@ -45289,6 +45289,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
@@ -45476,6 +45479,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 me.addDisabled = false;
                 me.blinkClass = '';
             });
+        },
+        goToForwardConfig: function goToForwardConfig() {
+            window.location.href = '/config';
         }
     }
 });
@@ -45514,7 +45520,13 @@ var render = function() {
           }
         }),
         _vm._v(" "),
-        _c("i", { staticClass: "fas fa-search query-icon" })
+        _c("i", { staticClass: "fas fa-search query-icon" }),
+        _vm._v(" "),
+        _c(
+          "button",
+          { style: { float: "right" }, on: { click: _vm.goToForwardConfig } },
+          [_c("i", { staticClass: "fas fa-cog" })]
+        )
       ]),
       _vm._v(" "),
       _c("br"),

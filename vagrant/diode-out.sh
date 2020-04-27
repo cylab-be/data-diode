@@ -41,6 +41,8 @@ php artisan migrate
 php artisan config:reset
 cp -r /vagrant/BlindFTP_0.37 ..
 
+systemctl restart apache2
+
 #update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1 # to make pip act as pip3 (better than a simple alias)
 #pip install --upgrade pip
 python3 -m pip install --upgrade pip
@@ -67,18 +69,6 @@ chown -R www-data:www-data . ../BlindFTP_0.37 /etc/supervisord.conf /etc/ntp.con
 sed -i -e "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g" /etc/sysctl.conf
 sysctl -p /etc/sysctl.conf
 echo "www-data ALL=NOPASSWD: /bin/netstat, /bin/rm, /usr/bin/python, /usr/bin/python3, /var/www/data-diode/src/app/Scripts/*, /usr/local/bin/supervisord" | EDITOR="tee -a" visudo
-
-# apt server
-#cat > /etc/apache2/sites-available/deb-mirror.conf << EOF
-#<VirtualHost *:8001>
-#        DocumentRoot /var/www/data-diode/src/storage/app/files/apt
-#</VirtualHost>
-#EOF
-#sed -i '/Listen 8001/d' /etc/apache2/ports.conf # delete lines
-#sed -i '/Listen 80/a Listen 8001' /etc/apache2/ports.conf # add a line under an existing one
-#a2ensite deb-mirror
-
-systemctl restart apache2
 
 # .zips folder for FTP zipped folder downloads
 cd /var/www/data-diode/src/storage/app/files
