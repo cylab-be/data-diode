@@ -1,42 +1,107 @@
 <template>
     <div>
-        <span v-show="!isPipModule">
-            <div class="text" :style="{float:'left', marginLeft: '2em', width: '12em'}">
-                Choose a <input class="port-input" v-model="pipport" placeholder="port"> and click to add a new PIP module
-            </div>
-            <add-button ref="addButton" v-on:add="addPip"></add-button>
-        </span>
-        <span v-show="isPipModule">
-            <div :style="{marginBottom: '0.5em'}">
+        <span v-if="diodein">
+            <span v-show="!isPipModule">
                 <div class="text" :style="{float:'left', marginLeft: '2em', width: '12em'}">
-                    Module running on port {{ pipport }}. Click to remove
+                    Choose a <input class="port-input" v-model="pipport" placeholder="port"> and click to add a new PIP module
                 </div>
-                <del-button ref="delButton" v-on:del="removePip"></del-button>
-                <hr class="window-title-bottom-bar"/>
-                <div class="text" :style="{float:'left', marginLeft: '2em', width: '12em'}">
-                    Add a <input :disabled="cannotDownload" class="package-input" v-model="packageName" placeholder="package name"> and click to download
+                <add-button ref="addButton" v-on:add="addPip"></add-button>
+            </span>
+            <span v-show="isPipModule">
+                <div :style="{marginBottom: '0.5em'}">
+                    <div class="text" :style="{float:'left', marginLeft: '2em', width: '12em'}">
+                        Module running on port {{ pipport }}. Click to remove
+                    </div>
+                    <del-button ref="delButton" v-on:del="removePip"></del-button>
+                    <hr class="window-title-bottom-bar"/>
+                    <div class="text" :style="{float:'left', marginLeft: '2em', width: '12em'}">
+                        Add a <input :disabled="cannotDownload" class="package-input" v-model="packageName" placeholder="package name"> and click to download
+                    </div>
+                    <add-button :style="{marginTop: '2em'}" :disabled="cannotDownload" ref="addPackage" v-on:add="downloadPackage"></add-button>
                 </div>
-                <add-button :style="{marginTop: '2em'}" :disabled="cannotDownload" ref="addPackage" v-on:add="downloadPackage"></add-button>
-            </div>
-            <div
-                v-show="false" 
-                :style="{
-                    width: '100%',
-                    overflow:'scroll',
-                    height:'12em',
-                }"
-            >
-                <div  
+                <div
+                    v-show="false" 
                     :style="{
-                        width: '95%',
-                        whiteSpace:'pre-wrap',                
+                        width: '100%',
+                        overflow:'scroll',
+                        height:'12em',
                     }"
-                    v-for="(item, index) in downloadedData" :key="index"
                 >
-                    <p>{{ item }}</p>
+                    <div  
+                        :style="{
+                            width: '95%',
+                            whiteSpace:'pre-wrap',                
+                        }"
+                        v-for="(item, index) in downloadedData" :key="index"
+                    >
+                        <p>{{ item }}</p>
+                    </div>
                 </div>
-            </div>
+            </span>
         </span>
+        <span v-else>
+            <span v-if="pipport == ''" class="text">
+                There is no PIP module on this channel.
+            </span>
+            <span v-else class="text" >
+                <div 
+                    :style="{
+                        width: '90%',
+                        textAlign: 'left',
+                        margin: 'auto',
+                    }"
+                >
+                    <b>Install a package:</b><br/>
+                    <ul
+                        :style="{
+                            margin: 0,
+                            padding: 0,
+                            listStyle: 'none',
+                        }"
+                    >
+                        <li
+                            :style="{
+                                margin: 0,
+                                padding: 0,
+                                float: 'left',
+                            }"
+                        >
+                            1. Write the <input placeholder="package name" v-model="packageName" :style="{width: '10em'}">
+                        </li>
+                        <li
+                            v-if="!copyError"
+                            :style="{
+                                margin: 0,
+                                padding: 0,
+                                float: 'left',
+                            }"
+                        >
+                            2. <button v-on:click="copyMe">CLICK ME</button> to copy the pip install command 
+                        </li>
+                        <li
+                            v-else
+                            :style="{
+                                margin: 0,
+                                padding: 0,
+                                float: 'left',
+                            }"
+                        >
+                            2. Copy <input :value="command + packageName">
+                        </li>                        
+                        <li
+                            :style="{
+                                margin: 0,
+                                padding: 0,
+                                float: 'left',
+                            }"
+                        >
+                            3. Paste and launch the copied command in a terminal!
+                        </li>                        
+                    </ul>
+                </div>
+            </span>
+        </span>
+
     </div>
 </template>
 
@@ -44,6 +109,7 @@
 export default {
     props: {
         item: Object,
+        diodein: Boolean,
     },
     data() {
         return {
@@ -52,6 +118,8 @@ export default {
             cannotDownload: false,
             pipport: '',
             isPipModule: false,
+            command: '',
+            copyError: false,
         }
     },
     mounted() {
@@ -70,6 +138,12 @@ export default {
             me.isPipModule = response.data.pipport != 0
             if (response.data.pipport != 0) {
                 me.pipport = response.data.pipport
+                var ip = '192.168.102.1'
+                var command = 'sudo -H python3 -m pip install --trusted-host'
+                command += ' ' + ip + ' '
+                command += '-i http://' + ip + ':'
+                command += response.data.pipport + '/simple '
+                me.command = command
             }
         })
         .catch(function(error) {
@@ -174,6 +248,18 @@ export default {
             } else {
                 toastr.error('You must specify at least one package.')
             }
+        },
+        copyMe() {
+            //this.$refs.copyText.select()
+            //this.$refs.copyText.setSelectionRange(0, 99999)
+            //document.execCommand('copy')
+            var me = this
+            navigator.clipboard.writeText(this.command + this.packageName).then(() => {
+                toastr.success('Successfully copied: ' + me.command + me.packageName)
+            }).catch(error => {
+                me.copyError = true
+                toastr.error('Impossible to copy to clipboard. Select and copy the text instead.')
+            })
         },
     },
 }

@@ -61,20 +61,20 @@ if (!env('DIODE_IN', false)) {
     Route::post('/pythonpip', 'PythonPipController@runPip');
     Route::post('/channelAdd', 'UploadersController@add');
     Route::post('/channelDel', 'UploadersController@del');
-    Route::post('/addPip', 'UploadersController@addPip');
-    Route::post('/getPipPort', 'UploadersController@getPipPort');
+    Route::post('/addPip', 'UploadersController@addPip');    
     Route::post('/removePip', 'UploadersController@removePip');
     Route::post('/addMirror', 'AptController@addMirror');
-    Route::post('/addApt', 'UploadersController@addApt');
-    Route::post('/getAptPort', 'UploadersController@getAptPort');
+    Route::post('/addApt', 'UploadersController@addApt');    
     Route::post('/removeApt', 'UploadersController@removeApt');
 }
-
+// BOTH
 Route::get('/channels', 'UploadersController@index');
 Route::post('/channelUpdate', 'UploadersController@update');
 Route::post('/channelStop', 'UploadersController@stop');
 Route::post('/channelRestart', 'UploadersController@restart');
 Route::post('/channelEmpty', 'UploadersController@empty');
+Route::post('/getPipPort', 'UploadersController@getPipPort');
+Route::post('/getAptPort', 'UploadersController@getAptPort');
 
 // Main Route...
 Route::get('/main', 'MainPageController@index');

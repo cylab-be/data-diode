@@ -41,34 +41,27 @@
                     </div>
                 </div>
             </span>
-            <span v-if="diodein" v-show="param == 'ftp'">
+            <span v-show="param == 'ftp'">
                 <upload 
                     :item="item"
                     :max-upload-size="maxUploadSize"
                     :max-upload-size-error-message="maxUploadSizeErrorMessage"
-                ></upload>                
+                    :diodein="diodein"
+                ></upload>
             </span>
-            <span v-if="diodein" v-show="param == 'pip'">
-                <python-pip :item="item"></python-pip>
+            <span v-show="param == 'pip'">
+                <python-pip :item="item" :diodein="diodein"></python-pip>
             </span>
-            <span v-if="diodein" v-show="param == 'apt'">
-                <apt-mirror :item="item"></apt-mirror>
+            <span v-show="param == 'apt'">
+                <apt-mirror :item="item" :diodein="diodein"></apt-mirror>
             </span>
-            <div  v-if="diodein" v-show="diodein" class="row" :style="{position: 'absolute', bottom: '1em', width: '100%', margin: 'auto'}">
+            <div class="row" :style="{position: 'absolute', bottom: '1em', width: '100%', margin: 'auto'}">
                 <hr class="window-title-bottom-bar"/>
                 <button class="param-button" v-on:click="param = 'config'">CONFIG</button><!-- This comment 
                 avoids spaces --><button class="param-button" v-on:click="param = 'ftp'">FTP</button><!-- This comment 
                 avoids spaces --><button class="param-button" v-on:click="param = 'pip'">PIP</button><!-- This comment 
                 avoids spaces --><button class="param-button" v-on:click="param = 'apt'">APT</button>
-            </div>
-            <span v-if="!diodein">
-                <hr class="window-title-bottom-bar"/>
-                <button 
-                    class="button"
-                    :style="{verticalAlign: 'middle'}"
-                    v-on:click="toStorage"
-                ><span>STORAGE </span></button>
-            </span>
+            </div>            
         </div>
     </div>
 </template>
@@ -208,9 +201,6 @@ export default {
                 me.closeDisabled = false
             })
         },
-        toStorage() {
-            window.location.href = '/storage/' + this.item.name
-        },
     }
 }
 </script>
@@ -303,46 +293,6 @@ export default {
   50% {
     opacity: 0;
   }
-}
-
-.button {
-  display: inline-block;
-  border-radius: 1em;
-  background-color: #007bff;
-  border: none;
-  color: #FFFFFF;
-  text-align: center;
-  font-size: 1.33em;
-  padding: 0.8em;
-  width: 8em;
-  transition: all 0.5s;
-  cursor: pointer;
-  margin: 0.4em;
-}
-
-.button span {
-  cursor: pointer;
-  display: inline-block;
-  position: relative;
-  transition: 0.5s;
-}
-
-.button span:after {
-  content: '\00bb';
-  position: absolute;
-  opacity: 0;
-  top: 0;
-  right: -0.8em;
-  transition: 0.5s;
-}
-
-.button:hover span {
-  padding-right: 1em;
-}
-
-.button:hover span:after {
-  opacity: 1;
-  right: 0;
 }
 
 </style>

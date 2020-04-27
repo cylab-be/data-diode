@@ -67,115 +67,6 @@
 /* 0 */
 /***/ (function(module, exports) {
 
-/* globals __VUE_SSR_CONTEXT__ */
-
-// IMPORTANT: Do NOT use ES2015 features in this file.
-// This module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle.
-
-module.exports = function normalizeComponent (
-  rawScriptExports,
-  compiledTemplate,
-  functionalTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier /* server only */
-) {
-  var esModule
-  var scriptExports = rawScriptExports = rawScriptExports || {}
-
-  // ES6 modules interop
-  var type = typeof rawScriptExports.default
-  if (type === 'object' || type === 'function') {
-    esModule = rawScriptExports
-    scriptExports = rawScriptExports.default
-  }
-
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // render functions
-  if (compiledTemplate) {
-    options.render = compiledTemplate.render
-    options.staticRenderFns = compiledTemplate.staticRenderFns
-    options._compiled = true
-  }
-
-  // functional template
-  if (functionalTemplate) {
-    options.functional = true
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = scopeId
-  }
-
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = injectStyles
-  }
-
-  if (hook) {
-    var functional = options.functional
-    var existing = functional
-      ? options.render
-      : options.beforeCreate
-
-    if (!functional) {
-      // inject component registration as beforeCreate hook
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    } else {
-      // for template-only hot-reload because in that case the render fn doesn't
-      // go through the normalizer
-      options._injectStyles = hook
-      // register for functioal component in vue file
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return existing(h, context)
-      }
-    }
-  }
-
-  return {
-    esModule: esModule,
-    exports: scriptExports,
-    options: options
-  }
-}
-
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports) {
-
 /*
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
@@ -255,7 +146,7 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 2 */
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -478,6 +369,115 @@ function applyToTag (styleElement, obj) {
       styleElement.removeChild(styleElement.firstChild)
     }
     styleElement.appendChild(document.createTextNode(css))
+  }
+}
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+/* globals __VUE_SSR_CONTEXT__ */
+
+// IMPORTANT: Do NOT use ES2015 features in this file.
+// This module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle.
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier /* server only */
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+    options._compiled = true
+  }
+
+  // functional template
+  if (functionalTemplate) {
+    options.functional = true
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+
+    if (!functional) {
+      // inject component registration as beforeCreate hook
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      // for template-only hot-reload because in that case the render fn doesn't
+      // go through the normalizer
+      options._injectStyles = hook
+      // register for functioal component in vue file
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
   }
 }
 
@@ -1382,7 +1382,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(13);
-module.exports = __webpack_require__(135);
+module.exports = __webpack_require__(137);
 
 
 /***/ }),
@@ -1417,13 +1417,13 @@ Vue.component('empty-button', __webpack_require__(82));
 Vue.component('del-button', __webpack_require__(87));
 Vue.component('add-button', __webpack_require__(92));
 Vue.component('upload', __webpack_require__(97));
-Vue.component('upload-toggler', __webpack_require__(100));
-Vue.component('storage', __webpack_require__(105));
-Vue.component('root-folder-card', __webpack_require__(110));
-Vue.component('folder-card', __webpack_require__(115));
-Vue.component('file-card', __webpack_require__(120));
-Vue.component('nav-path', __webpack_require__(125));
-Vue.component('apt-mirror', __webpack_require__(130));
+Vue.component('upload-toggler', __webpack_require__(102));
+Vue.component('storage', __webpack_require__(107));
+Vue.component('root-folder-card', __webpack_require__(112));
+Vue.component('folder-card', __webpack_require__(117));
+Vue.component('file-card', __webpack_require__(122));
+Vue.component('nav-path', __webpack_require__(127));
+Vue.component('apt-mirror', __webpack_require__(132));
 
 /***/ }),
 /* 14 */
@@ -43490,7 +43490,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(42)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(2)
 /* script */
 var __vue_script__ = __webpack_require__(45)
 /* template */
@@ -43543,7 +43543,7 @@ var content = __webpack_require__(43);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(2)("0ac502f7", content, false, {});
+var update = __webpack_require__(1)("0ac502f7", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -43562,7 +43562,7 @@ if(false) {
 /* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -43802,7 +43802,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(48)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(2)
 /* script */
 var __vue_script__ = __webpack_require__(50)
 /* template */
@@ -43855,7 +43855,7 @@ var content = __webpack_require__(49);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(2)("4a841b28", content, false, {});
+var update = __webpack_require__(1)("4a841b28", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -43874,7 +43874,7 @@ if(false) {
 /* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -43977,7 +43977,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(53)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(2)
 /* script */
 var __vue_script__ = __webpack_require__(55)
 /* template */
@@ -44030,7 +44030,7 @@ var content = __webpack_require__(54);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(2)("0e020592", content, false, {});
+var update = __webpack_require__(1)("0e020592", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -44049,7 +44049,7 @@ if(false) {
 /* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -44107,10 +44107,76 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
-        item: Object
+        item: Object,
+        diodein: Boolean
     },
     data: function data() {
         return {
@@ -44118,7 +44184,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             downloadedData: [],
             cannotDownload: false,
             pipport: '',
-            isPipModule: false
+            isPipModule: false,
+            command: '',
+            copyError: false
         };
     },
     mounted: function mounted() {
@@ -44136,6 +44204,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             me.isPipModule = response.data.pipport != 0;
             if (response.data.pipport != 0) {
                 me.pipport = response.data.pipport;
+                var ip = '192.168.102.1';
+                var command = 'sudo -H python3 -m pip install --trusted-host';
+                command += ' ' + ip + ' ';
+                command += '-i http://' + ip + ':';
+                command += response.data.pipport + '/simple ';
+                me.command = command;
             }
         }).catch(function (error) {
             toastr.error('Unable to get the ' + me.item.name + '\'s channel pip port module');
@@ -44235,6 +44309,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             } else {
                 toastr.error('You must specify at least one package.');
             }
+        },
+        copyMe: function copyMe() {
+            //this.$refs.copyText.select()
+            //this.$refs.copyText.setSelectionRange(0, 99999)
+            //document.execCommand('copy')
+            var me = this;
+            navigator.clipboard.writeText(this.command + this.packageName).then(function () {
+                toastr.success('Successfully copied: ' + me.command + me.packageName);
+            }).catch(function (error) {
+                me.copyError = true;
+                toastr.error('Impossible to copy to clipboard. Select and copy the text instead.');
+            });
         }
     }
 });
@@ -44248,172 +44334,304 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _c(
-      "span",
-      {
-        directives: [
-          {
-            name: "show",
-            rawName: "v-show",
-            value: !_vm.isPipModule,
-            expression: "!isPipModule"
-          }
-        ]
-      },
-      [
-        _c(
-          "div",
-          {
-            staticClass: "text",
-            style: { float: "left", marginLeft: "2em", width: "12em" }
-          },
-          [
-            _vm._v("\n            Choose a "),
-            _c("input", {
+    _vm.diodein
+      ? _c("span", [
+          _c(
+            "span",
+            {
               directives: [
                 {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.pipport,
-                  expression: "pipport"
+                  name: "show",
+                  rawName: "v-show",
+                  value: !_vm.isPipModule,
+                  expression: "!isPipModule"
                 }
-              ],
-              staticClass: "port-input",
-              attrs: { placeholder: "port" },
-              domProps: { value: _vm.pipport },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.pipport = $event.target.value
-                }
-              }
-            }),
-            _vm._v(" and click to add a new PIP module\n        ")
-          ]
-        ),
-        _vm._v(" "),
-        _c("add-button", { ref: "addButton", on: { add: _vm.addPip } })
-      ],
-      1
-    ),
-    _vm._v(" "),
-    _c(
-      "span",
-      {
-        directives: [
-          {
-            name: "show",
-            rawName: "v-show",
-            value: _vm.isPipModule,
-            expression: "isPipModule"
-          }
-        ]
-      },
-      [
-        _c(
-          "div",
-          { style: { marginBottom: "0.5em" } },
-          [
-            _c(
-              "div",
-              {
-                staticClass: "text",
-                style: { float: "left", marginLeft: "2em", width: "12em" }
-              },
-              [
-                _vm._v(
-                  "\n                Module running on port " +
-                    _vm._s(_vm.pipport) +
-                    ". Click to remove\n            "
-                )
               ]
-            ),
-            _vm._v(" "),
-            _c("del-button", { ref: "delButton", on: { del: _vm.removePip } }),
-            _vm._v(" "),
-            _c("hr", { staticClass: "window-title-bottom-bar" }),
-            _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass: "text",
-                style: { float: "left", marginLeft: "2em", width: "12em" }
-              },
-              [
-                _vm._v("\n                Add a "),
-                _c("input", {
+            },
+            [
+              _c(
+                "div",
+                {
+                  staticClass: "text",
+                  style: { float: "left", marginLeft: "2em", width: "12em" }
+                },
+                [
+                  _vm._v("\n                Choose a "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.pipport,
+                        expression: "pipport"
+                      }
+                    ],
+                    staticClass: "port-input",
+                    attrs: { placeholder: "port" },
+                    domProps: { value: _vm.pipport },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.pipport = $event.target.value
+                      }
+                    }
+                  }),
+                  _vm._v(" and click to add a new PIP module\n            ")
+                ]
+              ),
+              _vm._v(" "),
+              _c("add-button", { ref: "addButton", on: { add: _vm.addPip } })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "span",
+            {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.isPipModule,
+                  expression: "isPipModule"
+                }
+              ]
+            },
+            [
+              _c(
+                "div",
+                { style: { marginBottom: "0.5em" } },
+                [
+                  _c(
+                    "div",
+                    {
+                      staticClass: "text",
+                      style: { float: "left", marginLeft: "2em", width: "12em" }
+                    },
+                    [
+                      _vm._v(
+                        "\n                    Module running on port " +
+                          _vm._s(_vm.pipport) +
+                          ". Click to remove\n                "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c("del-button", {
+                    ref: "delButton",
+                    on: { del: _vm.removePip }
+                  }),
+                  _vm._v(" "),
+                  _c("hr", { staticClass: "window-title-bottom-bar" }),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticClass: "text",
+                      style: { float: "left", marginLeft: "2em", width: "12em" }
+                    },
+                    [
+                      _vm._v("\n                    Add a "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.packageName,
+                            expression: "packageName"
+                          }
+                        ],
+                        staticClass: "package-input",
+                        attrs: {
+                          disabled: _vm.cannotDownload,
+                          placeholder: "package name"
+                        },
+                        domProps: { value: _vm.packageName },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.packageName = $event.target.value
+                          }
+                        }
+                      }),
+                      _vm._v(" and click to download\n                ")
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c("add-button", {
+                    ref: "addPackage",
+                    style: { marginTop: "2em" },
+                    attrs: { disabled: _vm.cannotDownload },
+                    on: { add: _vm.downloadPackage }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
                   directives: [
                     {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.packageName,
-                      expression: "packageName"
+                      name: "show",
+                      rawName: "v-show",
+                      value: false,
+                      expression: "false"
                     }
                   ],
-                  staticClass: "package-input",
-                  attrs: {
-                    disabled: _vm.cannotDownload,
-                    placeholder: "package name"
-                  },
-                  domProps: { value: _vm.packageName },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.packageName = $event.target.value
-                    }
+                  style: {
+                    width: "100%",
+                    overflow: "scroll",
+                    height: "12em"
                   }
-                }),
-                _vm._v(" and click to download\n            ")
-              ]
-            ),
-            _vm._v(" "),
-            _c("add-button", {
-              ref: "addPackage",
-              style: { marginTop: "2em" },
-              attrs: { disabled: _vm.cannotDownload },
-              on: { add: _vm.downloadPackage }
-            })
-          ],
-          1
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            directives: [
-              {
-                name: "show",
-                rawName: "v-show",
-                value: false,
-                expression: "false"
-              }
-            ],
-            style: {
-              width: "100%",
-              overflow: "scroll",
-              height: "12em"
-            }
-          },
-          _vm._l(_vm.downloadedData, function(item, index) {
-            return _c(
-              "div",
-              {
-                key: index,
-                style: {
-                  width: "95%",
-                  whiteSpace: "pre-wrap"
-                }
-              },
-              [_c("p", [_vm._v(_vm._s(item))])]
-            )
-          })
-        )
-      ]
-    )
+                },
+                _vm._l(_vm.downloadedData, function(item, index) {
+                  return _c(
+                    "div",
+                    {
+                      key: index,
+                      style: {
+                        width: "95%",
+                        whiteSpace: "pre-wrap"
+                      }
+                    },
+                    [_c("p", [_vm._v(_vm._s(item))])]
+                  )
+                })
+              )
+            ]
+          )
+        ])
+      : _c("span", [
+          _vm.pipport == ""
+            ? _c("span", { staticClass: "text" }, [
+                _vm._v(
+                  "\n            There is no PIP module on this channel.\n        "
+                )
+              ])
+            : _c("span", { staticClass: "text" }, [
+                _c(
+                  "div",
+                  {
+                    style: {
+                      width: "90%",
+                      textAlign: "left",
+                      margin: "auto"
+                    }
+                  },
+                  [
+                    _c("b", [_vm._v("Install a package:")]),
+                    _c("br"),
+                    _vm._v(" "),
+                    _c(
+                      "ul",
+                      {
+                        style: {
+                          margin: 0,
+                          padding: 0,
+                          listStyle: "none"
+                        }
+                      },
+                      [
+                        _c(
+                          "li",
+                          {
+                            style: {
+                              margin: 0,
+                              padding: 0,
+                              float: "left"
+                            }
+                          },
+                          [
+                            _vm._v("\n                        1. Write the "),
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.packageName,
+                                  expression: "packageName"
+                                }
+                              ],
+                              style: { width: "10em" },
+                              attrs: { placeholder: "package name" },
+                              domProps: { value: _vm.packageName },
+                              on: {
+                                input: function($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.packageName = $event.target.value
+                                }
+                              }
+                            })
+                          ]
+                        ),
+                        _vm._v(" "),
+                        !_vm.copyError
+                          ? _c(
+                              "li",
+                              {
+                                style: {
+                                  margin: 0,
+                                  padding: 0,
+                                  float: "left"
+                                }
+                              },
+                              [
+                                _vm._v("\n                        2. "),
+                                _c("button", { on: { click: _vm.copyMe } }, [
+                                  _vm._v("CLICK ME")
+                                ]),
+                                _vm._v(
+                                  " to copy the pip install command \n                    "
+                                )
+                              ]
+                            )
+                          : _c(
+                              "li",
+                              {
+                                style: {
+                                  margin: 0,
+                                  padding: 0,
+                                  float: "left"
+                                }
+                              },
+                              [
+                                _vm._v("\n                        2. Copy "),
+                                _c("input", {
+                                  domProps: {
+                                    value: _vm.command + _vm.packageName
+                                  }
+                                })
+                              ]
+                            ),
+                        _vm._v(" "),
+                        _c(
+                          "li",
+                          {
+                            style: {
+                              margin: 0,
+                              padding: 0,
+                              float: "left"
+                            }
+                          },
+                          [
+                            _vm._v(
+                              "\n                        3. Paste and launch the copied command in a terminal!\n                    "
+                            )
+                          ]
+                        )
+                      ]
+                    )
+                  ]
+                )
+              ])
+        ])
   ])
 }
 var staticRenderFns = []
@@ -44435,7 +44653,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(58)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(2)
 /* script */
 var __vue_script__ = __webpack_require__(60)
 /* template */
@@ -44488,7 +44706,7 @@ var content = __webpack_require__(59);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(2)("212e4804", content, false, {});
+var update = __webpack_require__(1)("212e4804", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -44507,7 +44725,7 @@ if(false) {
 /* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -44932,7 +45150,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(63)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(2)
 /* script */
 var __vue_script__ = __webpack_require__(65)
 /* template */
@@ -44985,7 +45203,7 @@ var content = __webpack_require__(64);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(2)("18992ea9", content, false, {});
+var update = __webpack_require__(1)("18992ea9", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -45004,7 +45222,7 @@ if(false) {
 /* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -45411,7 +45629,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(68)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(2)
 /* script */
 var __vue_script__ = __webpack_require__(70)
 /* template */
@@ -45464,7 +45682,7 @@ var content = __webpack_require__(69);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(2)("7e2e7e6a", content, false, {});
+var update = __webpack_require__(1)("7e2e7e6a", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -45483,12 +45701,12 @@ if(false) {
 /* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
 // module
-exports.push([module.i, "\n.main[data-v-452b8014] {\n    /* position: absolute avoids the\n       \"stacking contexts\" effect between \n       this  component's z-index and the\n       transform css prop used by the \n       fa-spin classes of the Uploaders\n       components */\n    position: absolute; \n    padding: 0;\n    margin: 0;\n}\n.veil-main[data-v-452b8014] {\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background-color: #666;\n    opacity: 0.7;\n    z-index: 998;\n}\n.window-main[data-v-452b8014] {\n    position: fixed;\n    top: calc(50% - 15em);\n    left: calc(50% - 15em);\n    z-index: 999;\n    width: 30em;\n    height: 30em;\n    background-color: #f5f8fa;\n    border: 0.1em dashed #aaa;\n    border-radius: 0.7em;\n}\n.window-title[data-v-452b8014] {\n    margin-left: 2em;\n    margin-top: 0.8em;\n    float: left;\n    font-size: 1.33em;\n}\n.window-close-button[data-v-452b8014] {\n    margin-top: 1.0em;\n    margin-right: 2em;\n    height: 2em;\n    float: right;\n    border: none;\n    background-color: #dc3545;\n    border-radius: 0.3em;\n}\n.window-close-button-icon[data-v-452b8014] {\n    margin: auto;\n    color: #ddd;\n}\n.window-title-bottom-bar[data-v-452b8014] {\n    margin-left: auto;\n    margin-right: auto;\n    border: 0.16em dashed #aaa;\n    border-bottom-width: 0;\n    border-left-width: 0;\n    border-right-width: 0;\n    padding: 0;\n    height: 0;\n    width: 93%;\n}\n.text[data-v-452b8014] {\n    font-size: 1.33em;\n}\n.param-button[data-v-452b8014] {\n    width: 24%;\n    height: 4em;\n}\n.blink-me[data-v-452b8014] {\n  -webkit-animation: blinker-data-v-452b8014 1s linear infinite;\n          animation: blinker-data-v-452b8014 1s linear infinite;\n}\n@-webkit-keyframes blinker-data-v-452b8014 {\n50% {\n    opacity: 0;\n}\n}\n@keyframes blinker-data-v-452b8014 {\n50% {\n    opacity: 0;\n}\n}\n.button[data-v-452b8014] {\n  display: inline-block;\n  border-radius: 1em;\n  background-color: #007bff;\n  border: none;\n  color: #FFFFFF;\n  text-align: center;\n  font-size: 1.33em;\n  padding: 0.8em;\n  width: 8em;\n  -webkit-transition: all 0.5s;\n  transition: all 0.5s;\n  cursor: pointer;\n  margin: 0.4em;\n}\n.button span[data-v-452b8014] {\n  cursor: pointer;\n  display: inline-block;\n  position: relative;\n  -webkit-transition: 0.5s;\n  transition: 0.5s;\n}\n.button span[data-v-452b8014]:after {\n  content: '\\BB';\n  position: absolute;\n  opacity: 0;\n  top: 0;\n  right: -0.8em;\n  -webkit-transition: 0.5s;\n  transition: 0.5s;\n}\n.button:hover span[data-v-452b8014] {\n  padding-right: 1em;\n}\n.button:hover span[data-v-452b8014]:after {\n  opacity: 1;\n  right: 0;\n}\n\n", ""]);
+exports.push([module.i, "\n.main[data-v-452b8014] {\n    /* position: absolute avoids the\n       \"stacking contexts\" effect between \n       this  component's z-index and the\n       transform css prop used by the \n       fa-spin classes of the Uploaders\n       components */\n    position: absolute; \n    padding: 0;\n    margin: 0;\n}\n.veil-main[data-v-452b8014] {\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background-color: #666;\n    opacity: 0.7;\n    z-index: 998;\n}\n.window-main[data-v-452b8014] {\n    position: fixed;\n    top: calc(50% - 15em);\n    left: calc(50% - 15em);\n    z-index: 999;\n    width: 30em;\n    height: 30em;\n    background-color: #f5f8fa;\n    border: 0.1em dashed #aaa;\n    border-radius: 0.7em;\n}\n.window-title[data-v-452b8014] {\n    margin-left: 2em;\n    margin-top: 0.8em;\n    float: left;\n    font-size: 1.33em;\n}\n.window-close-button[data-v-452b8014] {\n    margin-top: 1.0em;\n    margin-right: 2em;\n    height: 2em;\n    float: right;\n    border: none;\n    background-color: #dc3545;\n    border-radius: 0.3em;\n}\n.window-close-button-icon[data-v-452b8014] {\n    margin: auto;\n    color: #ddd;\n}\n.window-title-bottom-bar[data-v-452b8014] {\n    margin-left: auto;\n    margin-right: auto;\n    border: 0.16em dashed #aaa;\n    border-bottom-width: 0;\n    border-left-width: 0;\n    border-right-width: 0;\n    padding: 0;\n    height: 0;\n    width: 93%;\n}\n.text[data-v-452b8014] {\n    font-size: 1.33em;\n}\n.param-button[data-v-452b8014] {\n    width: 24%;\n    height: 4em;\n}\n.blink-me[data-v-452b8014] {\n  -webkit-animation: blinker-data-v-452b8014 1s linear infinite;\n          animation: blinker-data-v-452b8014 1s linear infinite;\n}\n@-webkit-keyframes blinker-data-v-452b8014 {\n50% {\n    opacity: 0;\n}\n}\n@keyframes blinker-data-v-452b8014 {\n50% {\n    opacity: 0;\n}\n}\n\n", ""]);
 
 // exports
 
@@ -45499,13 +45717,6 @@ exports.push([module.i, "\n.main[data-v-452b8014] {\n    /* position: absolute a
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -45713,9 +45924,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 me.$refs.delButton.stopSpin();
                 me.closeDisabled = false;
             });
-        },
-        toStorage: function toStorage() {
-            window.location.href = '/storage/' + this.item.name;
         }
     }
 });
@@ -45854,159 +46062,135 @@ var render = function() {
           ]
         ),
         _vm._v(" "),
-        _vm.diodein
-          ? _c(
-              "span",
+        _c(
+          "span",
+          {
+            directives: [
               {
-                directives: [
-                  {
-                    name: "show",
-                    rawName: "v-show",
-                    value: _vm.param == "ftp",
-                    expression: "param == 'ftp'"
-                  }
-                ]
-              },
-              [
-                _c("upload", {
-                  attrs: {
-                    item: _vm.item,
-                    "max-upload-size": _vm.maxUploadSize,
-                    "max-upload-size-error-message":
-                      _vm.maxUploadSizeErrorMessage
-                  }
-                })
-              ],
-              1
-            )
-          : _vm._e(),
+                name: "show",
+                rawName: "v-show",
+                value: _vm.param == "ftp",
+                expression: "param == 'ftp'"
+              }
+            ]
+          },
+          [
+            _c("upload", {
+              attrs: {
+                item: _vm.item,
+                "max-upload-size": _vm.maxUploadSize,
+                "max-upload-size-error-message": _vm.maxUploadSizeErrorMessage,
+                diodein: _vm.diodein
+              }
+            })
+          ],
+          1
+        ),
         _vm._v(" "),
-        _vm.diodein
-          ? _c(
-              "span",
+        _c(
+          "span",
+          {
+            directives: [
               {
-                directives: [
-                  {
-                    name: "show",
-                    rawName: "v-show",
-                    value: _vm.param == "pip",
-                    expression: "param == 'pip'"
-                  }
-                ]
-              },
-              [_c("python-pip", { attrs: { item: _vm.item } })],
-              1
-            )
-          : _vm._e(),
+                name: "show",
+                rawName: "v-show",
+                value: _vm.param == "pip",
+                expression: "param == 'pip'"
+              }
+            ]
+          },
+          [
+            _c("python-pip", {
+              attrs: { item: _vm.item, diodein: _vm.diodein }
+            })
+          ],
+          1
+        ),
         _vm._v(" "),
-        _vm.diodein
-          ? _c(
-              "span",
+        _c(
+          "span",
+          {
+            directives: [
               {
-                directives: [
-                  {
-                    name: "show",
-                    rawName: "v-show",
-                    value: _vm.param == "apt",
-                    expression: "param == 'apt'"
-                  }
-                ]
-              },
-              [_c("apt-mirror", { attrs: { item: _vm.item } })],
-              1
-            )
-          : _vm._e(),
+                name: "show",
+                rawName: "v-show",
+                value: _vm.param == "apt",
+                expression: "param == 'apt'"
+              }
+            ]
+          },
+          [
+            _c("apt-mirror", {
+              attrs: { item: _vm.item, diodein: _vm.diodein }
+            })
+          ],
+          1
+        ),
         _vm._v(" "),
-        _vm.diodein
-          ? _c(
-              "div",
+        _c(
+          "div",
+          {
+            staticClass: "row",
+            style: {
+              position: "absolute",
+              bottom: "1em",
+              width: "100%",
+              margin: "auto"
+            }
+          },
+          [
+            _c("hr", { staticClass: "window-title-bottom-bar" }),
+            _vm._v(" "),
+            _c(
+              "button",
               {
-                directives: [
-                  {
-                    name: "show",
-                    rawName: "v-show",
-                    value: _vm.diodein,
-                    expression: "diodein"
+                staticClass: "param-button",
+                on: {
+                  click: function($event) {
+                    _vm.param = "config"
                   }
-                ],
-                staticClass: "row",
-                style: {
-                  position: "absolute",
-                  bottom: "1em",
-                  width: "100%",
-                  margin: "auto"
                 }
               },
-              [
-                _c("hr", { staticClass: "window-title-bottom-bar" }),
-                _vm._v(" "),
-                _c(
-                  "button",
-                  {
-                    staticClass: "param-button",
-                    on: {
-                      click: function($event) {
-                        _vm.param = "config"
-                      }
-                    }
-                  },
-                  [_vm._v("CONFIG")]
-                ),
-                _c(
-                  "button",
-                  {
-                    staticClass: "param-button",
-                    on: {
-                      click: function($event) {
-                        _vm.param = "ftp"
-                      }
-                    }
-                  },
-                  [_vm._v("FTP")]
-                ),
-                _c(
-                  "button",
-                  {
-                    staticClass: "param-button",
-                    on: {
-                      click: function($event) {
-                        _vm.param = "pip"
-                      }
-                    }
-                  },
-                  [_vm._v("PIP")]
-                ),
-                _c(
-                  "button",
-                  {
-                    staticClass: "param-button",
-                    on: {
-                      click: function($event) {
-                        _vm.param = "apt"
-                      }
-                    }
-                  },
-                  [_vm._v("APT")]
-                )
-              ]
+              [_vm._v("CONFIG")]
+            ),
+            _c(
+              "button",
+              {
+                staticClass: "param-button",
+                on: {
+                  click: function($event) {
+                    _vm.param = "ftp"
+                  }
+                }
+              },
+              [_vm._v("FTP")]
+            ),
+            _c(
+              "button",
+              {
+                staticClass: "param-button",
+                on: {
+                  click: function($event) {
+                    _vm.param = "pip"
+                  }
+                }
+              },
+              [_vm._v("PIP")]
+            ),
+            _c(
+              "button",
+              {
+                staticClass: "param-button",
+                on: {
+                  click: function($event) {
+                    _vm.param = "apt"
+                  }
+                }
+              },
+              [_vm._v("APT")]
             )
-          : _vm._e(),
-        _vm._v(" "),
-        !_vm.diodein
-          ? _c("span", [
-              _c("hr", { staticClass: "window-title-bottom-bar" }),
-              _vm._v(" "),
-              _c(
-                "button",
-                {
-                  staticClass: "button",
-                  style: { verticalAlign: "middle" },
-                  on: { click: _vm.toStorage }
-                },
-                [_c("span", [_vm._v("STORAGE ")])]
-              )
-            ])
-          : _vm._e()
+          ]
+        )
       ])
     ]
   )
@@ -46030,7 +46214,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(73)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(2)
 /* script */
 var __vue_script__ = __webpack_require__(75)
 /* template */
@@ -46083,7 +46267,7 @@ var content = __webpack_require__(74);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(2)("5be030cc", content, false, {});
+var update = __webpack_require__(1)("5be030cc", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -46102,7 +46286,7 @@ if(false) {
 /* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -46292,7 +46476,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(78)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(2)
 /* script */
 var __vue_script__ = __webpack_require__(80)
 /* template */
@@ -46345,7 +46529,7 @@ var content = __webpack_require__(79);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(2)("a8f6c0aa", content, false, {});
+var update = __webpack_require__(1)("a8f6c0aa", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -46364,7 +46548,7 @@ if(false) {
 /* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -46558,7 +46742,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(83)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(2)
 /* script */
 var __vue_script__ = __webpack_require__(85)
 /* template */
@@ -46611,7 +46795,7 @@ var content = __webpack_require__(84);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(2)("283fb150", content, false, {});
+var update = __webpack_require__(1)("283fb150", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -46630,7 +46814,7 @@ if(false) {
 /* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -46752,7 +46936,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(88)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(2)
 /* script */
 var __vue_script__ = __webpack_require__(90)
 /* template */
@@ -46805,7 +46989,7 @@ var content = __webpack_require__(89);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(2)("42c0c1a0", content, false, {});
+var update = __webpack_require__(1)("42c0c1a0", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -46824,7 +47008,7 @@ if(false) {
 /* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -46946,7 +47130,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(93)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(2)
 /* script */
 var __vue_script__ = __webpack_require__(95)
 /* template */
@@ -46999,7 +47183,7 @@ var content = __webpack_require__(94);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(2)("1fdaa6a7", content, false, {});
+var update = __webpack_require__(1)("1fdaa6a7", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -47018,7 +47202,7 @@ if(false) {
 /* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -47136,17 +47320,21 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(0)
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(98)
+}
+var normalizeComponent = __webpack_require__(2)
 /* script */
-var __vue_script__ = __webpack_require__(98)
+var __vue_script__ = __webpack_require__(100)
 /* template */
-var __vue_template__ = __webpack_require__(99)
+var __vue_template__ = __webpack_require__(101)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
-var __vue_styles__ = null
+var __vue_styles__ = injectStyle
 /* scopeId */
-var __vue_scopeId__ = null
+var __vue_scopeId__ = "data-v-ce928b10"
 /* moduleIdentifier (server only) */
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
@@ -47180,6 +47368,46 @@ module.exports = Component.exports
 
 /***/ }),
 /* 98 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(99);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(1)("868c79ec", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-ce928b10\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Upload.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-ce928b10\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Upload.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 99 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.button[data-v-ce928b10] {\n  display: inline-block;\n  border-radius: 1em;\n  background-color: #007bff;\n  border: none;\n  color: #FFFFFF;\n  text-align: center;\n  font-size: 1.33em;\n  padding: 0.8em;\n  width: 8em;\n  -webkit-transition: all 0.5s;\n  transition: all 0.5s;\n  cursor: pointer;\n  margin: 0.4em;\n}\n.button span[data-v-ce928b10] {\n  cursor: pointer;\n  display: inline-block;\n  position: relative;\n  -webkit-transition: 0.5s;\n  transition: 0.5s;\n}\n.button span[data-v-ce928b10]:after {\n  content: '\\BB';\n  position: absolute;\n  opacity: 0;\n  top: 0;\n  right: -0.8em;\n  -webkit-transition: 0.5s;\n  transition: 0.5s;\n}\n.button:hover span[data-v-ce928b10] {\n  padding-right: 1em;\n}\n.button:hover span[data-v-ce928b10]:after {\n  opacity: 1;\n  right: 0;\n}\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 100 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47245,12 +47473,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
         item: Object,
         maxUploadSize: Number,
-        maxUploadSizeErrorMessage: String
+        maxUploadSizeErrorMessage: String,
+        diodein: Boolean
     },
     data: function data() {
         var _uploadIconButtonStyl;
@@ -47422,12 +47661,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         toggle: function toggle() {
             this.isFile = !this.isFile;
             this.uploadText = this.isFile ? 'Select files...' : 'Select a folder...';
+        },
+        toStorage: function toStorage() {
+            window.location.href = '/storage/' + this.item.name;
         }
     }
 });
 
 /***/ }),
-/* 99 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -47435,130 +47677,150 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _c(
-      "div",
-      { staticClass: "row" },
-      [
-        _c("upload-toggler", {
-          style: { marginBottom: "0.5em" },
-          on: { toggled: _vm.toggle }
-        })
-      ],
-      1
-    ),
-    _vm._v(" "),
-    _c("input", {
-      ref: "fileToUpload",
-      style: {
-        width: "0.1px",
-        height: "0.1px",
-        opacity: "0",
-        overflow: "hidden",
-        position: "absolute",
-        zIndex: -1
-      },
-      attrs: {
-        type: "file",
-        multiple: "",
-        directory: !_vm.isFile,
-        webkitdirectory: !_vm.isFile,
-        moxdirectory: !_vm.isFile
-      },
-      on: { change: _vm.changeUploadText }
-    }),
-    _vm._v(" "),
-    _c(
-      "button",
-      {
-        style: _vm.selectButtonStyle,
-        attrs: { disabled: _vm.uploading },
-        on: {
-          click: _vm.inputClick,
-          mouseenter: _vm.enterSelect,
-          mouseleave: function($event) {
-            _vm.selectButtonStyle.opacity = 0.8
-          }
-        }
-      },
-      [
-        _c("div", { style: _vm.selectTextButtonstyle }, [
-          _vm._v("\n            " + _vm._s(_vm.uploadText) + "\n        ")
+    _vm.diodein
+      ? _c("span", [
+          _c(
+            "div",
+            { staticClass: "row" },
+            [
+              _c("upload-toggler", {
+                style: { marginBottom: "0.5em" },
+                on: { toggled: _vm.toggle }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c("input", {
+            ref: "fileToUpload",
+            style: {
+              width: "0.1px",
+              height: "0.1px",
+              opacity: "0",
+              overflow: "hidden",
+              position: "absolute",
+              zIndex: -1
+            },
+            attrs: {
+              type: "file",
+              multiple: "",
+              directory: !_vm.isFile,
+              webkitdirectory: !_vm.isFile,
+              moxdirectory: !_vm.isFile
+            },
+            on: { change: _vm.changeUploadText }
+          }),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              style: _vm.selectButtonStyle,
+              attrs: { disabled: _vm.uploading },
+              on: {
+                click: _vm.inputClick,
+                mouseenter: _vm.enterSelect,
+                mouseleave: function($event) {
+                  _vm.selectButtonStyle.opacity = 0.8
+                }
+              }
+            },
+            [
+              _c("div", { style: _vm.selectTextButtonstyle }, [
+                _vm._v(
+                  "\n                " +
+                    _vm._s(_vm.uploadText) +
+                    "\n            "
+                )
+              ])
+            ]
+          ),
+          _c(
+            "button",
+            {
+              style: _vm.uploadButtonStyle,
+              on: {
+                click: _vm.uploadOrStop,
+                mouseenter: function($event) {
+                  _vm.uploadButtonStyle.backgroundColor = "#aaa"
+                  _vm.uploadIconButtonStyle.opacity = 1
+                },
+                mouseleave: function($event) {
+                  _vm.uploadButtonStyle.backgroundColor = "#bdc3c7"
+                  _vm.uploadIconButtonStyle.opacity = 0.6
+                }
+              }
+            },
+            [
+              _c("i", {
+                staticClass: "fas",
+                class: _vm.uploadIcon,
+                style: _vm.uploadIconButtonStyle
+              })
+            ]
+          ),
+          _vm._v(" "),
+          _c("br"),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              style: {
+                width: "25em",
+                padding: 0,
+                marginLeft: "2.5em",
+                marginTop: "1em"
+              }
+            },
+            [
+              _c("p", { style: { float: "left" } }, [
+                _vm._v(_vm._s(_vm.currentName))
+              ]),
+              _vm._v(" "),
+              _c("p", { style: { float: "right" } }, [
+                _vm._v(_vm._s(_vm.currentNb) + " / " + _vm._s(_vm.totalNb))
+              ])
+            ]
+          ),
+          _vm._v(" "),
+          _c("br"),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              style: {
+                overflow: "hidden",
+                width: "26em",
+                height: "1em",
+                padding: 0,
+                marginLeft: "2em",
+                border: "1px solid #666",
+                borderRadius: "0.5em"
+              }
+            },
+            [
+              _c("div", {
+                style: {
+                  width: _vm.barProgress,
+                  backgroundColor: "#007bff",
+                  height: "1em"
+                }
+              })
+            ]
+          )
         ])
-      ]
-    ),
-    _c(
-      "button",
-      {
-        style: _vm.uploadButtonStyle,
-        on: {
-          click: _vm.uploadOrStop,
-          mouseenter: function($event) {
-            _vm.uploadButtonStyle.backgroundColor = "#aaa"
-            _vm.uploadIconButtonStyle.opacity = 1
-          },
-          mouseleave: function($event) {
-            _vm.uploadButtonStyle.backgroundColor = "#bdc3c7"
-            _vm.uploadIconButtonStyle.opacity = 0.6
-          }
-        }
-      },
-      [
-        _c("i", {
-          staticClass: "fas",
-          class: _vm.uploadIcon,
-          style: _vm.uploadIconButtonStyle
-        })
-      ]
-    ),
-    _vm._v(" "),
-    _c("br"),
-    _vm._v(" "),
-    _c(
-      "div",
-      {
-        style: {
-          width: "25em",
-          padding: 0,
-          marginLeft: "2.5em",
-          marginTop: "1em"
-        }
-      },
-      [
-        _c("p", { style: { float: "left" } }, [
-          _vm._v(_vm._s(_vm.currentName))
-        ]),
-        _vm._v(" "),
-        _c("p", { style: { float: "right" } }, [
-          _vm._v(_vm._s(_vm.currentNb) + " / " + _vm._s(_vm.totalNb))
+      : _c("span", [
+          _c("hr", { staticClass: "window-title-bottom-bar" }),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "button",
+              style: { verticalAlign: "middle" },
+              on: { click: _vm.toStorage }
+            },
+            [_c("span", [_vm._v("STORAGE ")])]
+          )
         ])
-      ]
-    ),
-    _vm._v(" "),
-    _c("br"),
-    _vm._v(" "),
-    _c(
-      "div",
-      {
-        style: {
-          overflow: "hidden",
-          width: "26em",
-          height: "1em",
-          padding: 0,
-          marginLeft: "2em",
-          border: "1px solid #666",
-          borderRadius: "0.5em"
-        }
-      },
-      [
-        _c("div", {
-          style: {
-            width: _vm.barProgress,
-            backgroundColor: "#007bff",
-            height: "1em"
-          }
-        })
-      ]
-    )
   ])
 }
 var staticRenderFns = []
@@ -47572,19 +47834,19 @@ if (false) {
 }
 
 /***/ }),
-/* 100 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(101)
+  __webpack_require__(103)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(2)
 /* script */
-var __vue_script__ = __webpack_require__(103)
+var __vue_script__ = __webpack_require__(105)
 /* template */
-var __vue_template__ = __webpack_require__(104)
+var __vue_template__ = __webpack_require__(106)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -47623,17 +47885,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 101 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(102);
+var content = __webpack_require__(104);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(2)("13ee7146", content, false, {});
+var update = __webpack_require__(1)("13ee7146", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -47649,10 +47911,10 @@ if(false) {
 }
 
 /***/ }),
-/* 102 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -47663,7 +47925,7 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 
 /***/ }),
-/* 103 */
+/* 105 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47806,7 +48068,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 104 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -47871,19 +48133,19 @@ if (false) {
 }
 
 /***/ }),
-/* 105 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(106)
+  __webpack_require__(108)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(2)
 /* script */
-var __vue_script__ = __webpack_require__(108)
+var __vue_script__ = __webpack_require__(110)
 /* template */
-var __vue_template__ = __webpack_require__(109)
+var __vue_template__ = __webpack_require__(111)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -47922,17 +48184,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 106 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(107);
+var content = __webpack_require__(109);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(2)("f72742e0", content, false, {});
+var update = __webpack_require__(1)("f72742e0", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -47948,10 +48210,10 @@ if(false) {
 }
 
 /***/ }),
-/* 107 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -47962,7 +48224,7 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 
 /***/ }),
-/* 108 */
+/* 110 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -48059,7 +48321,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 109 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -48184,19 +48446,19 @@ if (false) {
 }
 
 /***/ }),
-/* 110 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(111)
+  __webpack_require__(113)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(2)
 /* script */
-var __vue_script__ = __webpack_require__(113)
+var __vue_script__ = __webpack_require__(115)
 /* template */
-var __vue_template__ = __webpack_require__(114)
+var __vue_template__ = __webpack_require__(116)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -48235,17 +48497,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 111 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(112);
+var content = __webpack_require__(114);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(2)("7a41d0d5", content, false, {});
+var update = __webpack_require__(1)("7a41d0d5", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -48261,10 +48523,10 @@ if(false) {
 }
 
 /***/ }),
-/* 112 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -48275,7 +48537,7 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 
 /***/ }),
-/* 113 */
+/* 115 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -48350,7 +48612,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 114 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -48413,19 +48675,19 @@ if (false) {
 }
 
 /***/ }),
-/* 115 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(116)
+  __webpack_require__(118)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(2)
 /* script */
-var __vue_script__ = __webpack_require__(118)
+var __vue_script__ = __webpack_require__(120)
 /* template */
-var __vue_template__ = __webpack_require__(119)
+var __vue_template__ = __webpack_require__(121)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -48464,17 +48726,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 116 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(117);
+var content = __webpack_require__(119);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(2)("06a0bd56", content, false, {});
+var update = __webpack_require__(1)("06a0bd56", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -48490,10 +48752,10 @@ if(false) {
 }
 
 /***/ }),
-/* 117 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -48504,7 +48766,7 @@ exports.push([module.i, "\n.blink-me[data-v-1772f315] {\n  -webkit-animation: bl
 
 
 /***/ }),
-/* 118 */
+/* 120 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -48766,7 +49028,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 119 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -48960,19 +49222,19 @@ if (false) {
 }
 
 /***/ }),
-/* 120 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(121)
+  __webpack_require__(123)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(2)
 /* script */
-var __vue_script__ = __webpack_require__(123)
+var __vue_script__ = __webpack_require__(125)
 /* template */
-var __vue_template__ = __webpack_require__(124)
+var __vue_template__ = __webpack_require__(126)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -49011,17 +49273,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 121 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(122);
+var content = __webpack_require__(124);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(2)("51054015", content, false, {});
+var update = __webpack_require__(1)("51054015", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -49037,10 +49299,10 @@ if(false) {
 }
 
 /***/ }),
-/* 122 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -49051,7 +49313,7 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 
 /***/ }),
-/* 123 */
+/* 125 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -49291,7 +49553,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 124 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -49482,19 +49744,19 @@ if (false) {
 }
 
 /***/ }),
-/* 125 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(126)
+  __webpack_require__(128)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(2)
 /* script */
-var __vue_script__ = __webpack_require__(128)
+var __vue_script__ = __webpack_require__(130)
 /* template */
-var __vue_template__ = __webpack_require__(129)
+var __vue_template__ = __webpack_require__(131)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -49533,17 +49795,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 126 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(127);
+var content = __webpack_require__(129);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(2)("1b62bfbb", content, false, {});
+var update = __webpack_require__(1)("1b62bfbb", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -49559,10 +49821,10 @@ if(false) {
 }
 
 /***/ }),
-/* 127 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -49573,7 +49835,7 @@ exports.push([module.i, "\n.clickable[data-v-70582001] {\n    cursor: pointer;\n
 
 
 /***/ }),
-/* 128 */
+/* 130 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -49630,7 +49892,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 129 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -49680,19 +49942,19 @@ if (false) {
 }
 
 /***/ }),
-/* 130 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(131)
+  __webpack_require__(133)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(2)
 /* script */
-var __vue_script__ = __webpack_require__(133)
+var __vue_script__ = __webpack_require__(135)
 /* template */
-var __vue_template__ = __webpack_require__(134)
+var __vue_template__ = __webpack_require__(136)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -49731,17 +49993,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 131 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(132);
+var content = __webpack_require__(134);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(2)("1a848bec", content, false, {});
+var update = __webpack_require__(1)("1a848bec", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -49757,10 +50019,10 @@ if(false) {
 }
 
 /***/ }),
-/* 132 */
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -49771,7 +50033,7 @@ exports.push([module.i, "\n.port-input[data-v-5cdde01d] {\n    padding-left: 0.1
 
 
 /***/ }),
-/* 133 */
+/* 135 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -49823,10 +50085,21 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
-        item: Object
+        item: Object,
+        diodein: Boolean
     },
     data: function data() {
         return {
@@ -49940,7 +50213,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 134 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -49948,170 +50221,191 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _c(
-      "span",
-      {
-        directives: [
-          {
-            name: "show",
-            rawName: "v-show",
-            value: !_vm.isAptModule,
-            expression: "!isAptModule"
-          }
-        ]
-      },
-      [
-        _c(
-          "div",
-          {
-            staticClass: "text",
-            style: { float: "left", marginLeft: "2em", width: "12em" }
-          },
-          [
-            _vm._v("\n            Choose a "),
-            _c("input", {
+    _vm.diodein
+      ? _c("span", [
+          _c(
+            "span",
+            {
               directives: [
                 {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.aptport,
-                  expression: "aptport"
+                  name: "show",
+                  rawName: "v-show",
+                  value: !_vm.isAptModule,
+                  expression: "!isAptModule"
                 }
-              ],
-              staticClass: "port-input",
-              attrs: { placeholder: "port" },
-              domProps: { value: _vm.aptport },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.aptport = $event.target.value
-                }
-              }
-            }),
-            _vm._v(" and click to add a new APT module\n        ")
-          ]
-        ),
-        _vm._v(" "),
-        _c("add-button", { ref: "addButton", on: { add: _vm.addApt } })
-      ],
-      1
-    ),
-    _vm._v(" "),
-    _c(
-      "span",
-      {
-        directives: [
-          {
-            name: "show",
-            rawName: "v-show",
-            value: _vm.isAptModule,
-            expression: "isAptModule"
-          }
-        ]
-      },
-      [
-        _c(
-          "div",
-          { style: { marginBottom: "0.5em" } },
-          [
-            _c(
-              "div",
-              {
-                staticClass: "text",
-                style: { float: "left", marginLeft: "2em", width: "12em" }
-              },
-              [
-                _vm._v(
-                  "\n                Module running on port " +
-                    _vm._s(_vm.aptport) +
-                    ". Click to remove\n            "
-                )
               ]
-            ),
-            _vm._v(" "),
-            _c("del-button", { ref: "delButton", on: { del: _vm.removeApt } }),
-            _vm._v(" "),
-            _c("hr", { staticClass: "window-title-bottom-bar" }),
-            _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass: "text",
-                style: { float: "center", width: "19em" }
-              },
-              [
-                _c("input", {
+            },
+            [
+              _c(
+                "div",
+                {
+                  staticClass: "text",
+                  style: { float: "left", marginLeft: "2em", width: "12em" }
+                },
+                [
+                  _vm._v("\n                Choose a "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.aptport,
+                        expression: "aptport"
+                      }
+                    ],
+                    staticClass: "port-input",
+                    attrs: { placeholder: "port" },
+                    domProps: { value: _vm.aptport },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.aptport = $event.target.value
+                      }
+                    }
+                  }),
+                  _vm._v(" and click to add a new APT module\n            ")
+                ]
+              ),
+              _vm._v(" "),
+              _c("add-button", { ref: "addButton", on: { add: _vm.addApt } })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "span",
+            {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.isAptModule,
+                  expression: "isAptModule"
+                }
+              ]
+            },
+            [
+              _c(
+                "div",
+                { style: { marginBottom: "0.5em" } },
+                [
+                  _c(
+                    "div",
+                    {
+                      staticClass: "text",
+                      style: { float: "left", marginLeft: "2em", width: "12em" }
+                    },
+                    [
+                      _vm._v(
+                        "\n                    Module running on port " +
+                          _vm._s(_vm.aptport) +
+                          ". Click to remove\n                "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c("del-button", {
+                    ref: "delButton",
+                    on: { del: _vm.removeApt }
+                  }),
+                  _vm._v(" "),
+                  _c("hr", { staticClass: "window-title-bottom-bar" }),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticClass: "text",
+                      style: { float: "center", width: "19em" }
+                    },
+                    [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.mirrorUrl,
+                            expression: "mirrorUrl"
+                          }
+                        ],
+                        staticClass: "mirror-input",
+                        attrs: {
+                          disabled: _vm.downloading,
+                          placeholder: "mirror url"
+                        },
+                        domProps: { value: _vm.mirrorUrl },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.mirrorUrl = $event.target.value
+                          }
+                        }
+                      })
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c("add-button", {
+                    ref: "addMirror",
+                    style: { marginTop: "0.5em" },
+                    attrs: { disabled: _vm.downloading },
+                    on: { add: _vm.downloadMirror }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
                   directives: [
                     {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.mirrorUrl,
-                      expression: "mirrorUrl"
+                      name: "show",
+                      rawName: "v-show",
+                      value: false,
+                      expression: "false"
                     }
                   ],
-                  staticClass: "mirror-input",
-                  attrs: {
-                    disabled: _vm.downloading,
-                    placeholder: "mirror url"
-                  },
-                  domProps: { value: _vm.mirrorUrl },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.mirrorUrl = $event.target.value
-                    }
+                  style: {
+                    width: "100%",
+                    overflow: "scroll",
+                    height: "12em"
                   }
+                },
+                _vm._l(_vm.downloadedData, function(item, index) {
+                  return _c(
+                    "div",
+                    {
+                      key: index,
+                      style: {
+                        width: "95%",
+                        whiteSpace: "pre-wrap"
+                      }
+                    },
+                    [_c("p", [_vm._v(_vm._s(item))])]
+                  )
                 })
-              ]
-            ),
-            _vm._v(" "),
-            _c("add-button", {
-              ref: "addMirror",
-              style: { marginTop: "0.5em" },
-              attrs: { disabled: _vm.downloading },
-              on: { add: _vm.downloadMirror }
-            })
-          ],
-          1
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            directives: [
-              {
-                name: "show",
-                rawName: "v-show",
-                value: false,
-                expression: "false"
-              }
-            ],
-            style: {
-              width: "100%",
-              overflow: "scroll",
-              height: "12em"
-            }
-          },
-          _vm._l(_vm.downloadedData, function(item, index) {
-            return _c(
-              "div",
-              {
-                key: index,
-                style: {
-                  width: "95%",
-                  whiteSpace: "pre-wrap"
-                }
-              },
-              [_c("p", [_vm._v(_vm._s(item))])]
-            )
-          })
-        )
-      ]
-    )
+              )
+            ]
+          )
+        ])
+      : _c("span", [
+          _vm.aptport == ""
+            ? _c("span", { staticClass: "text" }, [
+                _vm._v(
+                  "\n            There is no APT module on this channel.\n        "
+                )
+              ])
+            : _c("span", { staticClass: "text" }, [
+                _vm._v(
+                  "\n            APT module running on port " +
+                    _vm._s(_vm.aptport) +
+                    "\n        "
+                )
+              ])
+        ])
   ])
 }
 var staticRenderFns = []
@@ -50125,7 +50419,7 @@ if (false) {
 }
 
 /***/ }),
-/* 135 */
+/* 137 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

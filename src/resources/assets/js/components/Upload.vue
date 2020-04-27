@@ -1,59 +1,69 @@
 <template>
     <div>
-        <div class="row">
-            <upload-toggler :style="{marginBottom: '0.5em'}" v-on:toggled="toggle"></upload-toggler>
-        </div>
-        <input 
-            type="file"
-            ref="fileToUpload"
-            multiple
-            :directory="!isFile"
-            :webkitdirectory="!isFile"
-            :moxdirectory="!isFile"
-            :style="{
-                width: '0.1px',
-                height: '0.1px',
-                opacity: '0',
-                overflow: 'hidden',
-                position: 'absolute',
-                zIndex: -1,
-            }"
-            v-on:change="changeUploadText"
-        >
-        <button 
-            :disabled="uploading"
-            :style="selectButtonStyle"
-            v-on:click="inputClick"
-            v-on:mouseenter="enterSelect"
-            v-on:mouseleave="selectButtonStyle.opacity = 0.8"
-        >
-            <div 
-                :style="selectTextButtonstyle"
-            >
-                {{ uploadText }}
+        <span v-if="diodein">
+            <div class="row">
+                <upload-toggler :style="{marginBottom: '0.5em'}" v-on:toggled="toggle"></upload-toggler>
             </div>
-        </button><!-- This comment 
-        avoids spaces --><button 
-            :style="uploadButtonStyle"
-            v-on:click="uploadOrStop"
-            v-on:mouseenter="uploadButtonStyle.backgroundColor = '#aaa'; uploadIconButtonStyle.opacity = 1"
-            v-on:mouseleave="uploadButtonStyle.backgroundColor = '#bdc3c7'; uploadIconButtonStyle.opacity = 0.6"
-        >
-            <i 
-                class="fas"
-                :class="uploadIcon"
-                :style="uploadIconButtonStyle"
-            ></i>
-        </button>
-        <br/>
-        <div :style="{width: '25em', padding: 0, marginLeft: '2.5em', marginTop: '1em'}">
-            <p :style="{float: 'left'}">{{ currentName }}</p>
-            <p :style="{float: 'right'}">{{ currentNb }} / {{ totalNb }}</p>
-        </div>
-        <br/>
-        <div :style="{overflow: 'hidden', width: '26em', height: '1em', padding: 0, marginLeft: '2em', border: '1px solid #666', borderRadius: '0.5em'}">
-            <div :style="{width: barProgress, backgroundColor: '#007bff', height: '1em'}"></div>
-        </div>
+            <input 
+                type="file"
+                ref="fileToUpload"
+                multiple
+                :directory="!isFile"
+                :webkitdirectory="!isFile"
+                :moxdirectory="!isFile"
+                :style="{
+                    width: '0.1px',
+                    height: '0.1px',
+                    opacity: '0',
+                    overflow: 'hidden',
+                    position: 'absolute',
+                    zIndex: -1,
+                }"
+                v-on:change="changeUploadText"
+            >
+            <button 
+                :disabled="uploading"
+                :style="selectButtonStyle"
+                v-on:click="inputClick"
+                v-on:mouseenter="enterSelect"
+                v-on:mouseleave="selectButtonStyle.opacity = 0.8"
+            >
+                <div 
+                    :style="selectTextButtonstyle"
+                >
+                    {{ uploadText }}
+                </div>
+            </button><!-- This comment 
+            avoids spaces --><button 
+                :style="uploadButtonStyle"
+                v-on:click="uploadOrStop"
+                v-on:mouseenter="uploadButtonStyle.backgroundColor = '#aaa'; uploadIconButtonStyle.opacity = 1"
+                v-on:mouseleave="uploadButtonStyle.backgroundColor = '#bdc3c7'; uploadIconButtonStyle.opacity = 0.6"
+            >
+                <i 
+                    class="fas"
+                    :class="uploadIcon"
+                    :style="uploadIconButtonStyle"
+                ></i>
+            </button>
+            <br/>
+            <div :style="{width: '25em', padding: 0, marginLeft: '2.5em', marginTop: '1em'}">
+                <p :style="{float: 'left'}">{{ currentName }}</p>
+                <p :style="{float: 'right'}">{{ currentNb }} / {{ totalNb }}</p>
+            </div>
+            <br/>
+            <div :style="{overflow: 'hidden', width: '26em', height: '1em', padding: 0, marginLeft: '2em', border: '1px solid #666', borderRadius: '0.5em'}">
+                <div :style="{width: barProgress, backgroundColor: '#007bff', height: '1em'}"></div>
+            </div>
+        </span>
+        <span v-else>
+            <hr class="window-title-bottom-bar"/>
+            <button 
+                class="button"
+                :style="{verticalAlign: 'middle'}"
+                v-on:click="toStorage"
+            ><span>STORAGE </span></button>
+        </span>
     </div>
 </template>
 
@@ -63,6 +73,7 @@ export default {
         item: Object,
         maxUploadSize: Number,
         maxUploadSizeErrorMessage: String,
+        diodein: Boolean,
     },
     data() {
         return {
@@ -240,7 +251,55 @@ export default {
         toggle() {
             this.isFile = !this.isFile
             this.uploadText = this.isFile ? 'Select files...' : 'Select a folder...'
-        }
+        },
+        toStorage() {
+            window.location.href = '/storage/' + this.item.name
+        },
+
     }
 }
 </script>
+
+<style scoped>
+
+.button {
+  display: inline-block;
+  border-radius: 1em;
+  background-color: #007bff;
+  border: none;
+  color: #FFFFFF;
+  text-align: center;
+  font-size: 1.33em;
+  padding: 0.8em;
+  width: 8em;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 0.4em;
+}
+
+.button span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.button span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -0.8em;
+  transition: 0.5s;
+}
+
+.button:hover span {
+  padding-right: 1em;
+}
+
+.button:hover span:after {
+  opacity: 1;
+  right: 0;
+}
+
+</style>

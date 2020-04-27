@@ -1,46 +1,56 @@
 <template>
     <div>
-        <span v-show="!isAptModule">
-            <div class="text" :style="{float:'left', marginLeft: '2em', width: '12em'}">
-                Choose a <input class="port-input" v-model="aptport" placeholder="port"> and click to add a new APT module
-            </div>
-            <add-button ref="addButton" v-on:add="addApt"></add-button>
-        </span>
-        <span v-show="isAptModule">
-            <div :style="{marginBottom: '0.5em'}">
+        <span v-if="diodein">
+            <span v-show="!isAptModule">
                 <div class="text" :style="{float:'left', marginLeft: '2em', width: '12em'}">
-                    Module running on port {{ aptport }}. Click to remove
+                    Choose a <input class="port-input" v-model="aptport" placeholder="port"> and click to add a new APT module
                 </div>
-                <del-button ref="delButton" v-on:del="removeApt"></del-button>
-                <hr class="window-title-bottom-bar"/>
-                <div class="text" :style="{float:'center', width: '19em'}">
-                    <input 
-                        class="mirror-input"
-                        v-model="mirrorUrl"
-                        :disabled="downloading"
-                        placeholder="mirror url"
-                    >
+                <add-button ref="addButton" v-on:add="addApt"></add-button>
+            </span>
+            <span v-show="isAptModule">
+                <div :style="{marginBottom: '0.5em'}">
+                    <div class="text" :style="{float:'left', marginLeft: '2em', width: '12em'}">
+                        Module running on port {{ aptport }}. Click to remove
+                    </div>
+                    <del-button ref="delButton" v-on:del="removeApt"></del-button>
+                    <hr class="window-title-bottom-bar"/>
+                    <div class="text" :style="{float:'center', width: '19em'}">
+                        <input 
+                            class="mirror-input"
+                            v-model="mirrorUrl"
+                            :disabled="downloading"
+                            placeholder="mirror url"
+                        >
+                    </div>
+                    <add-button :style="{marginTop: '0.5em'}" :disabled="downloading" ref="addMirror" v-on:add="downloadMirror"></add-button>
                 </div>
-                <add-button :style="{marginTop: '0.5em'}" :disabled="downloading" ref="addMirror" v-on:add="downloadMirror"></add-button>
-            </div>
-            <div
-                v-show="false" 
-                :style="{
-                    width: '100%',
-                    overflow:'scroll',
-                    height:'12em',
-                }"
-            >
-                <div  
+                <div
+                    v-show="false" 
                     :style="{
-                        width: '95%',
-                        whiteSpace:'pre-wrap',                
+                        width: '100%',
+                        overflow:'scroll',
+                        height:'12em',
                     }"
-                    v-for="(item, index) in downloadedData" :key="index"
                 >
-                    <p>{{ item }}</p>
+                    <div  
+                        :style="{
+                            width: '95%',
+                            whiteSpace:'pre-wrap',                
+                        }"
+                        v-for="(item, index) in downloadedData" :key="index"
+                    >
+                        <p>{{ item }}</p>
+                    </div>
                 </div>
-            </div>
+            </span>            
+        </span>
+        <span v-else>
+            <span v-if="aptport == ''" class="text">
+                There is no APT module on this channel.
+            </span>
+            <span v-else class="text">
+                APT module running on port {{ aptport }}
+            </span>
         </span>
     </div>
 </template>
@@ -49,6 +59,7 @@
 export default {
     props: {
         item: Object,
+        diodein: Boolean,
     },
     data() {
         return {

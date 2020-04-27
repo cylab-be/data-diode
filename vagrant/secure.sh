@@ -34,7 +34,7 @@ systemctl restart ntp
 # Uniquement à mettre si parfois ce client met plus d'une heure avant la synchro
 # (crontab -l 2>/dev/null; echo "@hourly sudo systemctl restart ntp") | crontab -
 
-arp -s 192.168.102.1 00:aa:bb:bb:aa:00
+arp -s 192.168.102.1 00:aa:bb:bb:aa:00 # pour que le client trouve le serveur NTP
 
 #timedatectl set-timezone Europe/Brussels
 
