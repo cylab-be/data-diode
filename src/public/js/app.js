@@ -44065,6 +44065,8 @@ exports.push([module.i, "\n.add-package-button[data-v-28b1c574] {\n    height: 4
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -44190,30 +44192,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         };
     },
     mounted: function mounted() {
-        var me = this;
-        var url = '/getPipPort';
-        var options = {
-            method: 'POST',
-            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-            url: url,
-            data: {
-                uploader: me.item.name
-            }
-        };
-        axios(options).then(function (response) {
-            me.isPipModule = response.data.pipport != 0;
-            if (response.data.pipport != 0) {
-                me.pipport = response.data.pipport;
-                var ip = '192.168.102.1';
-                var command = 'sudo -H python3 -m pip install --trusted-host';
-                command += ' ' + ip + ' ';
-                command += '-i http://' + ip + ':';
-                command += response.data.pipport + '/simple ';
-                me.command = command;
-            }
-        }).catch(function (error) {
-            toastr.error('Unable to get the ' + me.item.name + '\'s channel pip port module');
-        });
+        if (this.item.pipport != 0 && this.item.pipport != undefined) {
+            this.pipport = this.item.pipport;
+            this.isPipModule = true;
+            var ip = '192.168.102.1';
+            var command = 'sudo -H python3 -m pip install --trusted-host';
+            command += ' ' + ip + ' ';
+            command += '-i http://' + ip + ':';
+            command += this.item.pipport + '/simple ';
+            this.command = command;
+        }
     },
 
     methods: {
@@ -44225,13 +44213,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }
             this.$refs.addButton.startBlink();
             var port = parseInt(me.pipport);
-            var url = '/addPip';
+            var url = 'pip/' + me.item.id;
             var options = {
                 method: 'POST',
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                 url: url,
                 data: {
-                    uploader: me.item.name,
+                    name: me.item.name,
                     port: port
                 }
             };
@@ -44246,13 +44234,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         removePip: function removePip() {
             var me = this;
-            var url = '/removePip';
+            var url = 'pip/' + me.item.id;
             var options = {
-                method: 'POST',
+                method: 'DELETE',
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                 url: url,
                 data: {
-                    uploader: me.item.name
+                    name: me.item.name
                 }
             };
             this.$refs.delButton.startSpin();
@@ -44270,10 +44258,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             if (this.packageName.length > 0) {
                 var send = function send(name) {
                     return new Promise(function (resolve, reject) {
-                        axios.post('/pythonpip', {
-                            name: name,
-                            uploader: me.item.name
-                        }).then(function (response) {
+                        axios.post('/pythonpip', _defineProperty({
+                            name: name
+                        }, 'name', me.item.name)).then(function (response) {
                             resolve(response);
                         }).catch(function (error) {
                             reject(error);
@@ -44848,9 +44835,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         });
         setInterval(function () {
             if (me.canUpdate) {
-                var url = '/channelUpdate';
+                var url = 'uploader';
                 var options = {
-                    method: 'POST',
+                    method: 'GET',
                     headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                     url: url
                 };
@@ -44879,7 +44866,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                     url: url,
                     data: {
-                        uploader: name
+                        name: name
                     }
                 };
                 axios(options).then(function (response) {
@@ -44926,7 +44913,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                 url: url,
                 data: {
-                    uploader: me.uploaderToAdd,
+                    name: me.uploaderToAdd,
                     port: parseInt(me.portToAdd)
                 }
             };
@@ -45336,9 +45323,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         var me = this;
 
         // channel values
-        var url = '/channelUpdate';
+        var url = 'uploader';
         var options = {
-            method: 'POST',
+            method: 'GET',
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
             url: url
         };
@@ -45358,9 +45345,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
         setInterval(function () {
             if (me.canUpdate) {
-                var _url = '/channelUpdate';
+                var _url = 'uploader';
                 var _options = {
-                    method: 'POST',
+                    method: 'GET',
                     headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                     url: _url
                 };
@@ -45449,13 +45436,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 return;
             }
             me.addDisabled = true;
-            var url = '/channelAdd';
+            var url = 'uploader';
             var options = {
                 method: 'POST',
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                 url: url,
                 data: {
-                    uploader: me.name,
+                    name: me.name,
                     port: parseInt(me.port)
                 }
             };
@@ -45846,16 +45833,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 this.stop();
             }
         },
-        act: function act(action, name) {
+        act: function act(action, item) {
             return new Promise(function (resolve, reject) {
-                var url = '/channel' + action[0].toUpperCase() + action.slice(1);
+                var url = 'uploader/' + (action == 'delete' ? '' : action + '/') + item.id;
                 var options = {
-                    method: 'POST',
+                    method: action == 'delete' ? 'DELETE' : 'PUT',
                     headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-                    url: url,
-                    data: {
-                        uploader: name
-                    }
+                    url: url
                 };
                 axios(options).then(function (response) {
                     return resolve();
@@ -45869,7 +45853,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var me = this;
             this.blinkClass = 'blink-me';
             this.closeDisabled = true;
-            this.act('stop', this.item.name).then(function () {
+            this.act('stop', this.item).then(function () {
                 me.$emit('stop');
                 me.blinkClass = '';
                 toastr.success('Successfully stopped ' + me.item.name + '\'s channel!');
@@ -45884,7 +45868,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var me = this;
             this.blinkClass = 'blink-me';
             this.closeDisabled = true;
-            this.act('restart', this.item.name).then(function () {
+            this.act('restart', this.item).then(function () {
                 me.$emit('restart');
                 me.windowStatus = 'is running on port ' + me.item.port;
                 me.blinkClass = '';
@@ -45902,7 +45886,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var me = this;
             this.closeDisabled = true;
             this.$refs.emptyButton.startBlink();
-            this.act('empty', this.item.name).then(function () {
+            this.act('empty', this.item).then(function () {
                 _this2.$refs.emptyButton.stopBlink();
                 toastr.success('Successfully emptied ' + me.item.name + '\'s channel!');
                 me.closeDisabled = false;
@@ -45914,8 +45898,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
         /*emptyAndRestart(uploader) {
             var me = this
-            me.act('empty', uploader.name).then(() => {
-                me.act('restart', uploader.name).then(() => {
+            me.act('empty', uploader).then(() => {
+                me.act('restart', uploader).then(() => {
                     toastr.success('Successfully emptied and restarted ' + uploader.name + '\'s channel!')
                 })
             })
@@ -45926,7 +45910,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var me = this;
             this.closeDisabled = true;
             this.$refs.delButton.startSpin();
-            this.act('del', this.item.name).then(function () {
+            this.act('delete', this.item).then(function () {
                 me.$refs.delButton.stopSpin();
                 toastr.success('Successfully deleted ' + _this3.item.name + '\'s channel!');
                 me.closeDisabled = false;
@@ -50231,29 +50215,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         };
     },
     mounted: function mounted() {
-        var me = this;
-        var url = '/getAptPort';
-        var options = {
-            method: 'POST',
-            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-            url: url,
-            data: {
-                uploader: me.item.name
-            }
-        };
-        axios(options).then(function (response) {
-            me.isAptModule = response.data.aptport != 0;
-            if (response.data.aptport != 0) {
-                me.aptport = response.data.aptport;
-                var ip = '192.168.102.1';
-                var command = 'deb [trusted=yes] ';
-                command += 'http://' + ip + ':';
-                command += response.data.aptport;
-                me.command = command;
-            }
-        }).catch(function (error) {
-            toastr.error('Unable to get the ' + me.item.name + '\'s channel apt port module');
-        });
+        if (this.item.aptport != 0 && this.item.aptport != undefined) {
+            this.aptport = this.item.aptport;
+            this.isAptModule = true;
+            var ip = '192.168.102.1';
+            var command = 'deb [trusted=yes] ';
+            command += 'http://' + ip + ':';
+            command += this.item.aptport;
+            this.command = command;
+        }
     },
 
     methods: {
@@ -50265,13 +50235,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }
             this.$refs.addButton.startBlink();
             var port = parseInt(me.aptport);
-            var url = '/addApt';
+            var url = 'apt/' + me.item.id;
             var options = {
                 method: 'POST',
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                 url: url,
                 data: {
-                    uploader: me.item.name,
+                    name: me.item.name,
                     port: port
                 }
             };
@@ -50286,13 +50256,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         removeApt: function removeApt() {
             var me = this;
-            var url = '/removeApt';
+            var url = 'apt/' + me.item.id;
             var options = {
-                method: 'POST',
+                method: 'DELETE',
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                 url: url,
                 data: {
-                    uploader: me.item.name
+                    name: me.item.name
                 }
             };
             this.$refs.delButton.startSpin();
@@ -50317,7 +50287,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                 url: url,
                 data: {
-                    uploader: me.item.name,
+                    name: me.item.name,
                     url: me.mirrorUrl
                 }
             };

@@ -19,7 +19,7 @@ class AptController extends Controller
     }
 
     public function addMirror(Request $request) {
-        $cmd = 'sudo ' . base_path('app/Scripts') . '/download-apt.sh ' . $request->uploader . ' ' . $request->url;
+        $cmd = 'sudo ' . base_path('app/Scripts') . '/download-apt.sh ' . $request->name . ' ' . $request->url;
         $process = new Process($cmd);
         // the following is needed to ensure larger downloads will end
         $process->setTimeout(0);

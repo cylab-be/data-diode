@@ -50,21 +50,21 @@ class PythonPipController extends Controller
             return response()->json(['message' => 'You must specify a package name!'], 400);
         }
         // uploader check
-        if ($request->uploader == null) {
+        if ($request->name == null) {
             return response()->json(['message' => 'You must specify an uploader\'s name.'], 422);
-        } else if (!is_string($request->uploader)) {
+        } else if (!is_string($request->name)) {
             return response()->json(['message' => 'The uploader\'s name must be a string of characters.'], 422);
-        } else if (!preg_match("/^[a-zA-Z0-9]+$/", $request->uploader)) {
+        } else if (!preg_match("/^[a-zA-Z0-9]+$/", $request->name)) {
             return response()->json(['message' => 'The uploader\'s name must be composed of alphabetical characters only.'], 422);
         }
         // checking uploader's name existing
-        $count = Uploader::where('name', '=', $request->uploader)->count();
+        $count = Uploader::where('name', '=', $request->name)->count();
         if ($count == 0) {
             return response()->json(['message' => 'This uploader does not exist.'], 400);
         }
         // running script
         $name = $request->name;
-        $process = new Process('sudo -H ' . base_path('app/Scripts') . "/sendpip.sh '" . $name . "'" . ' ' . $request->uploader);
+        $process = new Process('sudo -H ' . base_path('app/Scripts') . "/sendpip.sh '" . $name . "'" . ' ' . $request->name);
         $process->setTimeout(0);
         $process->setIdleTimeout(365 * 24 * 3600);
         try {

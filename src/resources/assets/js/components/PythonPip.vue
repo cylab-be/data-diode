@@ -123,32 +123,16 @@ export default {
         }
     },
     mounted() {
-        var me = this
-        const url = '/getPipPort'
-        const options = {
-            method: 'POST',
-            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-            url,
-            data: {
-                uploader: me.item.name,
-            },
+        if (this.item.pipport != 0 && this.item.pipport != undefined) {
+            this.pipport = this.item.pipport
+            this.isPipModule = true
+            var ip = '192.168.102.1'
+            var command = 'sudo -H python3 -m pip install --trusted-host'
+            command += ' ' + ip + ' '
+            command += '-i http://' + ip + ':'
+            command += this.item.pipport + '/simple '
+            this.command = command
         }
-        axios(options)
-        .then(function(response) {
-            me.isPipModule = response.data.pipport != 0
-            if (response.data.pipport != 0) {
-                me.pipport = response.data.pipport
-                var ip = '192.168.102.1'
-                var command = 'sudo -H python3 -m pip install --trusted-host'
-                command += ' ' + ip + ' '
-                command += '-i http://' + ip + ':'
-                command += response.data.pipport + '/simple '
-                me.command = command
-            }
-        })
-        .catch(function(error) {
-            toastr.error('Unable to get the ' + me.item.name + '\'s channel pip port module')
-        })
     },
     methods: {
         addPip() {
@@ -159,13 +143,13 @@ export default {
             }
             this.$refs.addButton.startBlink()
             const port = parseInt(me.pipport)
-            const url = '/addPip'
+            const url = 'pip/' + me.item.id
             const options = {
                 method: 'POST',
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                 url,
                 data: {
-                    uploader: me.item.name,
+                    name: me.item.name,
                     port: port
                 },
             }
@@ -182,13 +166,13 @@ export default {
         },
         removePip() {
             var me = this
-            const url = '/removePip'
+            const url = 'pip/' + me.item.id
             const options = {
-                method: 'POST',
+                method: 'DELETE',
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                 url,
                 data: {
-                    uploader: me.item.name,
+                    name: me.item.name,
                 },
             }
             this.$refs.delButton.startSpin()
@@ -215,7 +199,7 @@ export default {
                         axios.post('/pythonpip',
                         {
                             name: name,
-                            uploader: me.item.name
+                            name: me.item.name
                         })
                         .then(function(response){                            
                             resolve(response)

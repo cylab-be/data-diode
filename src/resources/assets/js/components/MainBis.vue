@@ -87,9 +87,9 @@ export default {
         var me = this
 
         // channel values
-        const url = '/channelUpdate'
+        const url = 'uploader'
         const options = {
-            method: 'POST',
+            method: 'GET',
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
             url,
         }
@@ -111,9 +111,9 @@ export default {
 
         setInterval(() => {
             if (me.canUpdate) {
-                const url = '/channelUpdate'
+                const url = 'uploader'
                 const options = {
-                    method: 'POST',
+                    method: 'GET',
                     headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                     url,
                 }
@@ -205,13 +205,13 @@ export default {
                 return
             }            
             me.addDisabled = true
-            const url = '/channelAdd'
+            const url = 'uploader'
             const options = {
                 method: 'POST',
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                 url,
                 data: {
-                    uploader: me.name,
+                    name: me.name,
                     port: parseInt(me.port)
                 },
             }

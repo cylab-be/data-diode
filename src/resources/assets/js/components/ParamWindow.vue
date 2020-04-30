@@ -109,16 +109,13 @@ export default {
                 this.stop()
             }
         },
-        act(action, name) {
+        act(action, item) {
             return new Promise((resolve, reject) => {
-                const url = '/channel' + action[0].toUpperCase() + action.slice(1);
+                const url = 'uploader/' + (action == 'delete' ? '' : action + '/')  + item.id
                 const options = {
-                    method: 'POST',
+                    method: (action == 'delete' ? 'DELETE' : 'PUT'),
                     headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                     url,
-                    data: {
-                        uploader: name,
-                    },
                 }
                 axios(options)
                 .then(function(response) {                    
@@ -134,7 +131,7 @@ export default {
             var me = this
             this.blinkClass = 'blink-me'
             this.closeDisabled = true
-            this.act('stop', this.item.name).then(() => {
+            this.act('stop', this.item).then(() => {
                 me.$emit('stop')
                 me.blinkClass = ''
                 toastr.success('Successfully stopped ' + me.item.name + '\'s channel!')
@@ -149,7 +146,7 @@ export default {
             var me = this
             this.blinkClass = 'blink-me'
             this.closeDisabled = true
-            this.act('restart', this.item.name).then(() => {
+            this.act('restart', this.item).then(() => {
                 me.$emit('restart')
                 me.windowStatus = 'is running on port ' + me.item.port
                 me.blinkClass = ''                
@@ -165,7 +162,7 @@ export default {
             var me = this
             this.closeDisabled = true
             this.$refs.emptyButton.startBlink()
-            this.act('empty', this.item.name).then(() => {                
+            this.act('empty', this.item).then(() => {                
                 this.$refs.emptyButton.stopBlink()
                 toastr.success('Successfully emptied ' + me.item.name + '\'s channel!')
                 me.closeDisabled = false
@@ -176,8 +173,8 @@ export default {
         },
         /*emptyAndRestart(uploader) {
             var me = this
-            me.act('empty', uploader.name).then(() => {
-                me.act('restart', uploader.name).then(() => {
+            me.act('empty', uploader).then(() => {
+                me.act('restart', uploader).then(() => {
                     toastr.success('Successfully emptied and restarted ' + uploader.name + '\'s channel!')
                 })
             })
@@ -186,7 +183,7 @@ export default {
             var me = this
             this.closeDisabled = true
             this.$refs.delButton.startSpin()
-            this.act('del', this.item.name).then(() => {
+            this.act('delete', this.item).then(() => {
                 me.$refs.delButton.stopSpin()
                 toastr.success('Successfully deleted ' + this.item.name + '\'s channel!')
                 me.closeDisabled = false

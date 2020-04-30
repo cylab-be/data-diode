@@ -44,7 +44,7 @@ Route::delete("rule/{rule}", "RuleController@delete");
 Route::get("network", "NetworkController@get");
 Route::put("network/update", "NetworkController@update");
 
-// BlindFTP Server/Client and Python Pip Routes...
+// BlindFTP Server/Client Python PIP & APT Routes...
 if (!env('DIODE_IN', false)) {
     // DIODE OUT
     Route::get('/storage', 'StorageController@listView');
@@ -57,24 +57,27 @@ if (!env('DIODE_IN', false)) {
     // DIODE IN
     Route::get('/upload', 'StorageController@uploadIndex');
     Route::post('/upload', 'StorageController@upload');
+
     Route::get('/pythonpip', 'PythonPipController@index');
-    Route::post('/pythonpip', 'PythonPipController@runPip');
-    Route::post('/channelAdd', 'UploadersController@add');
-    Route::post('/channelDel', 'UploadersController@del');
-    Route::post('/addPip', 'UploadersController@addPip');    
-    Route::post('/removePip', 'UploadersController@removePip');
+    Route::post('/pythonpip', 'PythonPipController@runPip');    
+    
+    Route::post('uploader', 'UploaderController@create');
+    Route::delete('uploader/{uploader}', 'UploaderController@delete');
+    
+    Route::post('pip/{uploader}', 'UploaderController@addPip');
+    Route::delete('pip/{uploader}', 'UploaderController@removePip');
+    Route::post('apt/{uploader}', 'UploaderController@addApt');
+    Route::delete('apt/{uploader}', 'UploaderController@removeApt');
+
     Route::post('/addMirror', 'AptController@addMirror');
-    Route::post('/addApt', 'UploadersController@addApt');    
-    Route::post('/removeApt', 'UploadersController@removeApt');
 }
 // BOTH
-Route::get('/channels', 'UploadersController@index');
-Route::post('/channelUpdate', 'UploadersController@update');
-Route::post('/channelStop', 'UploadersController@stop');
-Route::post('/channelRestart', 'UploadersController@restart');
-Route::post('/channelEmpty', 'UploadersController@empty');
-Route::post('/getPipPort', 'UploadersController@getPipPort');
-Route::post('/getAptPort', 'UploadersController@getAptPort');
+Route::get('uploader/{uploader}', 'UploaderController@retrieve');
+Route::get('uploader', 'UploaderController@retrieveAll');
+
+Route::put('uploader/stop/{uploader}', 'UploaderController@stop');
+Route::put('uploader/restart/{uploader}', 'UploaderController@restart');
+Route::put('uploader/empty/{uploader}', 'UploaderController@empty');
 
 // Main Route...
 Route::get('/main', 'MainPageController@index');

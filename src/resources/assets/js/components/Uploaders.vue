@@ -101,9 +101,9 @@ export default {
         })
         setInterval(() => {
             if (me.canUpdate) {
-                const url = '/channelUpdate'
+                const url = 'uploader'
                 const options = {
-                    method: 'POST',
+                    method: 'GET',
                     headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                     url,
                 }
@@ -133,7 +133,7 @@ export default {
                     headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                     url,
                     data: {
-                        uploader: name,
+                        name: name,
                     },
                 }
                 axios(options)
@@ -182,7 +182,7 @@ export default {
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                 url,
                 data: {
-                    uploader: me.uploaderToAdd,
+                    name: me.uploaderToAdd,
                     port: parseInt(me.portToAdd)
                 },
             }

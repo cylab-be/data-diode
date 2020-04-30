@@ -175,31 +175,15 @@ export default {
         }
     },
     mounted() {
-        var me = this
-        const url = '/getAptPort'
-        const options = {
-            method: 'POST',
-            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-            url,
-            data: {
-                uploader: me.item.name,
-            },
+        if (this.item.aptport != 0 && this.item.aptport != undefined) {
+            this.aptport = this.item.aptport
+            this.isAptModule = true
+            var ip = '192.168.102.1'
+            var command = 'deb [trusted=yes] '
+            command += 'http://' + ip + ':'
+            command += this.item.aptport
+            this.command = command
         }
-        axios(options)
-        .then(function(response) {
-            me.isAptModule = response.data.aptport != 0
-            if (response.data.aptport != 0) {
-                me.aptport = response.data.aptport
-                var ip = '192.168.102.1'
-                var command = 'deb [trusted=yes] '
-                command += 'http://' + ip + ':'
-                command += response.data.aptport
-                me.command = command
-            }
-        })
-        .catch(function(error) {
-            toastr.error('Unable to get the ' + me.item.name + '\'s channel apt port module')
-        })
     },
     methods: {
         addApt() {
@@ -210,13 +194,13 @@ export default {
             }
             this.$refs.addButton.startBlink()
             const port = parseInt(me.aptport)
-            const url = '/addApt'
+            const url = 'apt/' + me.item.id
             const options = {
                 method: 'POST',
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                 url,
                 data: {
-                    uploader: me.item.name,
+                    name: me.item.name,
                     port: port
                 },
             }
@@ -233,13 +217,13 @@ export default {
         },
         removeApt() {
             var me = this
-            const url = '/removeApt'
+            const url = 'apt/' + me.item.id
             const options = {
-                method: 'POST',
+                method: 'DELETE',
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                 url,
                 data: {
-                    uploader: me.item.name,
+                    name: me.item.name,
                 },
             }
             this.$refs.delButton.startSpin()
@@ -266,7 +250,7 @@ export default {
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                 url,
                 data: {
-                    uploader: me.item.name,
+                    name: me.item.name,
                     url: me.mirrorUrl,
                 },
             }

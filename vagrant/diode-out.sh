@@ -68,7 +68,7 @@ EOF
 chown -R www-data:www-data . ../BlindFTP_0.37 /etc/supervisord.conf /etc/ntp.conf ../fakeNTP
 sed -i -e "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g" /etc/sysctl.conf
 sysctl -p /etc/sysctl.conf
-echo "www-data ALL=NOPASSWD: /bin/netstat, /bin/rm, /usr/bin/python, /usr/bin/python3, /var/www/data-diode/src/app/Scripts/*, /usr/local/bin/supervisord" | EDITOR="tee -a" visudo
+echo "www-data ALL=NOPASSWD: /usr/bin/python, /usr/bin/python3, /var/www/data-diode/src/app/Scripts/*, /usr/local/bin/supervisord" | EDITOR="tee -a" visudo
 
 # .zips folder for FTP zipped folder downloads
 cd /var/www/data-diode/src/storage/app/files
