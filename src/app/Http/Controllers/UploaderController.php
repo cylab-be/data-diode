@@ -77,7 +77,7 @@ class UploaderController extends Controller
         try {
             $process->mustRun();
         } catch (ProcessFailedException $exception) {
-            return response()->json(['message' => 'This process could not be stopped.'], 400);
+            return response()->json(['message' => 'This process could not be stopped.'], 451);
         }
     }
 

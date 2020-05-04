@@ -8,6 +8,9 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\User;
 use App\Uploader;
 
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+
 class UploaderTest extends TestCase
 {
 
@@ -175,13 +178,8 @@ class UploaderTest extends TestCase
 
     public function testDeleteUploaderNotConnectedJson()
     {
-        if (env("DIODE_IN", true)) {
-            $this->json("DELETE", "/uploader/" . $this->uploader->id)
-                ->assertStatus(401);
-        } else {
-            $this->json("DELETE", "/uploader/" . $this->uploader->id)
-                ->assertStatus(405);
-        }
+        $this->json("DELETE", "/uploader/" . $this->uploader->id)
+            ->assertStatus(env("DIODE_IN", true) ? 401 : 405);
     }
 
     public function testDeleteUploaderNotConnected()
@@ -215,7 +213,6 @@ class UploaderTest extends TestCase
                 ->assertStatus(204);
             $this->actingAs($this->user)->get("/uploader/" . $this->uploader->id)
                 ->assertStatus(404);
-
         } else {
             $this->actingAs($this->user)->delete("/uploader/" . $this->uploader->id)
                 ->assertStatus(405);
@@ -224,39 +221,22 @@ class UploaderTest extends TestCase
 
     public function testDeleteUploaderNotFoundJson()
     {
-        if (env("DIODE_IN", true)) {
-            $this->actingAs($this->user)->json("DELETE", "/uploader/9999999999999999999999")
-                ->assertStatus(404);
-        } else {
-            $this->actingAs($this->user)->json("DELETE", "/uploader/9999999999999999999999")
-                ->assertStatus(405);
-        }
+        $this->actingAs($this->user)->json("DELETE", "/uploader/9999999999999999999999")
+            ->assertStatus(env("DIODE_IN", true) ? 404 : 405);
     }
 
     public function testDeleteUploaderNotFound()
     {
-        if (env("DIODE_IN", true)) {
-            $this->actingAs($this->user)->delete("/uploader/9999999999999999999999")
-                ->assertStatus(404);
-        } else {
-            $this->actingAs($this->user)->delete("/uploader/9999999999999999999999")
-                ->assertStatus(405);
-        }
+        $this->actingAs($this->user)->delete("/uploader/9999999999999999999999")
+            ->assertStatus(env("DIODE_IN", true) ? 404 : 405);
     }
 
     public function testPostUploaderNotConnectedJson()
     {
-        if (env("DIODE_IN", true)) {
-            $this->json("POST", "/uploader", [
-                "name" => "test0",
-                "port" => 40000,
-            ])->assertStatus(401);
-        } else {
-            $this->json("POST", "/uploader", [
-                "name" => "test0",
-                "port" => 40000,
-            ])->assertStatus(405);
-        }
+        $this->json("POST", "/uploader", [
+            "name" => "test0",
+            "port" => 40000,
+        ])->assertStatus(env("DIODE_IN", true) ? 401 : 405);
     }
 
     public function testPostUploaderNotConnected()
@@ -291,7 +271,8 @@ class UploaderTest extends TestCase
                 ->assertJsonFragment(["port" => "40000"])
                 ->assertJsonFragment(["pipport" => "0"])
                 ->assertJsonFragment(["aptport" => "0"]);
-            $this->actingAs($this->user)->delete("/uploader/" . $obj["id"]);
+            $this->actingAs($this->user)->delete("/uploader/" . $obj["id"])
+                ->assertStatus(204);
         } else {
             $this->actingAs($this->user)->json("POST", "/uploader", [
                 "name" => "test0",
@@ -300,7 +281,7 @@ class UploaderTest extends TestCase
         }
     }
 
-    public function testPostUploaderConnected()
+    /*public function testPostUploaderConnected()
     {
         if (env("DIODE_IN", true)) {
             $json = $this->actingAs($this->user)->post("/uploader", [
@@ -317,90 +298,53 @@ class UploaderTest extends TestCase
                 ->assertJsonFragment(["port" => "40000"])
                 ->assertJsonFragment(["pipport" => "0"])
                 ->assertJsonFragment(["aptport" => "0"]);
-            $this->actingAs($this->user)->delete("/uploader/" . $obj["id"]);
+            $this->actingAs($this->user)->delete("/uploader/" . $obj["id"])
+                ->assertStatus(204);
         } else {
             $this->actingAs($this->user)->post("/uploader", [
                 "name" => "test0",
                 "port" => 40000,
             ])->assertStatus(405);
         }
-    }
+    }*/
 
     public function testPostUploaderMissingName()
     {
-        if (env("DIODE_IN", true)) {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "port" => 40000,
-            ])->assertStatus(422);
-        } 
-        // else we already proved that POST is not allowed on /uploader
-        // but too avoid a risky test result we prove it again (idem 
-        // the next tests)
-        else {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "port" => 40000,
-            ])->assertStatus(405);
-        }
+        $this->actingAs($this->user)->json("POST", "/uploader", [
+            "port" => 40000,
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 405);
     }
 
     public function testPostUploaderWrongNameType()
     {
-        if (env("DIODE_IN", true)) {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => 1,
-                "port" => 40000,
-            ])->assertStatus(422);
-        } else {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => 1,
-                "port" => 40000,
-            ])->assertStatus(405);
-        }
+        $this->actingAs($this->user)->json("POST", "/uploader", [
+            "name" => 1,
+            "port" => 40000,
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 405);
     }
 
     public function testPostUploaderWrongNameRegex()
     {
-        if (env("DIODE_IN", true)) {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => 'test.0',
-                "port" => 40000,
-            ])->assertStatus(422);
-        } else {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => 'test.0',
-                "port" => 40000,
-            ])->assertStatus(405);
-        }
+        $this->actingAs($this->user)->json("POST", "/uploader", [
+            "name" => 'test.0',
+            "port" => 40000,
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 405);
     }
 
     public function testPostUploaderNonUniqueName()
     {
-        if (env("DIODE_IN", true)) {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => 'ftp',
-                "port" => 50000,
-            ])->assertStatus(422);
-        } else {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => 'ftp',
-                "port" => 50000,
-            ])->assertStatus(405);
-        }
+        $this->actingAs($this->user)->json("POST", "/uploader", [
+            "name" => 'ftp',
+            "port" => 50000,
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 405);
     }
 
     public function testPostUploaderMinSizeName()
     {
-        if (env("DIODE_IN", true)) {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => 'aa',
-                "port" => 40000,
-            ])->assertStatus(422);
-        } else {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => 'aa',
-                "port" => 40000,
-            ])->assertStatus(405);
-        }
+        $this->actingAs($this->user)->json("POST", "/uploader", [
+            "name" => 'aa',
+            "port" => 40000,
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 405);        
     }
 
     public function testPostUploaderMaxSizeName()
@@ -411,135 +355,73 @@ class UploaderTest extends TestCase
         $name .= "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
         $name .= "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
         $this->assertEquals(strlen($name), 256);
-        if (env("DIODE_IN", true)) {            
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => $name,
-                "port" => 40000,
-            ])->assertStatus(422);
-        } else {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => $name,
-                "port" => 40000,
-            ])->assertStatus(405);
-        }
+        $this->actingAs($this->user)->json("POST", "/uploader", [
+            "name" => $name,
+            "port" => 40000,
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 405);        
     }
 
     public function testPostUploaderMissingPort()
     {
-        if (env("DIODE_IN", true)) {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => "test0",
-            ])->assertStatus(422);
-        } else {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => "test0",
-            ])->assertStatus(405);
-        }
+        $this->actingAs($this->user)->json("POST", "/uploader", [
+            "name" => "test0",
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 405);        
     }
 
     public function testPostUploaderWrongPortType()
     {
-        if (env("DIODE_IN", true)) {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => "test0",
-                "port" => "fail",
-            ])->assertStatus(422);
-        } else {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => "test0",
-                "port" => "fail",
-            ])->assertStatus(405);
-        }
+        $this->actingAs($this->user)->json("POST", "/uploader", [
+            "name" => "test0",
+            "port" => "fail",
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 405);        
     }
 
     public function testPostUploaderNonUniquePort()
     {
-        if (env("DIODE_IN", true)) {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => 'test0',
-                "port" => 10000,
-            ])->assertStatus(422);
-        } else {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => 'test0',
-                "port" => 10000,
-            ])->assertStatus(405);
-        }
+        $this->actingAs($this->user)->json("POST", "/uploader", [
+            "name" => 'test0',
+            "port" => 10000,
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 405);        
     }
 
     public function testPostUploaderUnderRangePort()
     {
-        if (env("DIODE_IN", true)) {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => 'test0',
-                "port" => 1024,
-            ])->assertStatus(422);
-        } else {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => 'test0',
-                "port" => 1024,
-            ])->assertStatus(405);
-        }
+        $this->actingAs($this->user)->json("POST", "/uploader", [
+            "name" => 'test0',
+            "port" => 1024,
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 405);        
     }
 
     public function testPostUploaderAboveRangePort()
     {
-        if (env("DIODE_IN", true)) {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => 'test0',
-                "port" => 65536,
-            ])->assertStatus(422);
-        } else {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => 'test0',
-                "port" => 65536,
-            ])->assertStatus(405);
-        }
+        $this->actingAs($this->user)->json("POST", "/uploader", [
+            "name" => 'test0',
+            "port" => 65536,
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 405);        
     }
 
     public function testPostUploaderUsedByOtherProgramPort()
     {
-        if (env("DIODE_IN", true)) {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => 'test0',
-                "port" => 9001, // used by supervisor
-            ])->assertStatus(422);
-        } else {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => 'test0',
-                "port" => 9001, // used by supervisor
-            ])->assertStatus(405);
-        }
+        $this->actingAs($this->user)->json("POST", "/uploader", [
+            "name" => 'test0',
+            "port" => 9001, // used by supervisor
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 405);        
     }
 
     public function testPostUploaderUsedByOtherPipModulePort()
     {
-        if (env("DIODE_IN", true)) {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => 'test0',
-                "port" => 20001, // used by pip uploader's PIP module
-            ])->assertStatus(422);
-        } else {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => 'test0',
-                "port" => 20001, // used by pip uploader's PIP module
-            ])->assertStatus(405);
-        }
+        $this->actingAs($this->user)->json("POST", "/uploader", [
+            "name" => 'test0',
+            "port" => 20001, // used by pip uploader's PIP module
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 405);        
     }
 
     public function testPostUploaderUsedByOtherAptModulePort()
     {
-        if (env("DIODE_IN", true)) {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => 'test0',
-                "port" => 30001, // used by apt uploader's APT module
-            ])->assertStatus(422);
-        } else {
-            $this->actingAs($this->user)->json("POST", "/uploader", [
-                "name" => 'test0',
-                "port" => 30001, // used by apt uploader's APT module
-            ])->assertStatus(405);
-        }
+        $this->actingAs($this->user)->json("POST", "/uploader", [
+            "name" => 'test0',
+            "port" => 30001, // used by apt uploader's APT module
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 405);        
     }
 
 }

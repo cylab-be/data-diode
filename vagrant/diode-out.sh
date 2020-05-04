@@ -1,7 +1,7 @@
 #!/bin/bash
 export DEBIAN_FRONTEND=noninteractive
 apt update
-apt install -y apache2 php libapache2-mod-php php-pdo php-mbstring php-tokenizer php-xml composer zip unzip iptables-persistent php-sqlite3 python3-pip ntp
+apt install -y apache2 php libapache2-mod-php php-pdo php-mbstring php-tokenizer php-xml composer zip unzip iptables-persistent php-sqlite3 python3-pip ntp php7.0-gd
 a2dissite 000-default.conf
 cat > /etc/apache2/sites-available/data-diode.conf << EOF
 <Directory /var/www/data-diode/src/public>

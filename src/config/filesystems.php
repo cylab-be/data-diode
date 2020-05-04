@@ -48,6 +48,11 @@ return [
             'root' => storage_path('app/files'),
         ],
 
+        'diode_local_test' => [
+            'driver' => 'local',
+            'root' => storage_path('app/files/test0'),
+        ],
+
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app'),
