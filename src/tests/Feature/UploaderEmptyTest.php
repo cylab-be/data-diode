@@ -16,7 +16,7 @@ use Illuminate\Http\UploadedFile;
  * Check if the emptying feature of the folder associated to
  * a channel do empty that folder. 
  * 
- * This test must be run on diodein first. Then wait 10 
+ * This test must be run on diodein first. Then wait ~10 
  * seconds and run it on diodeout. The diodein test will 
  * wait for 20 seconds before deleting the created channel,
  * allowing the diodeout test to use the uploader created 
@@ -59,36 +59,36 @@ class UploaderEmptyTest extends TestCase
 
         if (env("DIODE_IN", true)) {
             // Stopping program to avoid the file to be sent to diodeout
-            $this->actingAs($this->user)->json("PUT", "/uploader/stop/" . $obj["id"])
+            $this->actingAs($this->user)->put("/uploader/stop/" . $obj["id"])
                  ->assertStatus(200);
                 
             // Upload file
-            $this->json('POST', '/upload', [
+            $this->actingAs($this->user)->post('/upload', [
                 'uploader' => $obj['name'],
                 'input_file_0' => UploadedFile::fake()->image('upload.jpg')->size(1),
                 'input_file_full_path_0' => 'upload.jpg',
-            ]);
+            ])->assertStatus(200);
 
             // Checking there is a file
             Storage::disk('diode_local_test')->assertExists('upload.jpg');
 
             // Empyting folder
-            $this->actingAs($this->user)->json("PUT", "/uploader/empty/" . $obj["id"])
+            $this->actingAs($this->user)->put("/uploader/empty/" . $obj["id"])
                  ->assertStatus(200);             
                 
             // Checking there is no file
             Storage::disk('diode_local_test')->assertMissing('upload.jpg');
 
             // Restarting program so that the next file will be sent to diodeout
-            $this->actingAs($this->user)->json("PUT", "/uploader/restart/" . $obj["id"])
+            $this->actingAs($this->user)->put("/uploader/restart/" . $obj["id"])
                 ->assertStatus(200);
 
             // Upload the new file
-            $this->json('POST', '/upload', [
+            $this->actingAs($this->user)->post('/upload', [
                 'uploader' => $obj['name'],
                 'input_file_0' => UploadedFile::fake()->image('upload.jpg')->size(1),
                 'input_file_full_path_0' => 'upload.jpg',
-            ]);
+            ])->assertStatus(200);
 
             // Checking there is a file
             Storage::disk('diode_local_test')->assertExists('upload.jpg');
@@ -101,7 +101,7 @@ class UploaderEmptyTest extends TestCase
             Storage::disk('diode_local_test')->assertExists('upload.jpg');
 
             // Empyting folder
-            $this->actingAs($this->user)->json("PUT", "/uploader/empty/" . $obj["id"])
+            $this->actingAs($this->user)->put("/uploader/empty/" . $obj["id"])
                  ->assertStatus(200);             
                 
             // Checking there is no file
@@ -112,7 +112,7 @@ class UploaderEmptyTest extends TestCase
             sleep(20);
 
             // Empyting folder
-            $this->actingAs($this->user)->json("PUT", "/uploader/empty/" . $obj["id"])
+            $this->actingAs($this->user)->put("/uploader/empty/" . $obj["id"])
                  ->assertStatus(200);             
                 
             // Checking there is no file

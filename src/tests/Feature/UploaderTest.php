@@ -281,33 +281,6 @@ class UploaderTest extends TestCase
         }
     }
 
-    /*public function testPostUploaderConnected()
-    {
-        if (env("DIODE_IN", true)) {
-            $json = $this->actingAs($this->user)->post("/uploader", [
-                "name" => "test0",
-                "port" => 40000,
-            ])->assertStatus(201)
-            ->getContent();
-            $obj = json_decode($json, true);
-            $this->actingAs($this->user)->get("/uploader/" . $obj["id"])
-                ->assertStatus(200)
-                ->assertJsonFragment(["id" => $obj["id"]])
-                ->assertJsonFragment(["name" => "test0"])
-                ->assertJsonFragment(["state" => "0"])
-                ->assertJsonFragment(["port" => "40000"])
-                ->assertJsonFragment(["pipport" => "0"])
-                ->assertJsonFragment(["aptport" => "0"]);
-            $this->actingAs($this->user)->delete("/uploader/" . $obj["id"])
-                ->assertStatus(204);
-        } else {
-            $this->actingAs($this->user)->post("/uploader", [
-                "name" => "test0",
-                "port" => 40000,
-            ])->assertStatus(405);
-        }
-    }*/
-
     public function testPostUploaderMissingName()
     {
         $this->actingAs($this->user)->json("POST", "/uploader", [
@@ -422,6 +395,132 @@ class UploaderTest extends TestCase
             "name" => 'test0',
             "port" => 30001, // used by apt uploader's APT module
         ])->assertStatus(env("DIODE_IN", true) ? 422 : 405);        
+    }
+
+    public function testPostAddPipMissingPort()
+    {
+        $this->actingAs($this->user)->json("POST", "pip/" . $this->uploader->id, [
+            "name" => "test0",
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);        
+    }
+
+    public function testPostAddPipWrongPortType()
+    {
+        $this->actingAs($this->user)->json("POST", "pip/" . $this->uploader->id, [
+            "name" => "test0",
+            "port" => "fail",
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);        
+    }
+
+    public function testPostAddPipNonUniquePort()
+    {
+        $this->actingAs($this->user)->json("POST", "pip/" . $this->uploader->id, [
+            "name" => 'test0',
+            "port" => 10000,
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);        
+    }
+
+    public function testPostAddPipUnderRangePort()
+    {
+        $this->actingAs($this->user)->json("POST", "pip/" . $this->uploader->id, [
+            "name" => 'test0',
+            "port" => 1024,
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);        
+    }
+
+    public function testPostAddPipAboveRangePort()
+    {
+        $this->actingAs($this->user)->json("POST", "pip/" . $this->uploader->id, [
+            "name" => 'test0',
+            "port" => 65536,
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);        
+    }
+
+    public function testPostAddPipUsedByOtherProgramPort()
+    {
+        $this->actingAs($this->user)->json("POST", "pip/" . $this->uploader->id, [
+            "name" => 'test0',
+            "port" => 9001, // used by supervisor
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);        
+    }
+
+    public function testPostAddPipUsedByOtherPipModulePort()
+    {
+        $this->actingAs($this->user)->json("POST", "pip/" . $this->uploader->id, [
+            "name" => 'test0',
+            "port" => 20001, // used by pip uploader's PIP module
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);        
+    }
+
+    public function testPostAddPipUsedByOtherAptModulePort()
+    {
+        $this->actingAs($this->user)->json("POST", "pip/" . $this->uploader->id, [
+            "name" => 'test0',
+            "port" => 30001, // used by apt uploader's APT module
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);        
+    }
+
+    public function testPostAddAptMissingPort()
+    {
+        $this->actingAs($this->user)->json("POST", "apt/" . $this->uploader->id, [
+            "name" => "test0",
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);        
+    }
+
+    public function testPostAddAptWrongPortType()
+    {
+        $this->actingAs($this->user)->json("POST", "apt/" . $this->uploader->id, [
+            "name" => "test0",
+            "port" => "fail",
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);        
+    }
+
+    public function testPostAddAptNonUniquePort()
+    {
+        $this->actingAs($this->user)->json("POST", "apt/" . $this->uploader->id, [
+            "name" => 'test0',
+            "port" => 10000,
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);        
+    }
+
+    public function testPostAddAptUnderRangePort()
+    {
+        $this->actingAs($this->user)->json("POST", "apt/" . $this->uploader->id, [
+            "name" => 'test0',
+            "port" => 1024,
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);        
+    }
+
+    public function testPostAddAptAboveRangePort()
+    {
+        $this->actingAs($this->user)->json("POST", "apt/" . $this->uploader->id, [
+            "name" => 'test0',
+            "port" => 65536,
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);        
+    }
+
+    public function testPostAddAptUsedByOtherProgramPort()
+    {
+        $this->actingAs($this->user)->json("POST", "apt/" . $this->uploader->id, [
+            "name" => 'test0',
+            "port" => 9001, // used by supervisor
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);        
+    }
+
+    public function testPostAddAptUsedByOtherPipModulePort()
+    {
+        $this->actingAs($this->user)->json("POST", "apt/" . $this->uploader->id, [
+            "name" => 'test0',
+            "port" => 20001, // used by pip uploader's PIP module
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);        
+    }
+
+    public function testPostAddAptUsedByOtherAptModulePort()
+    {
+        $this->actingAs($this->user)->json("POST", "apt/" . $this->uploader->id, [
+            "name" => 'test0',
+            "port" => 30001, // used by apt uploader's APT module
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);        
     }
 
 }

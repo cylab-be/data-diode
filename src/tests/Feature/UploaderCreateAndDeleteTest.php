@@ -13,7 +13,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 /**
  * Check if the creating channel feature.
  * 
- * This test must be run on diodein first. Then wait a few 
+ * This test must be run on diodein first. Then wait ~10 
  * seconds and run it on diodeout. The diodein test will 
  * wait for 20 seconds before deleting the created channel,
  * allowing the diodeout test to use the uploader created 
@@ -51,7 +51,7 @@ class UploaderCreateAndDeleteTest extends TestCase
             ])->assertStatus(201)
               ->getContent();
             $obj = json_decode($json, true);
-            // Checking the uploader is in the DB
+            // Checking that the uploader is in the DB
             $this->actingAs($this->user)->get("/uploader/" . $obj["id"])
                 ->assertStatus(200)
                 ->assertJsonFragment(["id" => $obj["id"]])
@@ -63,7 +63,7 @@ class UploaderCreateAndDeleteTest extends TestCase
         } else {
             // Getting the new uploader
             $obj = Uploader::where("name", "=", "test0")->first();
-            // Checking the uploader is in the DB
+            // Checking that the uploader is in the DB
             $this->assertTrue($obj["name"] == "test0");
             $this->assertTrue($obj["state"] == "0");
             $this->assertTrue($obj["port"] == 40000);
@@ -98,6 +98,62 @@ class UploaderCreateAndDeleteTest extends TestCase
             // Deleting the uploader
             $this->actingAs($this->user)->delete("/uploader/" . $obj["id"])
                  ->assertStatus(204);
+            
+            // Checking that the uploader is not in the DB
+            $this->assertTrue(Uploader::where("name", "=", "test0")->count() == 0);
+
+            // Checking if a folder has been created
+            $cmd = 'cd /var/www/data-diode/src/storage/app/files && ';
+            $cmd .= '[ -d test0 ] &&  echo 1 || echo 0';
+            $process = new Process($cmd);
+            try {
+                $process->mustRun();            
+            } catch (ProcessFailedException $exception) {
+                $output = $process->getOutput();
+                $this->assertTrue($output == "0");
+            }
+
+            // Checking if supervisorctl has run the new uploader's config
+            $cmd = 'supervisorctl pid blindftp-' . $obj['name'];
+            $process = new Process($cmd);
+            try {
+                $process->mustRun();            
+            } catch (ProcessFailedException $exception) {
+                $output = $process->getOutput();
+                // The output should be a program non existing error
+                // and not a number
+                $this->assertFalse(ctype_digit(trim($output)));
+            }
+
+        } else {
+            sleep(20);
+            // The uploader should have been deleted thanks to the Python script...
+
+            // Checking that the uploader is not in the DB
+            $this->assertTrue(Uploader::where("name", "=", "test0")->count() == 0);
+
+            // Checking if a folder has been created
+            $cmd = 'cd /var/www/data-diode/src/storage/app/files && ';
+            $cmd .= '[ -d test0 ] &&  echo 1 || echo 0';
+            $process = new Process($cmd);
+            try {
+                $process->mustRun();            
+            } catch (ProcessFailedException $exception) {
+                $output = $process->getOutput();
+                $this->assertTrue($output == "0");
+            }
+
+            // Checking if supervisorctl has run the new uploader's config
+            $cmd = 'supervisorctl pid blindftp-' . $obj['name'];
+            $process = new Process($cmd);
+            try {
+                $process->mustRun();            
+            } catch (ProcessFailedException $exception) {
+                $output = $process->getOutput();
+                // The output should be a program non existing error
+                // and not a number
+                $this->assertFalse(ctype_digit(trim($output)));
+            }
         }
     }
 }
