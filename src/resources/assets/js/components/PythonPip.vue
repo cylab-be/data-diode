@@ -196,10 +196,9 @@ export default {
                 var me = this            
                 function send(name) {
                     return new Promise((resolve, reject) => {
-                        axios.post('/pythonpip',
+                        axios.post('pip/package/' + me.item.id,
                         {
-                            name: name,
-                            name: me.item.name
+                            package: me.packageName,
                         })
                         .then(function(response){                            
                             resolve(response)
@@ -225,6 +224,7 @@ export default {
                     me.$refs.addPackage.stopBlink()
                     me.packageName = ''
                 }).catch(error => {
+                    me.cannotDownload = false
                     toastr.error(error.response.data.message)
                     me.$refs.addPackage.stopBlink()
                     me.packageName = ''

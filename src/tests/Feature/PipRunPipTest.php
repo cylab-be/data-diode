@@ -10,14 +10,14 @@ use App\Uploader;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * Check if if the downloaded mirror is in the uploader's
- * folder. Also checks if the mirror is sent from diodein
+ * Check if if the downloaded package is in the uploader's
+ * folder. Also checks if the package is sent from diodein
  * to diodeout.
  * 
  * This test must be run on diodein first. Then wait ~10 
  * seconds and run it on diodeout. 
  */
-class AptAddMirrorTest extends TestCase
+class PipRunPipTest extends TestCase
 {
     private $user;
     private $uploader;
@@ -56,21 +56,26 @@ class AptAddMirrorTest extends TestCase
         parent::tearDown();
     }
 
-    public function testPostAptAddMirror()
+    public function testPostPipRunPip()
     {
         if (env("DIODE_IN", true)) {
-            $this->actingAs($this->user)->json("POST", "apt/mirror/" . $this->uploader["id"], [
-                "url" => 'https://deb.opera.com/opera',
+            $this->actingAs($this->user)->json("POST", "pip/package/" . $this->uploader["id"], [
+                "package" => "requests",
             ])->assertStatus(200);
 
             // Checking that there is the mirror folder
-            Storage::disk('diode_local_test')->assertExists('deb.opera.com');
+            Storage::disk('diode_local_test')->assertExists('simple/requests');
+
+            // The requests package takes very little time to be downloaded,
+            // this time will allow its transfer to diodeout before the 
+            // uploader is deleted.
+            sleep(20);
         } else {
             $contains = false;
             while (Uploader::where('name', '=', 'test0')->count() != 0) {
                 // Diodeout should receive the folder while diodein is sending
                 // it at least once before diodein's test destroys the channel.
-                if (Storage::disk('diode_local_test')->exists('deb.opera.com')) {
+                if (Storage::disk('diode_local_test')->exists('simple/requests')) {
                     $this->assertTrue(true);
                     $contains = true;
                     break;

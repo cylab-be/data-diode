@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AddMirrorRequest extends FormRequest
+class RunPipRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,7 +27,6 @@ class AddMirrorRequest extends FormRequest
             "package" => [
                 "required",
                 "string",
-                "regex:/^https?:\/\/(www\.)?([-a-zA-Z0-9@:%._\+~#=]{1,256}\.)+[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/",
             ],
         ];
     }

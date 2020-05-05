@@ -141,7 +141,7 @@ export default {
 
                 function send(name) {
                     return new Promise((resolve, reject) => {
-                        axios.post('/pythonpip',
+                        axios.post('pip/package/',
                         {
                             name: name,
                         })

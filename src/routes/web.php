@@ -58,8 +58,7 @@ if (!env('DIODE_IN', false)) {
     Route::get('/upload', 'StorageController@uploadIndex');
     Route::post('/upload', 'StorageController@upload');
 
-    Route::get('/pythonpip', 'PythonPipController@index');
-    Route::post('/pythonpip', 'PythonPipController@runPip');    
+    Route::post('pip/package/{uploader}', 'PythonPipController@runPip');    
     
     Route::post('uploader', 'UploaderController@create');
     Route::delete('uploader/{uploader}', 'UploaderController@delete');

@@ -44065,8 +44065,6 @@ exports.push([module.i, "\n.add-package-button[data-v-28b1c574] {\n    height: 4
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 //
 //
 //
@@ -44258,9 +44256,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             if (this.packageName.length > 0) {
                 var send = function send(name) {
                     return new Promise(function (resolve, reject) {
-                        axios.post('/pythonpip', _defineProperty({
-                            name: name
-                        }, 'name', me.item.name)).then(function (response) {
+                        axios.post('pip/package/' + me.item.id, {
+                            package: me.packageName
+                        }).then(function (response) {
                             resolve(response);
                         }).catch(function (error) {
                             reject(error);
@@ -44289,6 +44287,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                     me.$refs.addPackage.stopBlink();
                     me.packageName = '';
                 }).catch(function (error) {
+                    me.cannotDownload = false;
                     toastr.error(error.response.data.message);
                     me.$refs.addPackage.stopBlink();
                     me.packageName = '';
@@ -50287,7 +50286,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                 url: url,
                 data: {
-                    name: me.item.name,
                     url: me.mirrorUrl
                 }
             };
