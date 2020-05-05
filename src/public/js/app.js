@@ -50281,7 +50281,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.item.state = '1';
             this.downloading = true;
             this.$refs.addMirror.startBlink();
-            var url = '/addMirror';
+            var url = 'apt/mirror/' + this.item.id;
             var options = {
                 method: 'POST',
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },

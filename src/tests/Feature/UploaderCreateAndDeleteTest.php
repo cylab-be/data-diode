@@ -14,10 +14,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
  * Check if the creating channel feature.
  * 
  * This test must be run on diodein first. Then wait ~10 
- * seconds and run it on diodeout. The diodein test will 
- * wait for 20 seconds before deleting the created channel,
- * allowing the diodeout test to use the uploader created 
- * by the diodein test during those ~20 seconds.
+ * seconds and run it on diodeout. 
  */
 class UploaderCreateAndDeleteTest extends TestCase
 {

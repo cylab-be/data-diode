@@ -244,7 +244,7 @@ export default {
             this.item.state = '1'
             this.downloading = true
             this.$refs.addMirror.startBlink()
-            const url = '/addMirror'
+            const url = 'apt/mirror/' + this.item.id
             const options = {
                 method: 'POST',
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },

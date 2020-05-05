@@ -69,7 +69,7 @@ if (!env('DIODE_IN', false)) {
     Route::post('apt/{uploader}', 'UploaderController@addApt');
     Route::delete('apt/{uploader}', 'UploaderController@removeApt');
 
-    Route::post('/addMirror', 'AptController@addMirror');
+    Route::post('apt/mirror/{uploader}', 'AptController@addMirror');
 }
 // BOTH
 Route::get('uploader/{uploader}', 'UploaderController@retrieve');
