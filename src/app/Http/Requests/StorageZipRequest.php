@@ -28,7 +28,7 @@ class StorageZipRequest extends FormRequest
         return [
             "time" => [
                 "required",
-                "integer",                
+                "integer",
             ],
             "name" => [
                 "required",

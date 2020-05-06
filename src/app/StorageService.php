@@ -206,7 +206,7 @@ class StorageService {
      * @throws StorageException
      */
     public function upload(StorageUploadRequest $request, Uploader $uploader)
-    {        
+    {
         $file = $request->file('input_file');
         $fullPath = $request->input('input_file_full_path');
         $this->uploadFile($file, $fullPath, $uploader->name);
