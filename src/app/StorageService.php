@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use League\Flysystem\NotSupportedException;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use App\Uploader;
+use \Illuminate\Contracts\Filesystem\FileNotFoundException;
+use App\Http\Requests\StorageUploadRequest;
 
 class StorageService {
  
@@ -20,17 +24,16 @@ class StorageService {
      *
      * @param FilesystemAdapter $storage
      */
-    public function __construct( FilesystemAdapter $storage )
+    public function __construct(FilesystemAdapter $storage)
     {
         $this->storage = $storage;
     }
 
     /**
-     * Get directory content
+     * Get directory content.
      *
-     * @param String $path the directory path to get its content
-     *
-     * @return array containing the data needed about the directory
+     * @param String $path  The directory path to get its content
+     * @return array        The data needed about the directory
      */
     
     public function list( String $path ) {
@@ -66,11 +69,10 @@ class StorageService {
     }
 
     /**
-     * Get path info
+     * Get path info.
      *
-     * @param string $path
-     *
-     * @return array
+     * @param String $path  The path
+     * @return array        The info
      */
     
     private function pathInfo( $path ) {
@@ -87,14 +89,13 @@ class StorageService {
     }
     
     /**
-     * Get directories list
+     * Get directories list.
      *
-     * @param string $directory
-     *
-     * @return array
+     * @param String $directory The directory
+     * @return array            The list.
      */
     
-    private function directories( $directory ) {
+    private function directories($directory) {
         $diodeDirectories = $this->storage->directories( $directory );
     
         $directoriesList = [];
@@ -110,13 +111,11 @@ class StorageService {
     }
     
     /**
-     * Get files list for directory
+     * Get files list for directory.
      *
-     * @param string $directory
-     *
-     * @return array
-     */
-    
+     * @param String $directory The directory
+    * @return array             The files lits
+     */    
     private function files( $directory ) {
         $diodeFiles = $this->storage->files( $directory );
     
@@ -134,13 +133,11 @@ class StorageService {
     }
     
     /**
-     * Get list of path parts for navigation
+     * Get list of path parts for navigation.
      *
-     * @param string $directory
-     *
-     * @return array
+     * @param String $directory The directory
+     * @return array            The list of files    
      */
-    
     private function quickNavigation( $directory ) {
         $directoriesList = [];
     
@@ -185,69 +182,55 @@ class StorageService {
     }
 
     /**
-     * Download file
+     * Download a file.
      *
-     * @param Request $request
-     *
-     * @return StreamedResponse
-     * @throws StorageException
+     * @param String $path              The file path
+     * @return StreamedResponse         The requested file
+     * @throws FileNotFoundException    The eventual exception concerning the file path
      */
-    public function download( Request $request )
-    {
-        $path = $request->path;
-        //$this->checkExists( $path );
-        return $this->storage->download( $path );
+    public function download(String $path)
+    {        
+        if (!$this->storage->exists($path)) {
+            throw new FileNotFoundException();
+        }
+        return $this->storage->download($path);
     }
-
-    public function downloadZippedFolder(String $path) 
-    {
-        return $this->storage->download( $path );
-    }
-
 
     /**
-     * Upload file(s) in the 'diode_local' filesystem.
+     * Upload file(s) in the 'diode_local' filesystem under
+     * the uploader's folder.
      *
-     * @param Request the request.
-     *
-     * @return int the number of files that have been uploaded.
+     * @param StorageUploadRequest  The request made by the user
+     * @param  Uploader $uploader   The uploader
+     * @return Boolean              True if the upload happend without error, false otherwise
      * @throws StorageException
      */
-    public function upload( Request $request )
+    public function upload(StorageUploadRequest $request, Uploader $uploader)
     {        
-        $i = 0;
-        $uploaderName = 'ftp';
-        while ($request->hasFile('input_file_' . $i)) {
-            $file = $request->file('input_file_' . $i);
-            $fullPath = $request['input_file_full_path_' . $i];
-            $uploaderName = $request['uploader'];
-            if ($uploaderName == null) {
-                $uploaderName = 'ftp';
-            }
-            $this->uploadFile($file, $fullPath, $uploaderName);
-            $i++;
-        }
-        if ($i > 0) {
-            $cmd = "sudo python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py update " . $uploaderName . " 1";
-            $process = new Process($cmd);
+        $file = $request->file('input_file');
+        $fullPath = $request->input('input_file_full_path');
+        $this->uploadFile($file, $fullPath, $uploader->name);
+        $cmd = "sudo python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py update ";
+        $cmd .= $uploader->name . " 1";
+        $process = new Process($cmd);
+        try {
             $process->mustRun();
+            return true;
+        } catch (ProcessFailedException $exception) {
+            return false;
         }
-        return response()->json(['i' => $i, 'uploaderName' => $uploaderName], 200);
-        return $i;
     }
     
     /**
-     * Upload file.
+     * Upload a file.
      *
-     * @param UploadedFile the file.
-     * @param string the path.
-     * @param string the name of the uploader's channel.
-     *
-     * @return string
+     * @param UploadedFile $file    The file
+     * @param String $path          The file path
+     * @param STring $uploaderName  The name of the uploader
      */
-    private function uploadFile( $file, $path, $uploaderName )
+    private function uploadFile($file, $path, $uploaderName)
     {        
-        $this->storage->putFileAs( $uploaderName . '/', $file, $path );
+        $this->storage->putFileAs($uploaderName . '/', $file, $path);
     }
 
 }

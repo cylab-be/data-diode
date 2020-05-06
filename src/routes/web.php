@@ -44,19 +44,18 @@ Route::delete("rule/{rule}", "RuleController@delete");
 Route::get("network", "NetworkController@get");
 Route::put("network/update", "NetworkController@update");
 
-// BlindFTP Server/Client Python PIP & APT Routes...
+// BlindFTP Server/Client, Python PIP & APT Routes...
 if (!env('DIODE_IN', false)) {
     // DIODE OUT
-    Route::get('/storage', 'StorageController@listView');
-    Route::get('/storage/{path}', 'StorageController@listView')->where('path', '(.*)'); // The "where" method permits the usage of a slash in the path variable
-    Route::post('/download', 'StorageController@download');
-    Route::post('/zip', 'StorageController@zip');
-    Route::post('/getzip', 'StorageController@getZip');
-    Route::post('/remove', 'StorageController@remove');
+    Route::get('storage', 'StorageController@listView');
+    Route::get('storage/{path}', 'StorageController@listView')->where('path', '(.*)'); // The "where" method permits the usage of a slash in the path variable
+    Route::post('download', 'StorageController@download');
+    Route::post('zip', 'StorageController@zip');
+    Route::post('getzip', 'StorageController@getZip');
+    Route::post('remove', 'StorageController@remove');
 } else {
     // DIODE IN
-    Route::get('/upload', 'StorageController@uploadIndex');
-    Route::post('/upload', 'StorageController@upload');
+    Route::post('upload/{uploader}', 'StorageController@upload');
 
     Route::post('pip/package/{uploader}', 'PythonPipController@runPip');    
     
@@ -79,5 +78,5 @@ Route::put('uploader/restart/{uploader}', 'UploaderController@restart');
 Route::put('uploader/empty/{uploader}', 'UploaderController@empty');
 
 // Main Route...
-Route::get('/main', 'MainPageController@index');
+//Route::get('/main', 'MainPageController@index');
 Route::get('/', 'MainBisController@index');

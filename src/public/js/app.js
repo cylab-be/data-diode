@@ -47598,11 +47598,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                     var extra = 2 * (('' + me.totalNb).length - 2);
                     me.currentName = file.name.length <= 34 - extra ? file.name : file.name.substring(0, 31 - extra) + '...';
 
-                    formData.append('uploader', me.item.name);
-                    formData.append('input_file_full_path_' + 0, file.webkitRelativePath == '' ? './' + file.name : file.webkitRelativePath);
-                    formData.append('input_file_' + 0, file);
+                    formData.append('input_file_full_path', file.webkitRelativePath == '' ? './' + file.name : file.webkitRelativePath);
+                    formData.append('input_file', file);
 
-                    axios.post('/upload', //this.upload_url,
+                    axios.post('upload/' + me.item.id, //this.upload_url,
                     formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
@@ -47614,6 +47613,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                         me.barProgress = '100%';
                         resolve();
                     }).catch(function (error) {
+                        me.currentNb = 0;
+                        me.totalNb = 0;
+                        me.currentName = '...';
+                        input.value = ''; // will make the input.files.length equal to 0
+                        me.uploadText = me.isFile ? 'Select files...' : 'Select a folder...';
+                        me.barProgress = 0;
+                        me.uploading = false;
+                        me.stopUpload = false;
+                        me.uploadIcon = 'fa-arrow-up';
                         toastr.error(error.message);
                         reject();
                     });

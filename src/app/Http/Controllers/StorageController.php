@@ -6,6 +6,13 @@ use Illuminate\Http\Request;
 use App\StorageService;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use \Illuminate\Contracts\Filesystem\FileNotFoundException;
+use App\Uploader;
+use App\Http\Requests\StorageUploadRequest;
+use App\Http\Requests\StorageDownloadRequest;
+use App\Http\Requests\StorageZipRequest;
+use App\Http\Requests\StorageGetZipRequest;
+use App\Http\Requests\StorageRemoveRequest;
 
 /**
  * Controller used to browse the data sent by the diode in.
@@ -15,7 +22,7 @@ class StorageController extends Controller {
     private $storageService;
  
     /**
-     * ApiController constructor.
+     * StorageController constructor.
      *
      * @param StorageService the storage service.
      */
@@ -25,13 +32,12 @@ class StorageController extends Controller {
     }
  
     /**
-     * List of directory content into a view.
+     * List the content of a directory into a view.
      *
-     * @param Sring $path the directory path to get its content.
-     *
-     * @return mixed the view.
+     * @param String $path  The directory path to get its content
+     * @return mixed        The view
      */
-    public function listView( String $path = '.' ) {
+    public function listView(String $path = '.') {
         $content = $this->storageService->list($path );
         $dirPath = $content['info']['dirPath'];
         if ($dirPath != '.') {
@@ -47,127 +53,106 @@ class StorageController extends Controller {
     }
 
     /**
-     * Gets the view for the file upload page.
-     * @return mixed the view.
+     * Upload a file in the 'diode_local' filesystem under
+     * the uploader's folder.
+     * 
+     * @param StorageUploadRequest  The request made by the user
+     * @param Uploader $uploader    The uploader
+     * @return mixed                The json response containing the number of files
+     *                              that have been uploaded
      */
-    public function uploadIndex()
+    public function upload(StorageUploadRequest $request, Uploader $uploader) 
     {
-        return view("upload");
+        $success = $this->storageService->upload($request, $uploader);
+        $file = $request->input('input_file');
+        response()->json(['filename' => $file['name']]);
+        if (!$success) {
+            response()->json(['message' => 'Failed to upload.'], 400);
+        }
     }
 
     /**
-     * Upload file(s).
-     * 
-     * @param Resquest the request containing the file(s) to upload.
-     * 
-     * @return mixed a json containing the number of files that have been uploaded.
+     * Download a file.
+     *
+     * @param StorageDownloadRequest $request   The request made by the user
+     * @return StreamedResponse                 The requested file
+     * @throws FileNotFoundException            The eventual exception concerning the file path
      */
-    public function upload(Request $request) 
+    public function download(StorageDownloadRequest $request)
     {
-        $nb = $this->storageService->upload($request);
-        return response()->json(['nbUploads' => $nb]);
+        try {
+            $path = $request->input('path');
+            return $this->storageService->download($path);
+        } catch (FileNotFoundException $exception) {
+            return response()->json(['message' => 'File not found.'], 404);
+        }
     }
 
     /**
-     * Download file
+     * Zip a folder into the .zips folder.
      *
-     * @param Request $request
-     *
-     * @return StreamedResponse
-     * @throws StorageException
+     * @param StorageZipRequest $request    The request made by the user
+     * @return mixed                        The json response
      */
-    public function download( Request $request )
-    {
-        if ($request->path == null) {
-            return response()->json(['message' => 'Path missing.'], 400);
-        }
-        if ($this::badPath($request->path)) {
-            return response()->json(['message' => 'Invalid path.'], 400);
-        }
-        return $this->storageService->download( $request );
-    }    
-
-    public function zip( Request $request ) 
-    {
-        if ($request->path == null) {
-            return response()->json(['message' => 'Path missing.'], 400);
-        }
-        if ($request->name == null || $request->time == null) {
-            return response()->json(['message' => 'Folder name missing.'], 400);
-        }        
-        if ($this::badPath($request->path)) {
-            return response()->json(['message' => 'Invalid path.'], 400);
-        }
-        if ($this::badName($request->name)) {
-            return response()->json(['message' => 'Invalid folder name.'], 400);
-        }
-        // The double quotes are here to avoid errors with paths containing spaces
-        $folderPath = base_path('storage') . '/app/files' . $request->path;        
+    public function zip(StorageZipRequest $request) 
+    {        
+        $folderPath = base_path('storage') . '/app/files' . $request->input('path');
         $destPath = base_path('storage') . '/app/files/.zips/';
-        $destZip = $destPath . $request->name . '_' . $request->time . '.zip';
-        $cmd = 'sudo ' . base_path('app/Scripts') . '/zip-folder.sh "' . $folderPath . '" "' . $destZip . '" "' . $request->name . '"';
-        $process = new Process($cmd);
-        try {
-            $process->mustRun();
-        } catch (ProcessFailedException $exception) {
-            return response()->json(['message' => 'Failed to compress ' . $request->name, 'exception' => $exception->getMessage()], 400);
-        }
-    }
-
-    public function getZip( Request $request ) 
-    {
-        if ($request->name == null) {
-            return response()->json(['message' => 'Folder name missing.'], 400);
-        }
-        if ($request->time == null) {
-            return response()->json(['message' => 'Folder name missing.'], 400);
-        }
-        if ($this::badName($request->name) || $this::badName($request->time)) {
-            return response()->json(['message' => 'Invalid folder name.'], 400);
-        }
-        return $this->storageService->downloadZippedFolder( '.zips/' . $request->name . '_' . $request->time . '.zip' );
-    }
-
-    public function remove( Request $request )
-    {
-        if ($request->path == null) {
-            return response()->json(['message' => 'Path missing.'], 400);
-        }
-        if ($request->name == null) {
-            return response()->json(['message' => 'Target name missing.'], 400);
-        }
-        if ($this::badPath($request->path) || $this::badName($request->name)) {
-            return response()->json(['message' => 'Invalid path.'], 400);
-        }
+        $destZip = $destPath . $request->input('name') . '_' . $request->input('time') . '.zip';
         // The double quotes are here to avoid errors with paths containing spaces
-        $cmd = 'sudo ' . base_path('app/Scripts') . '/remove-file-or-folder.sh "' . base_path('storage') . '/app/files' . $request->path . '"';
-        if ($request->path == './.zips') {
-            $cmd = 'sudo ' . base_path('app/Scripts') . '/remove-file-or-folder.sh ' . base_path('storage') . '/app/files/.zips/*';
+        $cmd = 'sudo ' . base_path('app/Scripts') . '/zip-folder.sh "';
+        $cmd .= $folderPath . '" "' . $destZip . '" "' . $request->input('name') . '"';
+        $process = new Process($cmd);
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException $exception) {
+            return response()->json([
+                'message' => 'Failed to compress ' . $request->input('name'),
+                'exception' => $exception->getMessage()
+            ], 400);
+        }
+    }
+
+    /**
+     * Get a previously zipped folder
+     *
+     * @param StorageZipRequest $request    The request made by the user
+     * @return StreamedResponse             The requested zip file
+     * @throws FileNotFoundException        The eventual exception concerning the file path
+     */
+    public function getZip(StorageGetZipRequest $request)
+    {
+        try {
+            $path = '.zips/' . $request->input('name') . '_' . $request->input('time') . '.zip';
+            return $this->storageService->download($path);
+        } catch (FileNotFoundException $exception) {
+            return response()->json(['message' => 'File not found.'], 404);
+        }
+    }
+
+    /**
+     * Remove a folder or a file.
+     *
+     * @param StorageRemoveRequest $request The request made by the user
+     * @return mixed                        The json response
+     */
+    public function remove(StorageRemoveRequest $request)
+    {
+        // The double quotes are here to avoid errors with paths containing spaces
+        $cmd = 'sudo ' . base_path('app/Scripts') . '/remove-file-or-folder.sh "';
+        $cmd .= base_path('storage') . '/app/files' . $request->input('path') . '"';
+        if ($request->input('path') == './.zips') {
+            $cmd = 'sudo ' . base_path('app/Scripts') . '/remove-file-or-folder.sh ';
+            $cmd .= base_path('storage') . '/app/files/.zips/*';
         }
         $process = new Process($cmd);
         try {
             $process->mustRun();
         } catch (ProcessFailedException $exception) {
-            return response()->json(['message' => 'Failed to remove ' . $request->name, 'exception' => $exception->getMessage()], 400);
+            return response()->json([
+                'message' => 'Failed to remove ' . $request->input('name'),
+                'exception' => $exception->getMessage()
+            ], 400);
         }
     }
-
-    private function badPath( String $path )
-    {
-        // A path cannot contain '..'
-        if (preg_match('/^.*\.\..*$/', $path)){
-            return true;
-        }
-        return false;
-    }
-
-    private function badName( String $name )
-    {
-        // A name cannot contain '..' or '/'
-        if (preg_match('/^.*\.\..*$/', $name) || preg_match('/^.*\/.*$/', $name)){
-            return true;
-        }
-        return false;
-    }
-
 }
