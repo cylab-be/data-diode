@@ -95,7 +95,7 @@ class StorageController extends Controller {
      * @return mixed                        The json response
      */
     public function zip(StorageZipRequest $request) 
-    {        
+    {
         $folderPath = base_path('storage') . '/app/files' . $request->input('path');
         $destPath = base_path('storage') . '/app/files/.zips/';
         $destZip = $destPath . $request->input('name') . '_' . $request->input('time') . '.zip';

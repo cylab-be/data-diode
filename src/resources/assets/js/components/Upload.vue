@@ -187,7 +187,9 @@ export default {
                     formData.append('input_file_full_path', file.webkitRelativePath == '' ? './' + file.name : file.webkitRelativePath)
                     formData.append('input_file', file)
 
-                    axios.post( 'upload/' + me.item.id,//this.upload_url,
+                    console.log(file)
+
+                    axios.post( '/upload/' + me.item.id,//this.upload_url,
                         formData,
                         {
                             headers: {

@@ -76,7 +76,7 @@ class StorageTest extends TestCase
 
     public function testPostUploadWrongInputFileFullPathType()
     {
-        $this->actingAs($this->user)->json("POST", "apt/" . $this->uploader->id, [
+        $this->actingAs($this->user)->json("POST", "upload/" . $this->uploader->id, [
             "input_file" => UploadedFile::fake()->image('upload.jpg')->size(1),
             "input_file_full_path" => 1,
         ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);
