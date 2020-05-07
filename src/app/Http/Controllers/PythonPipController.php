@@ -40,9 +40,9 @@ class PythonPipController extends Controller
         $process->setIdleTimeout(365 * 24 * 3600); // one year should be long enough...
         try {
             $process->mustRun();
-            return response()->json(['output' => $process->getOutput()]);
+            // return response()->json(['output' => $process->getOutput()]);
         } catch (ProcessFailedException $exception) {
-            return response()->json(['message' => $exception->getMessage()], 400);
+            return response()->json(['message' => 'Failed to download the package.'], 400);
         }
     }
 

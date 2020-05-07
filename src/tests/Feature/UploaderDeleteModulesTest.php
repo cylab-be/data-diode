@@ -11,8 +11,8 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
 /**
- * Check if the modules added to a deleted channel are also
- * deleted.
+ * Check if the modules added to a channel are also
+ * deleted when the channel is deleted.
  * 
  * This test must be run on diodein first. Then wait ~10 
  * seconds and run it on diodeout. 

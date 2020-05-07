@@ -39,7 +39,7 @@ class AptController extends Controller
             $process->mustRun();
             //return response()->json(['output' => $process->getOutput()]);
         } catch (ProcessFailedException $exception) {
-            return response()->json(['message' => $exception->getMessage()], 400);
+            return response()->json(['message' => 'Failed to add a mirror.'], 400);
         }
     }
 }

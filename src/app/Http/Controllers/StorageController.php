@@ -22,7 +22,7 @@ class StorageController extends Controller {
     private $storageService;
  
     /**
-     * StorageController constructor.
+     * Create a new controller instance.
      *
      * @param StorageService the storage service.
      */
@@ -96,7 +96,14 @@ class StorageController extends Controller {
      */
     public function zip(StorageZipRequest $request) 
     {
-        $folderPath = base_path('storage') . '/app/files' . $request->input('path');
+        $len = strlen($request->input('path'));
+        if (startsWith($request->input('path'), './') &&  $len > 1) {
+            $path = substr($request->input('path'), 1, $len - 1);
+        } else {
+            $path = $request->input('path');
+        }
+        $path = '/' . $path;
+        $folderPath = base_path('storage') . '/app/files' . $path;
         $destPath = base_path('storage') . '/app/files/.zips/';
         $destZip = $destPath . $request->input('name') . '_' . $request->input('time') . '.zip';
         // The double quotes are here to avoid errors with paths containing spaces
@@ -108,7 +115,7 @@ class StorageController extends Controller {
         } catch (ProcessFailedException $exception) {
             return response()->json([
                 'message' => 'Failed to compress ' . $request->input('name'),
-                'exception' => $exception->getMessage()
+                //'exception' => $exception->getMessage()
             ], 400);
         }
     }
@@ -138,12 +145,20 @@ class StorageController extends Controller {
      */
     public function remove(StorageRemoveRequest $request)
     {
-        // The double quotes are here to avoid errors with paths containing spaces
-        $cmd = 'sudo ' . base_path('app/Scripts') . '/remove-file-or-folder.sh "';
-        $cmd .= base_path('storage') . '/app/files' . $request->input('path') . '"';
         if ($request->input('path') == './.zips') {
             $cmd = 'sudo ' . base_path('app/Scripts') . '/remove-file-or-folder.sh ';
             $cmd .= base_path('storage') . '/app/files/.zips/*';
+        } else {
+            $len = strlen($request->input('path'));
+            if (startsWith($request->input('path'), './') &&  $len > 2) {
+                $path = substr($request->input('path'), 1, $len - 1);
+            } else {
+                $path = $request->input('path');
+            }
+            $path = '/' . $path;
+            // The double quotes are here to avoid errors with paths containing spaces
+            $cmd = 'sudo ' . base_path('app/Scripts') . '/remove-file-or-folder.sh "';
+            $cmd .= base_path('storage') . '/app/files' . $path . '"';
         }
         $process = new Process($cmd);
         try {
@@ -151,7 +166,7 @@ class StorageController extends Controller {
         } catch (ProcessFailedException $exception) {
             return response()->json([
                 'message' => 'Failed to remove ' . $request->input('name'),
-                'exception' => $exception->getMessage()
+                //'exception' => $exception->getMessage()
             ], 400);
         }
     }

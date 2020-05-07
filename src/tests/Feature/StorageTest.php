@@ -41,6 +41,29 @@ class StorageTest extends TestCase
         }
     }
 
+    public function testPostUploadNotConnectedJson()
+    {
+        $this->json("POST", "upload/" . $this->uploader->id, [
+            "input_file" => UploadedFile::fake()->image('upload.jpg')->size(1),
+            "input_file_full_path" => "image.png",
+        ])->assertStatus(env("DIODE_IN", true) ? 401 : 404);
+    }
+
+    public function testPostUploadNotConnected()
+    {
+        if (env("DIODE_IN", true)) {
+            $this->post("upload/" . $this->uploader->id, [
+                "input_file" => UploadedFile::fake()->image('upload.jpg')->size(1),
+                "input_file_full_path" => "image.png",
+            ])->assertRedirect("/login");
+        } else {
+            $this->post("upload/" . $this->uploader->id, [
+                "input_file" => UploadedFile::fake()->image('upload.jpg')->size(1),
+                "input_file_full_path" => "image.png",
+            ])->assertStatus(404);
+        }
+    }
+
     public function testPostUploadMissingInputFile()
     {
         $this->actingAs($this->user)->json("POST", "upload/" . $this->uploader->id, [
@@ -82,6 +105,26 @@ class StorageTest extends TestCase
         ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);
     }
 
+    public function testPostDownloadNotConnectedJson()
+    {
+        $this->json("POST", "download", [
+            "path" => "image.png",
+        ])->assertStatus(env("DIODE_IN", true) ? 404 : 401);
+    }
+
+    public function testPostDownloadNotConnected()
+    {
+        if (env("DIODE_IN", true)) {
+            $this->post("download", [
+                "path" => "image.png",
+            ])->assertStatus(404);                
+        } else {
+            $this->post("download", [
+                "path" => "image.png",
+            ])->assertRedirect("/login");
+        }
+    }
+
     public function testPostDownloadMissingPath()
     {
         $this->actingAs($this->user)->json("POST", "download", [
@@ -117,9 +160,34 @@ class StorageTest extends TestCase
         ])->assertStatus(env("DIODE_IN", true) ? 404 : 422);
     }
 
+    public function testPostZipNotConnectedJson()
+    {
+        $this->json("POST", "zip", [
+            "path" => "image.png",
+        ])->assertStatus(env("DIODE_IN", true) ? 404 : 401);
+    }
+
+    public function testPostZipNotConnected()
+    {
+        if (env("DIODE_IN", true)) {
+            $this->post("zip", [
+                "time" => 1,
+                "name" => "image.png",
+                "path" => "image.png",
+            ])->assertStatus(404);
+        } else {
+            $this->post("zip", [
+                "time" => 1,
+                "name" => "image.png",
+                "path" => "image.png",
+            ])->assertRedirect("/login");
+        }
+    }
+
     public function testPostZipMissingTime()
     {
         $this->actingAs($this->user)->json("POST", "zip", [
+            // no time
             "name" => "image.png",
             "path" => "image.png",
         ])->assertStatus(env("DIODE_IN", true) ? 404 : 422);
@@ -233,6 +301,29 @@ class StorageTest extends TestCase
         ])->assertStatus(env("DIODE_IN", true) ? 404 : 422);
     }
 
+    public function testPostGetZipNotConnectedJson()
+    {
+        $this->json("POST", "getzip", [
+            "time" => 1,
+            "name" => "name",
+        ])->assertStatus(env("DIODE_IN", true) ? 404 : 401);
+    }
+
+    public function testPostGetZipNotConnected()
+    {
+        if (env("DIODE_IN", true)) {
+            $this->post("getzip", [
+                "time" => 1,
+                "name" => "image.png",
+            ])->assertStatus(404);                
+        } else {
+            $this->post("getzip", [
+                "time" => 1,
+                "name" => "image.png",
+            ])->assertRedirect("/login");
+        }
+    }
+
     public function testPostGetZipMissingTime()
     {
         $this->actingAs($this->user)->json("POST", "getzip", [
@@ -294,6 +385,29 @@ class StorageTest extends TestCase
             "time" => 1,
             "name" => "../image.png",
         ])->assertStatus(env("DIODE_IN", true) ? 404 : 422);
+    }
+
+    public function testPostRemoveNotConnectedJson()
+    {
+        $this->json("POST", "remove", [
+            "name" => "image.png",
+            "path" => "image.png",
+        ])->assertStatus(env("DIODE_IN", true) ? 404 : 401);
+    }
+
+    public function testPostRemoveNotConnected()
+    {
+        if (env("DIODE_IN", true)) {
+            $this->post("remove", [
+                "name" => "image.png",
+                "path" => "image.png",
+            ])->assertStatus(404);                
+        } else {
+            $this->post("remove", [
+                "name" => "image.png",
+                "path" => "image.png",
+            ])->assertRedirect("/login");
+        }
     }
 
     public function testPostRemoveMissingName()

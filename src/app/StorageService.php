@@ -203,13 +203,16 @@ class StorageService {
      * @param StorageUploadRequest  The request made by the user
      * @param  Uploader $uploader   The uploader
      * @return Boolean              True if the upload happend without error, false otherwise
-     * @throws StorageException
      */
     public function upload(StorageUploadRequest $request, Uploader $uploader)
     {
         $file = $request->file('input_file');
         $fullPath = $request->input('input_file_full_path');
-        $this->uploadFile($file, $fullPath, $uploader->name);
+        try {
+            $this->uploadFile($file, $fullPath, $uploader->name);
+        } catch (Exception $exception) {
+            return false;
+        }
         $cmd = "sudo python /var/www/data-diode/uploadersScripts/db_uploaders_clie.py update ";
         $cmd .= $uploader->name . " 1";
         $process = new Process($cmd);

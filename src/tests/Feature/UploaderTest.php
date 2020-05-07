@@ -67,7 +67,6 @@ class UploaderTest extends TestCase
         parent::tearDown();
     }
 
-
     public function testGetUploaderNotConnectedJson()
     {
         $this->json("GET", "/uploader/" . $this->uploader->id)
@@ -397,6 +396,46 @@ class UploaderTest extends TestCase
         ])->assertStatus(env("DIODE_IN", true) ? 422 : 405);        
     }
 
+    public function testPostRemovePipNotConnectedJson()
+    {
+        $this->json("DELETE", "pip/" . $this->uploader->id)
+             ->assertStatus(env("DIODE_IN", true) ? 401 : 404);
+    }
+
+    public function testPostRemovePipNotConnected()
+    {
+        if (env("DIODE_IN", true)) {
+            $this->delete("pip/" . $this->uploader->id)
+                 ->assertRedirect("/login");
+        } else {
+            $this->post("pip/" . $this->uploader->id)
+                 ->assertStatus(404);
+        }
+    }
+
+    public function testPostAddPipNotConnectedJson()
+    {
+        $this->json("POST", "pip/" . $this->uploader->id, [
+            "name" => 'test0',
+            "port" => 10001,
+        ])->assertStatus(env("DIODE_IN", true) ? 401 : 404);
+    }
+
+    public function testPostAddPipNotConnected()
+    {
+        if (env("DIODE_IN", true)) {
+            $this->post("pip/" . $this->uploader->id, [
+                "name" => 'test0',
+                "port" => 10001,
+            ])->assertRedirect("/login");
+        } else {
+            $this->post("pip/" . $this->uploader->id, [
+                "name" => 'test0',
+                "port" => 10001,
+            ])->assertStatus(404);
+        }
+    }
+
     public function testPostAddPipMissingPort()
     {
         $this->actingAs($this->user)->json("POST", "pip/" . $this->uploader->id, [
@@ -417,7 +456,7 @@ class UploaderTest extends TestCase
         $this->actingAs($this->user)->json("POST", "pip/" . $this->uploader->id, [
             "name" => 'test0',
             "port" => 10000,
-        ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);        
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);
     }
 
     public function testPostAddPipUnderRangePort()
@@ -460,11 +499,51 @@ class UploaderTest extends TestCase
         ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);        
     }
 
+    public function testPostRemoveAptNotConnectedJson()
+    {
+        $this->json("DELETE", "apt/" . $this->uploader->id)
+             ->assertStatus(env("DIODE_IN", true) ? 401 : 404);
+    }
+
+    public function testPostRemoveAptNotConnected()
+    {
+        if (env("DIODE_IN", true)) {
+            $this->delete("apt/" . $this->uploader->id)
+                 ->assertRedirect("/login");
+        } else {
+            $this->post("apt/" . $this->uploader->id)
+                 ->assertStatus(404);
+        }
+    }
+
+    public function testPostAddAptNotConnectedJson()
+    {
+        $this->json("POST", "apt/" . $this->uploader->id, [
+            "name" => 'test0',
+            "port" => 10001,
+        ])->assertStatus(env("DIODE_IN", true) ? 401 : 404);
+    }
+
+    public function testPostAddAptNotConnected()
+    {
+        if (env("DIODE_IN", true)) {
+            $this->post("apt/" . $this->uploader->id, [
+                "name" => 'test0',
+                "port" => 10001,
+            ])->assertRedirect("/login");
+        } else {
+            $this->post("apt/" . $this->uploader->id, [
+                "name" => 'test0',
+                "port" => 10001,
+            ])->assertStatus(404);
+        }
+    }
+
     public function testPostAddAptMissingPort()
     {
         $this->actingAs($this->user)->json("POST", "apt/" . $this->uploader->id, [
             "name" => "test0",
-        ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);        
+        ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);
     }
 
     public function testPostAddAptWrongPortType()
@@ -523,4 +602,39 @@ class UploaderTest extends TestCase
         ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);        
     }
 
+    public function testPostUploaderEmptyFolderNotConnectedJson()
+    {
+        $this->json("PUT", "/uploader/empty/" . $this->uploader->id)
+             ->assertStatus(401);
+    }
+
+    public function testPostUploaderEmptyFolderNotConnected()
+    {
+        $this->put("/uploader/empty/" . $this->uploader->id)
+             ->assertRedirect("/login");
+    }
+
+    public function testPostUploaderStopProgramNotConnectedJson()
+    {
+        $this->json("PUT", "/uploader/stop/" . $this->uploader->id)
+             ->assertStatus(401);
+    }
+
+    public function testPostUploaderStopProgramNotConnected()
+    {
+        $this->put("/uploader/stop/" . $this->uploader->id)
+             ->assertRedirect("/login");
+    }
+
+    public function testPostUploaderRestartProgramNotConnectedJson()
+    {
+        $this->json("PUT", "/uploader/restart/" . $this->uploader->id)
+             ->assertStatus(401);
+    }
+
+    public function testPostUploaderRestartProgramNotConnected()
+    {
+        $this->put("/uploader/restart/" . $this->uploader->id)
+             ->assertRedirect("/login");
+    }
 }

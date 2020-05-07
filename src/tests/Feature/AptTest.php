@@ -20,17 +20,13 @@ class AptTest extends TestCase
     {
         parent::setUp();
         $this->user = factory(User::class)->create();
-        if (env("DIODE_IN", true)) {
-            // Adding the new uploader via POST (to launch the Python script)
-            $json = $this->actingAs($this->user)->post("/uploader", [
-                "name" => "test0",
-                "port" => 40000,
-            ])->assertStatus(201)->getContent();
-            $this->uploader = json_decode($json, true);
-        } else {
-            // Getting the new uploader
-            $this->uploader = Uploader::where('name', '=', 'test0')->first();
-        }
+        $this->uploader = Uploader::create([
+            "name"      => "ftp",
+            "state"     => "0",
+            "port"      => "10000",
+            "pipport"   => "0",
+            "aptport"   => "0",
+        ]);
     }
 
     /**
@@ -38,32 +34,50 @@ class AptTest extends TestCase
      */
     public function tearDown()
     {
-        if (env("DIODE_IN", true)) {
-            // Deleting the new uploader
-            $this->actingAs($this->user)->delete("/uploader/" . $this->uploader["id"])
-                ->assertStatus(204);
-        }
         $this->user->delete();
+        if (Uploader::find($this->uploader->id)) {
+            Uploader::destroy($this->uploader->id);
+        }
         parent::tearDown();
+    }
+    
+    public function testPostAptAddMirrorNotConnectedJson()
+    {
+        $this->json("POST", "apt/mirror/" . $this->uploader->id, [
+            "url" => 'https://deb.opera.com/opera',
+        ])->assertStatus(env("DIODE_IN", true) ? 401 : 404);
+    }
+
+    public function testPostAptAddMirrorNotConnected()
+    {
+        if (env("DIODE_IN", true)) {
+            $this->post("apt/mirror/" . $this->uploader->id, [
+                "url" => 'https://deb.opera.com/opera',
+            ])->assertRedirect("/login");
+        } else {
+            $this->post("apt/mirror/" . $this->uploader->id, [
+                "url" => 'https://deb.opera.com/opera',
+            ])->assertStatus(404);
+        }
     }
 
     public function testPostAptAddMirrorMissingUrl()
     {
-        $this->actingAs($this->user)->json("POST", "apt/mirror/" . $this->uploader["id"], [
+        $this->actingAs($this->user)->json("POST", "apt/mirror/" . $this->uploader->id, [
             // no url
         ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);
     }
 
     public function testPostAptAddMirrorWrongUrlType()
     {
-        $this->actingAs($this->user)->json("POST", "apt/mirror/" . $this->uploader["id"], [
+        $this->actingAs($this->user)->json("POST", "apt/mirror/" . $this->uploader->id, [
             "url" => 1,
         ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);
     }
 
     public function testPostAptAddMirrorBadRegexUrl1()
     {
-        $this->actingAs($this->user)->json("POST", "apt/mirror/" . $this->uploader["id"], [
+        $this->actingAs($this->user)->json("POST", "apt/mirror/" . $this->uploader->id, [
             "url" => 'htt://deb.opera.com/opera',
         ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);
     }

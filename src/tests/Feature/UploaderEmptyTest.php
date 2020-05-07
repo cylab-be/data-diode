@@ -71,7 +71,7 @@ class UploaderEmptyTest extends TestCase
 
             // Empyting folder
             $this->actingAs($this->user)->put("/uploader/empty/" . $obj["id"])
-                 ->assertStatus(200);             
+                 ->assertStatus(200);
                 
             // Checking there is no file
             Storage::disk('diode_local_test')->assertMissing('upload.jpg');

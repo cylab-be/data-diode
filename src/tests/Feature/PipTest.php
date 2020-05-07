@@ -20,17 +20,13 @@ class PipTest extends TestCase
     {
         parent::setUp();
         $this->user = factory(User::class)->create();
-        if (env("DIODE_IN", true)) {
-            // Adding the new uploader via POST (to launch the Python script)
-            $json = $this->actingAs($this->user)->post("/uploader", [
-                "name" => "test0",
-                "port" => 40000,
-            ])->assertStatus(201)->getContent();
-            $this->uploader = json_decode($json, true);
-        } else {
-            // Getting the new uploader
-            $this->uploader = Uploader::where('name', '=', 'test0')->first();
-        }
+        $this->uploader = Uploader::create([
+            "name"      => "ftp",
+            "state"     => "0",
+            "port"      => "10000",
+            "pipport"   => "0",
+            "aptport"   => "0",
+        ]);
     }
 
     /**
@@ -38,25 +34,43 @@ class PipTest extends TestCase
      */
     public function tearDown()
     {
-        if (env("DIODE_IN", true)) {
-            // Deleting the new uploader
-            $this->actingAs($this->user)->delete("/uploader/" . $this->uploader["id"])
-                ->assertStatus(204);
-        }
         $this->user->delete();
+        if (Uploader::find($this->uploader->id)) {
+            Uploader::destroy($this->uploader->id);
+        }
         parent::tearDown();
+    }
+
+    public function testPostPipRunPipNotConnectedJson()
+    {
+        $this->json("POST", "pip/package/" . $this->uploader->id, [
+            "package" => "requests",
+        ])->assertStatus(env("DIODE_IN", true) ? 401 : 404);
+    }
+
+    public function testPostPipRunPipNotConnected()
+    {
+        if (env("DIODE_IN", true)) {
+            $this->post("pip/package/" . $this->uploader->id, [
+                "package" => "requests",
+            ])->assertRedirect("/login");
+        } else {
+            $this->post("pip/package/" . $this->uploader->id, [
+                "package" => "requests",
+            ])->assertStatus(404);
+        }
     }
 
     public function testPostPipRunPipMissingPackage()
     {
-        $this->actingAs($this->user)->json("POST", "pip/package/" . $this->uploader["id"], [
+        $this->actingAs($this->user)->json("POST", "pip/package/" . $this->uploader->id, [
             // no package
         ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);
     }
 
     public function testPostPipRunPipWrongPackageType()
     {
-        $this->actingAs($this->user)->json("POST", "pip/package/" . $this->uploader["id"], [
+        $this->actingAs($this->user)->json("POST", "pip/package/" . $this->uploader->id, [
             "package" => 1,
         ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);
     }

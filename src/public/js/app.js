@@ -47603,7 +47603,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
                     console.log(file);
 
-                    axios.post('upload/' + me.item.id, //this.upload_url,
+                    axios.post('/upload/' + me.item.id, //this.upload_url,
                     formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
