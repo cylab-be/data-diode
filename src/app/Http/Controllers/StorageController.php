@@ -146,8 +146,8 @@ class StorageController extends Controller {
     public function remove(StorageRemoveRequest $request)
     {
         if ($request->input('path') == './.zips') {
-            $cmd = 'sudo ' . base_path('app/Scripts') . '/remove-file-or-folder.sh ';
-            $cmd .= base_path('storage') . '/app/files/.zips/*';
+            $cmd = 'sudo ' . base_path('app/Scripts') . '/remake-folder.sh ';
+            $cmd .= base_path('storage') . '/app/files/.zips'; 
         } else {
             $len = strlen($request->input('path'));
             if (startsWith($request->input('path'), './') &&  $len > 2) {

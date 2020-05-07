@@ -211,7 +211,15 @@ export default {
                 me.$refs.addButton.stopBlink()
             })
             .catch(function(error) {
-                toastr.error(error.response.data.message)
+                if (error.response.status != 422) {
+                    toastr.error(error.response.data.message)
+                }
+                if (error.response.data.errors.name) {
+                    toastr.error(error.response.data.errors.name)
+                }
+                if (error.response.data.errors.port) {
+                    toastr.error(error.response.data.errors.port)
+                }
                 me.$refs.addButton.stopBlink()
             })
         },
@@ -235,7 +243,12 @@ export default {
                 me.$refs.delButton.stopSpin()
             })
             .catch(function(error) {
-                toastr.error(error.response.data.message)
+                if (error.response.status != 422) {
+                    toastr.error(error.response.data.message)
+                }
+                if (error.response.data.errors.name) {
+                    toastr.error(error.response.data.errors.name)
+                }
                 me.$refs.delButton.stopSpin()
             })
         },
@@ -263,7 +276,12 @@ export default {
             .catch(function(error) {
                 me.$refs.addMirror.stopBlink()
                 me.downloading = false
-                toastr.error(error.response.data.message)
+                if (error.response.status != 422) {
+                    toastr.error(error.response.data.message)
+                }
+                if (error.response.data.errors.url) {
+                    toastr.error(error.response.data.errors.url)
+                }
             })
         },
         copyMe() {

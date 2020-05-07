@@ -214,7 +214,15 @@ export default {
                         me.uploading = false
                         me.stopUpload = false
                         me.uploadIcon = 'fa-arrow-up'
-                        toastr.error(error.message)
+                        if (error.response.status != 422) {
+                            toastr.error(error.response.data.message)
+                        }
+                        if (error.response.data.errors.input_file) {
+                            toastr.error(error.response.data.errors.input_file)
+                        }
+                        if (error.response.data.errors.input_file_full_path) {
+                            toastr.error(error.response.data.errors.input_file_full_path)
+                        }
                         reject()
                     })
                 })

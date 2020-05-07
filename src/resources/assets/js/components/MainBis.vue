@@ -233,7 +233,15 @@ export default {
                 me.blinkClass = ''
             })
             .catch(function(error) {
-                toastr.error(error.response.data.message)
+                if (error.response.status != 422) {
+                    toastr.error(error.response.data.message)
+                }
+                if (error.response.data.errors.name) {
+                    toastr.error(error.response.data.errors.name)
+                }
+                if (error.response.data.errors.port) {
+                    toastr.error(error.response.data.errors.port)
+                }
                 me.addDisabled = false
                 me.blinkClass = ''
             })

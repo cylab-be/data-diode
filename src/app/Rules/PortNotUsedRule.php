@@ -60,6 +60,6 @@ class PortNotUsedRule implements Rule
      */
     public function message()
     {
-        return 'The :attribute must not be an already used port.';
+        return ' The :attribute is used by another program.';
     }
 }

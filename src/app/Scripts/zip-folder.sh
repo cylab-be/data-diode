@@ -1,1 +1,1 @@
-cd "$1" && cd .. && sudo zip -r "$2" "$3"
+cd "$1" && cd .. && sudo zip -r "$2" "$3" && chown -R www-data:www-data "$2"

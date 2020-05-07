@@ -186,8 +186,13 @@ export default {
                 me.downloading = false
                 me.showOptions = false
                 me.confirmDownload = false
-                me.confirmRemove = false
-                toastr.error('An error occured. Impossible to download ' + me.file.name)
+                me.confirmRemove = false                
+                if (error.response.status != 422) {
+                    toastr.error('An error occured. Impossible to download ' + me.file.name)
+                }
+                if (error.response.data.errors.path) {
+                    toastr.error(error.response.data.errors.path)
+                }
             })
         },
         removeFile(event) {
@@ -220,8 +225,16 @@ export default {
                 me.showOptions = false
                 me.confirmDownload = false
                 me.confirmRemove = false
-                me.deleting = false
-                toastr.error('An error occured. Impossible to remove ' + me.file.name)
+                me.deleting = false                
+                if (error.response.status != 422) {
+                    toastr.error('An error occured. Impossible to remove ' + me.file.name)
+                }
+                if (error.response.data.errors.name) {
+                    toastr.error(error.response.data.errors.name)
+                }
+                if (error.response.data.errors.path) {
+                    toastr.error(error.response.data.errors.path)
+                }
             })      
         },
         startShowOptions(event) {

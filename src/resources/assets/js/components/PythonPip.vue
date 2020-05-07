@@ -159,9 +159,17 @@ export default {
                 toastr.success(response.data.message)
                 me.$refs.addButton.stopBlink()
             })
-            .catch(function(error) {
-                toastr.error(error.response.data.message)
+            .catch(function(error) {                
                 me.$refs.addButton.stopBlink()
+                if (error.response.status != 422) {
+                    toastr.error(error.response.data.message)
+                }
+                if (error.response.data.errors.name) {
+                    toastr.error(error.response.data.errors.name)
+                }
+                if (error.response.data.errors.port) {
+                    toastr.error(error.response.data.errors.port)
+                }
             })
         },
         removePip() {
@@ -183,9 +191,14 @@ export default {
                 toastr.success(response.data.message)
                 me.$refs.delButton.stopSpin()
             })
-            .catch(function(error) {
-                toastr.error(error.response.data.message)
+            .catch(function(error) {                
                 me.$refs.delButton.stopSpin()
+                if (error.response.status != 422) {
+                    toastr.error(error.response.data.message)
+                }
+                if (error.response.data.errors.name) {
+                    toastr.error(error.response.data.errors.name)
+                }
             })
         },
         downloadPackage() {
@@ -204,6 +217,12 @@ export default {
                             resolve(response)
                         })
                         .catch(function(error){
+                            if (error.response.status != 422) {
+                                toastr.error(error.response.data.message)
+                            }
+                            if (error.response.data.errors.package) {
+                                toastr.error(error.response.data.errors.package)
+                            }
                             reject(error)
                         })
                     })
@@ -216,18 +235,16 @@ export default {
                     if (response.data.output.startsWith('Failed')) {
                         toastr.error('The download of the ' + name + ' package failed.')                        
                     } else {
-                        toastr.success('The ' + name + ' package has been successfully downloaded and added to the ' + me.item.name + '\'s channel.')
-                        
                         me.item.state = '1'
+                        toastr.success('The ' + name + ' package has been successfully downloaded and added to the ' + me.item.name + '\'s channel.')                        
                     }
                     me.cannotDownload = false
                     me.$refs.addPackage.stopBlink()
                     me.packageName = ''
                 }).catch(error => {
                     me.cannotDownload = false
-                    toastr.error(error.response.data.message)
                     me.$refs.addPackage.stopBlink()
-                    me.packageName = ''
+                    me.packageName = ''                    
                 })
             } else {
                 toastr.error('You must specify at least one package.')

@@ -141,8 +141,13 @@ export default {
                     return resolve()
                 })
                 .catch(function(error) {
-                    toastr.error(error.response.data.message)
                     return reject()
+                    if (error.response.status != 422) {
+                    toastr.error(error.response.data.message)
+                    }
+                    if (error.response.data.errors.name) {
+                        toastr.error(error.response.data.errors.name)
+                    }
                 })
             })
         },
@@ -195,7 +200,15 @@ export default {
                 me.portToAdd = ''
             })
             .catch(function(error) {
-                toastr.error(error.response.data.message)                
+                if (error.response.status != 422) {
+                    toastr.error(error.response.data.message)
+                }
+                if (error.response.data.errors.name) {
+                    toastr.error(error.response.data.errors.name)
+                }
+                if (error.response.data.errors.port) {
+                    toastr.error(error.response.data.errors.port)
+                }
             })
         },
     },

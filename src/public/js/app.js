@@ -44226,8 +44226,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 toastr.success(response.data.message);
                 me.$refs.addButton.stopBlink();
             }).catch(function (error) {
-                toastr.error(error.response.data.message);
                 me.$refs.addButton.stopBlink();
+                if (error.response.status != 422) {
+                    toastr.error(error.response.data.message);
+                }
+                if (error.response.data.errors.name) {
+                    toastr.error(error.response.data.errors.name);
+                }
+                if (error.response.data.errors.port) {
+                    toastr.error(error.response.data.errors.port);
+                }
             });
         },
         removePip: function removePip() {
@@ -44248,8 +44256,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 toastr.success(response.data.message);
                 me.$refs.delButton.stopSpin();
             }).catch(function (error) {
-                toastr.error(error.response.data.message);
                 me.$refs.delButton.stopSpin();
+                if (error.response.status != 422) {
+                    toastr.error(error.response.data.message);
+                }
+                if (error.response.data.errors.name) {
+                    toastr.error(error.response.data.errors.name);
+                }
             });
         },
         downloadPackage: function downloadPackage() {
@@ -44261,6 +44274,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                         }).then(function (response) {
                             resolve(response);
                         }).catch(function (error) {
+                            if (error.response.status != 422) {
+                                toastr.error(error.response.data.message);
+                            }
+                            if (error.response.data.errors.package) {
+                                toastr.error(error.response.data.errors.package);
+                            }
                             reject(error);
                         });
                     });
@@ -44279,16 +44298,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     if (response.data.output.startsWith('Failed')) {
                         toastr.error('The download of the ' + name + ' package failed.');
                     } else {
-                        toastr.success('The ' + name + ' package has been successfully downloaded and added to the ' + me.item.name + '\'s channel.');
-
                         me.item.state = '1';
+                        toastr.success('The ' + name + ' package has been successfully downloaded and added to the ' + me.item.name + '\'s channel.');
                     }
                     me.cannotDownload = false;
                     me.$refs.addPackage.stopBlink();
                     me.packageName = '';
                 }).catch(function (error) {
                     me.cannotDownload = false;
-                    toastr.error(error.response.data.message);
                     me.$refs.addPackage.stopBlink();
                     me.packageName = '';
                 });
@@ -44720,7 +44737,7 @@ exports = module.exports = __webpack_require__(0)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -44871,8 +44888,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 axios(options).then(function (response) {
                     return resolve();
                 }).catch(function (error) {
-                    toastr.error(error.response.data.message);
                     return reject();
+                    if (error.response.status != 422) {
+                        toastr.error(error.response.data.message);
+                    }
+                    if (error.response.data.errors.name) {
+                        toastr.error(error.response.data.errors.name);
+                    }
                 });
             });
         },
@@ -44923,7 +44945,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 me.uploaderToAdd = '';
                 me.portToAdd = '';
             }).catch(function (error) {
-                toastr.error(error.response.data.message);
+                if (error.response.status != 422) {
+                    toastr.error(error.response.data.message);
+                }
+                if (error.response.data.errors.name) {
+                    toastr.error(error.response.data.errors.name);
+                }
+                if (error.response.data.errors.port) {
+                    toastr.error(error.response.data.errors.port);
+                }
             });
         }
     },
@@ -45461,7 +45491,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 me.addDisabled = false;
                 me.blinkClass = '';
             }).catch(function (error) {
-                toastr.error(error.response.data.message);
+                if (error.response.status != 422) {
+                    toastr.error(error.response.data.message);
+                }
+                if (error.response.data.errors.name) {
+                    toastr.error(error.response.data.errors.name);
+                }
+                if (error.response.data.errors.port) {
+                    toastr.error(error.response.data.errors.port);
+                }
                 me.addDisabled = false;
                 me.blinkClass = '';
             });
@@ -47624,7 +47662,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                         me.uploading = false;
                         me.stopUpload = false;
                         me.uploadIcon = 'fa-arrow-up';
-                        toastr.error(error.message);
+                        if (error.response.status != 422) {
+                            toastr.error(error.response.data.message);
+                        }
+                        if (error.response.data.errors.input_file) {
+                            toastr.error(error.response.data.errors.input_file);
+                        }
+                        if (error.response.data.errors.input_file_full_path) {
+                            toastr.error(error.response.data.errors.input_file_full_path);
+                        }
                         reject();
                     });
                 });
@@ -48984,7 +49030,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     me.showOptions = false;
                     me.confirmDownload = false;
                     me.confirmRemove = false;
-                    toastr.error('An error occured. Impossible to download ' + me.folder.name + '.zip');
+                    if (error.response.status != 422) {
+                        toastr.error('An error occured. Impossible to download ' + me.folder.name + '.zip');
+                    }
+                    if (error.response.data.errors.time) {
+                        toastr.error(error.response.data.errors.time);
+                    }
+                    if (error.response.data.errors.name) {
+                        toastr.error(error.response.data.errors.name);
+                    }
                 });
             }).catch(function (error) {
                 me.mainIconClass = 'fa-folder';
@@ -48992,7 +49046,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 me.showOptions = false;
                 me.confirmDownload = false;
                 me.confirmRemove = false;
-                toastr.error(error.response.data.message);
+                if (error.response.status != 422) {
+                    toastr.error(error.response.data.message);
+                }
+                if (error.response.data.errors.time) {
+                    toastr.error(error.response.data.errors.time);
+                }
+                if (error.response.data.errors.name) {
+                    toastr.error(error.response.data.errors.name);
+                }
+                if (error.response.data.errors.path) {
+                    toastr.error(error.response.data.errors.path);
+                }
             });
         },
         removeFolder: function removeFolder(event) {
@@ -49026,7 +49091,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 me.confirmDownload = false;
                 me.confirmRemove = false;
                 me.deleting = false;
-                toastr.error('An error occured. Impossible to remove ' + me.folder.name);
+                if (error.response.status != 422) {
+                    toastr.error('An error occured. Impossible to remove ' + me.folder.name);
+                }
+                if (error.response.data.errors.name) {
+                    toastr.error(error.response.data.errors.name);
+                }
+                if (error.response.data.errors.path) {
+                    toastr.error(error.response.data.errors.path);
+                }
             });
         },
         startShowOptions: function startShowOptions(event) {
@@ -49316,7 +49389,7 @@ exports = module.exports = __webpack_require__(0)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -49517,7 +49590,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 me.showOptions = false;
                 me.confirmDownload = false;
                 me.confirmRemove = false;
-                toastr.error('An error occured. Impossible to download ' + me.file.name);
+                if (error.response.status != 422) {
+                    toastr.error('An error occured. Impossible to download ' + me.file.name);
+                }
+                if (error.response.data.errors.path) {
+                    toastr.error(error.response.data.errors.path);
+                }
             });
         },
         removeFile: function removeFile(event) {
@@ -49551,7 +49629,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 me.confirmDownload = false;
                 me.confirmRemove = false;
                 me.deleting = false;
-                toastr.error('An error occured. Impossible to remove ' + me.file.name);
+                if (error.response.status != 422) {
+                    toastr.error('An error occured. Impossible to remove ' + me.file.name);
+                }
+                if (error.response.data.errors.name) {
+                    toastr.error(error.response.data.errors.name);
+                }
+                if (error.response.data.errors.path) {
+                    toastr.error(error.response.data.errors.path);
+                }
             });
         },
         startShowOptions: function startShowOptions(event) {
@@ -50259,7 +50345,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 toastr.success(response.data.message);
                 me.$refs.addButton.stopBlink();
             }).catch(function (error) {
-                toastr.error(error.response.data.message);
+                if (error.response.status != 422) {
+                    toastr.error(error.response.data.message);
+                }
+                if (error.response.data.errors.name) {
+                    toastr.error(error.response.data.errors.name);
+                }
+                if (error.response.data.errors.port) {
+                    toastr.error(error.response.data.errors.port);
+                }
                 me.$refs.addButton.stopBlink();
             });
         },
@@ -50281,7 +50375,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 toastr.success(response.data.message);
                 me.$refs.delButton.stopSpin();
             }).catch(function (error) {
-                toastr.error(error.response.data.message);
+                if (error.response.status != 422) {
+                    toastr.error(error.response.data.message);
+                }
+                if (error.response.data.errors.name) {
+                    toastr.error(error.response.data.errors.name);
+                }
                 me.$refs.delButton.stopSpin();
             });
         },
@@ -50307,7 +50406,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }).catch(function (error) {
                 me.$refs.addMirror.stopBlink();
                 me.downloading = false;
-                toastr.error(error.response.data.message);
+                if (error.response.status != 422) {
+                    toastr.error(error.response.data.message);
+                }
+                if (error.response.data.errors.url) {
+                    toastr.error(error.response.data.errors.url);
+                }
             });
         },
         copyMe: function copyMe() {
