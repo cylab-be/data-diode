@@ -78,5 +78,4 @@ Route::put('uploader/restart/{uploader}', 'UploaderController@restart');
 Route::put('uploader/empty/{uploader}', 'UploaderController@empty');
 
 // Main Route...
-//Route::get('/main', 'MainPageController@index');
-Route::get('/', 'MainBisController@index');
+Route::get('/', 'MainController@index');

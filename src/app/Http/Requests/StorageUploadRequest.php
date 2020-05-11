@@ -27,7 +27,7 @@ class StorageUploadRequest extends FormRequest
             "input_file" => [
                 "required",
                 "file",
-                "max:1024 * 1024", // 1GB (1024 * 1024 * 1KB)
+                "max:" . strval(env('MAX_UPLOAD_SIZE_GB', 1) * 1024 * 1024), // N GB = N * 1024 * 1024 * 1KB)
             ],
             "input_file_full_path" => [
                 "required",

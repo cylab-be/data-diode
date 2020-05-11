@@ -298,7 +298,7 @@ class UploaderTest extends TestCase
     public function testPostUploaderWrongNameRegex()
     {
         $this->actingAs($this->user)->json("POST", "/uploader", [
-            "name" => 'test.0',
+            "name" => 'test$0',
             "port" => 40000,
         ])->assertStatus(env("DIODE_IN", true) ? 422 : 405);
     }

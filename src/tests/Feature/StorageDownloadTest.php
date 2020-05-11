@@ -39,7 +39,7 @@ class StorageDownloadTest extends TestCase
         parent::tearDown();
     }    
 
-    public function testUploadSuccess() {        
+    public function testPostStorageDownload() {
         if (env("DIODE_IN", true)) {
             // Adding the new uploader via POST (to launch the Python script)
             $json = $this->actingAs($this->user)->post("/uploader", [

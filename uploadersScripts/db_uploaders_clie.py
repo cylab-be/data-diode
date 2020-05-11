@@ -105,7 +105,7 @@ def add(uploader, state, port):
     conn = create_connection(database)
     if conn is not None:
         if uploader_exists(conn, sql_uploader_exists, uploader):
-            change_uploader_attribute(conn,  sql_change_uploader_state, uploader, state)
+            change_uploader_attribute(conn, sql_change_uploader_state, uploader, state)
         else:
             if port != 0:
                 insert_uploader(conn, sql_insert_uploader, uploader, state, port)
@@ -129,7 +129,7 @@ if __name__ == '__main__':
     
     options = ['help', 'add', 'update', 'remove', 'pipadd', 'pipremove', 'aptadd', 'aptremove']
 
-    name_pattern = '^[a-zA-Z0-9]+$'
+    name_pattern = UPLOADER_NAME_REGEX
     state_pattern = '^[0-1]$'
 
     if len(sys.argv) == 1:
@@ -142,13 +142,13 @@ if __name__ == '__main__':
         
         elif sys.argv[1] == 'help':
             print('%s help\n\tshow this help\n' %sys.argv[0])
-            print('%s add name state port\n\tadd an uploader with:\n\t\tname regex ^[a-zA-Z0-9]+$\n\t\tstate in [0, 1]\n\t\tport in [1025, 65535]\n' %sys.argv[0])
-            print('%s update name state\n\tupdate an uploader\'s state with:\n\t\tname regex ^[a-zA-Z0-9]+$\n\t\tstate in [0, 1]\n' %sys.argv[0])
-            print('%s remove name\n\tremove an uploader with:\n\t\t name regex ^[a-zA-Z0-9]+$\n' %sys.argv[0])
-            print('%s pipadd name port\n\tadd a pip module to an uploader with:\n\t\tname regex ^[a-zA-Z0-9]+$\n\t\tport in [1025, 65535]\n' %sys.argv[0])
-            print('%s pipremove name\n\tremove a pip module from an uploader with:\n\t\tname regex ^[a-zA-Z0-9]+$\n' %sys.argv[0])
-            print('%s aptadd name port\n\tadd an apt module to an uploader with:\n\t\tname regex ^[a-zA-Z0-9]+$\n\t\tport in [1025, 65535]\n' %sys.argv[0])
-            print('%s aptremove name\n\tremove an apt module from an uploader with:\n\t\tname regex ^[a-zA-Z0-9]+$\n' %sys.argv[0])
+            print('%s add name state port\n\tadd an uploader with:\n\t\tname regex ' + name_pattern + '\n\t\tstate in [0, 1]\n\t\tport in [1025, 65535]\n' %sys.argv[0])
+            print('%s update name state\n\tupdate an uploader\'s state with:\n\t\tname regex ' + name_pattern + '\n\t\tstate in [0, 1]\n' %sys.argv[0])
+            print('%s remove name\n\tremove an uploader with:\n\t\t name regex ' + name_pattern + '\n' %sys.argv[0])
+            print('%s pipadd name port\n\tadd a pip module to an uploader with:\n\t\tname regex ' + name_pattern + '\n\t\tport in [1025, 65535]\n' %sys.argv[0])
+            print('%s pipremove name\n\tremove a pip module from an uploader with:\n\t\tname regex ' + name_pattern + '\n' %sys.argv[0])
+            print('%s aptadd name port\n\tadd an apt module to an uploader with:\n\t\tname regex ' + name_pattern + '\n\t\tport in [1025, 65535]\n' %sys.argv[0])
+            print('%s aptremove name\n\tremove an apt module from an uploader with:\n\t\tname regex ' + name_pattern + '\n' %sys.argv[0])
     
         elif sys.argv[1] == 'add':
             if not len(sys.argv) == 5:

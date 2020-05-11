@@ -58,7 +58,9 @@ class UploaderStopAndRestartTest extends TestCase
         $cmd = 'supervisorctl pid blindftp-' . $obj['name'];
         $process = new Process($cmd);
         try {
-            $process->mustRun();            
+            $process->mustRun();
+            $output = $process->getOutput();
+            $this->assertTrue(ctype_digit(trim($output)) && intval(trim($output)) > 0);
         } catch (ProcessFailedException $exception) {
             // An error is generated even if the command works.
             // Therefore we do the assertion here.
@@ -72,7 +74,9 @@ class UploaderStopAndRestartTest extends TestCase
         
         $process = new Process($cmd);
         try {
-            $process->mustRun();            
+            $process->mustRun();
+            $output = $process->getOutput();
+            $this->assertTrue(ctype_digit(trim($output)) && intval(trim($output)) == 0);
         } catch (ProcessFailedException $exception) {
             $output = $process->getOutput();
             $this->assertTrue(ctype_digit(trim($output)) && intval(trim($output)) == 0);
@@ -84,7 +88,9 @@ class UploaderStopAndRestartTest extends TestCase
         
         $process = new Process($cmd);
         try {
-            $process->mustRun();            
+            $process->mustRun();
+            $output = $process->getOutput();
+            $this->assertTrue(ctype_digit(trim($output)) && intval(trim($output)) > 0);
         } catch (ProcessFailedException $exception) {
             $output = $process->getOutput();
             $this->assertTrue(ctype_digit(trim($output)) && intval(trim($output)) > 0);

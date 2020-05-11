@@ -56,6 +56,9 @@ service supervisord start
 python3 -m pip install python-pypi-mirror
 chmod +x /var/www/data-diode/src/app/Scripts/sendpip.sh
 
+python -m pip install python-dotenv
+python3 -m pip install python-dotenv
+
 cat > /etc/ntp.conf << EOF
 statistics loopstats peerstats clockstats
 filegen loopstats file loopstats type day enable

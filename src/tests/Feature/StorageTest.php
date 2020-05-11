@@ -83,8 +83,7 @@ class StorageTest extends TestCase
     public function testPostUploadTooBigInputFileSize()
     {
         $this->actingAs($this->user)->json("POST", "upload/" . $this->uploader->id, [
-            // 2GB file
-            "input_file" => UploadedFile::fake()->image('upload.jpg')->size(2 * 1024 * 1024 * 1024),
+            "input_file" => UploadedFile::fake()->image('upload.jpg')->size(2 * env('MAX_UPLOAD_SIZE_GB', 1) * 1024 * 1024),
             "input_file_full_path" => "image.png",
         ])->assertStatus(env("DIODE_IN", true) ? 422 : 404);
     }

@@ -21,39 +21,23 @@
 @endsection
 
 @section("content")
-   <div class="container">
-        <div class="tab-v1" style="text-align:center;position:absolute;top:12em;">
-            <h1>WELCOME TO THE HOME PAGE</h1>
-            <br/>
-            <br/>
-            <br/>
-            <div 
-                class="container pt90"
-                style="padding-bottom:10em"
-            >
-                <div
-                    class="row pb60"
-                    style="width:100%;text-align:center;margin:auto;"
-                >
-                    @foreach($routes as $route)
-                    <div
-                        class="col-md-6 col-lg-4 col-xl-3"
-                        style="margin:auto;"
-                    >
-                        <growing-button
-                            style="margin:auto"
-                            icon="{{ $route['icon'] }}"
-                            route="{{ $route['url'] }}"
-                        >
-                            <h4>{{ $route['name'] }}</h4>
-                        </growing-button>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
+    <div class="container">
+        <div class="tab-v1">
+            <!-- The following info about upload can come from PHP (ex: from .env) -->            
+            @if (env("DIODE_IN", true))
+            <main-modules
+              :interval=10000
+              :max-upload-size="{{1024 * 1024 * 1024 * env('MAX_UPLOAD_SIZE_GB', 1)}}"
+              diodein
+              max-upload-size-error-message="{{'Your upload cannot contain a file bigger than ' . env('MAX_UPLOAD_SIZE_GB', 1) . 'GB!'}}"
+            ></main-modules>
+            @else
+            <main-modules
+              :interval=10000
+              :max-upload-size="{{1024 * 1024 * 1024 * env('MAX_UPLOAD_SIZE_GB', 1)}}"
+              max-upload-size-error-message="{{'Your upload cannot contain a file bigger than ' . env('MAX_UPLOAD_SIZE_GB', 1) . 'GB!'}}"
+            ></main-modules>
+            @endif
         </div>
     </div>
-    <script>
-        document.body.style.backgroundColor = '#222';
-    </script>
 @endsection

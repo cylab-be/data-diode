@@ -14,11 +14,9 @@ window.Vue = require('vue');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('growing-button', require('./components/GrowingButton.vue'));
-Vue.component('restart-button', require('./components/RestartButton.vue'));
 Vue.component('python-pip', require('./components/PythonPip.vue'));
 Vue.component('uploaders', require('./components/Uploaders.vue'));
-Vue.component('main-bis', require('./components/MainBis.vue'));
+Vue.component('main-modules', require('./components/Main.vue'));
 Vue.component('param-window', require('./components/ParamWindow.vue'));
 Vue.component('toggler', require('./components/Toggler.vue'));
 Vue.component('uploader', require('./components/Uploader.vue'));

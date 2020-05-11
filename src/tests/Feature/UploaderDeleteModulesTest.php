@@ -89,7 +89,9 @@ class UploaderDeleteModulesTest extends TestCase
             $cmd = 'sudo ' . base_path('app/Scripts') . '/get-netstat.sh 40001';
             $process = new Process($cmd);
             try {
-                $process->mustRun();            
+                $process->mustRun();
+                $output = $process->getOutput();
+                $this->assertTrue(strlen($output) != 0); // The PIP module should be running
             } catch (ProcessFailedException $exception) {
                 $output = $process->getOutput();
                 $this->assertTrue(strlen($output) != 0); // The PIP module should be running
@@ -99,7 +101,9 @@ class UploaderDeleteModulesTest extends TestCase
             $cmd = 'sudo ' . base_path('app/Scripts') . '/get-netstat.sh 40002';
             $process = new Process($cmd);
             try {
-                $process->mustRun();            
+                $process->mustRun();
+                $output = $process->getOutput();
+                $this->assertTrue(strlen($output) != 0); // The APT module should be running
             } catch (ProcessFailedException $exception) {
                 $output = $process->getOutput();
                 $this->assertTrue(strlen($output) != 0); // The APT module should be running
@@ -113,7 +117,9 @@ class UploaderDeleteModulesTest extends TestCase
             $cmd = 'sudo ' . base_path('app/Scripts') . '/get-netstat.sh 40001';
             $process = new Process($cmd);
             try {
-                $process->mustRun();            
+                $process->mustRun();
+                $output = $process->getOutput();
+                $this->assertTrue(strlen($output) == 0); // Nothing should be running
             } catch (ProcessFailedException $exception) {
                 $output = $process->getOutput();
                 $this->assertTrue(strlen($output) == 0); // Nothing should be running
@@ -123,7 +129,9 @@ class UploaderDeleteModulesTest extends TestCase
             $cmd = 'sudo ' . base_path('app/Scripts') . '/get-netstat.sh 40002';
             $process = new Process($cmd);
             try {
-                $process->mustRun();            
+                $process->mustRun();
+                $output = $process->getOutput();                
+                $this->assertTrue(strlen($output) == 0); // Nothing should be running
             } catch (ProcessFailedException $exception) {
                 $output = $process->getOutput();
                 $this->assertTrue(strlen($output) == 0); // Nothing should be running

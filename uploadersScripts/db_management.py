@@ -15,6 +15,14 @@ sql_delete_uploader = "DELETE FROM uploaders WHERE name=?;"
 sql_change_uploader_pipport = "UPDATE uploaders SET pipport=? WHERE name=?;"
 sql_change_uploader_aptport = "UPDATE uploaders SET aptport=? WHERE name=?;"
 
+# .env
+import os
+from dotenv import load_dotenv
+# Get the path to the directory this file is in
+BASEDIR = os.path.abspath(os.path.dirname(__file__))
+# Connect the path with your '.env' file name
+load_dotenv(os.path.join(BASEDIR, '../src/.env'))
+UPLOADER_NAME_REGEX = os.getenv("UPLOADER_NAME_REGEX")
 
 def create_connection(db_file):
     """ create a database connection to the SQLite database

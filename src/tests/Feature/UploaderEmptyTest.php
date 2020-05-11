@@ -60,10 +60,9 @@ class UploaderEmptyTest extends TestCase
                  ->assertStatus(200);
                 
             // Upload file
-            $this->actingAs($this->user)->post('/upload', [
-                'uploader' => $obj['name'],
-                'input_file_0' => UploadedFile::fake()->image('upload.jpg')->size(1),
-                'input_file_full_path_0' => 'upload.jpg',
+            $this->actingAs($this->user)->json("POST", "upload/" . $obj['id'], [
+                'input_file' => UploadedFile::fake()->image('upload.jpg')->size(1),
+                'input_file_full_path' => 'upload.jpg',
             ])->assertStatus(200);
 
             // Checking there is a file
@@ -81,10 +80,9 @@ class UploaderEmptyTest extends TestCase
                 ->assertStatus(200);
 
             // Upload the new file
-            $this->actingAs($this->user)->post('/upload', [
-                'uploader' => $obj['name'],
-                'input_file_0' => UploadedFile::fake()->image('upload.jpg')->size(1),
-                'input_file_full_path_0' => 'upload.jpg',
+            $this->actingAs($this->user)->json("POST", "upload/" . $obj['id'], [                
+                'input_file' => UploadedFile::fake()->image('upload.jpg')->size(1),
+                'input_file_full_path' => 'upload.jpg',
             ])->assertStatus(200);
 
             // Checking there is a file

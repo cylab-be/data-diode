@@ -155,14 +155,14 @@ export default {
                 toastr.error('You must select at least one file to upload!')
                 return
             }
-            var totalSize = 0
+            var size = 0
             for (let i = 0; i < input.files.length; i++) {
-                totalSize += input.files[i].size // given in bytes (octets)
-                if (totalSize > this.maxUploadSize) {
+                size = input.files[i].size // given in bytes (octets)
+                if (size > this.maxUploadSize) {
                     toastr.error(this.maxUploadSizeErrorMessage)
                     return
                 }
-            }            
+            }
 
             this.uploading = true
             this.uploadIcon = 'fa-times'
@@ -187,9 +187,7 @@ export default {
                     formData.append('input_file_full_path', file.webkitRelativePath == '' ? './' + file.name : file.webkitRelativePath)
                     formData.append('input_file', file)
 
-                    console.log(file)
-
-                    axios.post( '/upload/' + me.item.id,//this.upload_url,
+                    axios.post( '/upload/' + me.item.id,
                         formData,
                         {
                             headers: {

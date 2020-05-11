@@ -73,17 +73,21 @@ class UploaderCreateAndDeleteTest extends TestCase
         $cmd .= '[ -d test0 ] &&  echo 1 || echo 0';
         $process = new Process($cmd);
         try {
-            $process->mustRun();            
+            $process->mustRun();
+            $output = $process->getOutput();
+            $this->assertTrue(trim($output) == "1");
         } catch (ProcessFailedException $exception) {
             $output = $process->getOutput();
-            $this->assertTrue($output == "1");
+            $this->assertTrue(trim($output) == "1");
         }
 
         // Checking if supervisorctl has run the new uploader's config
         $cmd = 'supervisorctl pid blindftp-' . $obj['name'];
         $process = new Process($cmd);
         try {
-            $process->mustRun();            
+            $process->mustRun();
+            $output = $process->getOutput();
+            $this->assertTrue(ctype_digit(trim($output)) && intval(trim($output)) > 0);
         } catch (ProcessFailedException $exception) {
             $output = $process->getOutput();
             $this->assertTrue(ctype_digit(trim($output)) && intval(trim($output)) > 0);
@@ -105,16 +109,20 @@ class UploaderCreateAndDeleteTest extends TestCase
             $process = new Process($cmd);
             try {
                 $process->mustRun();            
+                $output = $process->getOutput();
+                $this->assertTrue(trim($output) == "0");
             } catch (ProcessFailedException $exception) {
                 $output = $process->getOutput();
-                $this->assertTrue($output == "0");
+                $this->assertTrue(trim($output) == "0");
             }
 
             // Checking if supervisorctl has run the new uploader's config
             $cmd = 'supervisorctl pid blindftp-' . $obj['name'];
             $process = new Process($cmd);
             try {
-                $process->mustRun();            
+                $process->mustRun();
+                $output = $process->getOutput();
+                $this->assertFalse(ctype_digit(trim($output)));
             } catch (ProcessFailedException $exception) {
                 $output = $process->getOutput();
                 // The output should be a program non existing error
@@ -135,9 +143,11 @@ class UploaderCreateAndDeleteTest extends TestCase
             $process = new Process($cmd);
             try {
                 $process->mustRun();            
+                $output = $process->getOutput();
+                $this->assertTrue(trim($output) == "0");
             } catch (ProcessFailedException $exception) {
                 $output = $process->getOutput();
-                $this->assertTrue($output == "0");
+                $this->assertTrue(trim($output) == "0");
             }
 
             // Checking if supervisorctl has run the new uploader's config

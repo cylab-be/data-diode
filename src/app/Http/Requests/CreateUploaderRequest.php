@@ -28,8 +28,7 @@ class CreateUploaderRequest extends FormRequest
             "name" => [
                 "required",
                 "string",
-                "regex:/^[a-zA-Z0-9]+$/",
-                //'regex:/' . env("UPLOADER_NAME_REGEX") . '/',
+                'regex:/' . env("UPLOADER_NAME_REGEX", "^[a-zA-Z0-9_]+$") . '/',
                 "min:3",
                 "max:255",
                 "unique:uploaders",

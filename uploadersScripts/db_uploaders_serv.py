@@ -7,7 +7,6 @@ import subprocess
 from db_management import *
 
 
-
 def main():    
     
     # create a database connection
@@ -23,12 +22,17 @@ def main():
 
             data, addr = sock.recvfrom(1024)
 
-            pattern = '^[a-zA-Z0-9]+:[0-1]:[0-9]+$'
-            del_pattern = '^del:[a-zA-Z0-9]+$'
-            pipadd_pattern = '^pipadd:[a-zA-Z0-9]+:[0-9]+$'
-            pipremove_pattern = '^pipremove:[a-zA-Z0-9]+'
-            aptadd_pattern = '^aptadd:[a-zA-Z0-9]+:[0-9]+$'
-            aptremove_pattern = '^aptremove:[a-zA-Z0-9]+'
+            name_pattern = UPLOADER_NAME_REGEX
+            name_pattern_no_beg = name_pattern[1:len(name_pattern)]     # without the initial ^
+            name_pattern_no_end = name_pattern[0:len(name_pattern)-1]   # without the final $
+            name_pattern_no_bds = name_pattern[1:len(name_pattern)-1]   # without the boundaries ^ and $
+
+            pattern = name_pattern_no_end + ':[0-1]:[0-9]+$'
+            del_pattern = '^del:' + name_pattern_no_beg
+            pipadd_pattern = '^pipadd:' + name_pattern_no_bds + ':[0-9]+$'
+            pipremove_pattern = '^pipremove:' + name_pattern_no_beg
+            aptadd_pattern = '^aptadd:' + name_pattern_no_bds + ':[0-9]+$'
+            aptremove_pattern = '^aptremove:' + name_pattern_no_beg
             ts = data.decode('utf-8')
 
             if re.match(pattern, ts):

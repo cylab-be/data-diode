@@ -39,7 +39,7 @@ class StorageZipAndGetZipTest extends TestCase
         parent::tearDown();
     }    
 
-    public function testUploadSuccess() {        
+    public function testStorageZipAndGetZip() {
         if (env("DIODE_IN", true)) {
             // Adding the new uploader via POST (to launch the Python script)
             $json = $this->actingAs($this->user)->post("/uploader", [
@@ -51,11 +51,11 @@ class StorageZipAndGetZipTest extends TestCase
             // Uploading a file
             $this->actingAs($this->user)->json("POST", "upload/" . $obj['id'], [
                 "input_file" => UploadedFile::fake()->image('folder')->size(1),
-                "input_file_full_path" => "upload.jpg",
+                "input_file_full_path" => "folder",
             ])->assertStatus(200);
             
             // Checking the file has been uploaded
-            Storage::disk('diode_local_test')->assertExists('upload.jpg');
+            Storage::disk('diode_local_test')->assertExists('folder');
             
             // Waiting for diodeout            
             sleep(20);
@@ -69,7 +69,7 @@ class StorageZipAndGetZipTest extends TestCase
             $obj = Uploader::where('name', '=', 'test0')->first();
 
             // The file should have been sent to diodeout...
-            Storage::disk('diode_local_test')->assertExists('upload.jpg');
+            Storage::disk('diode_local_test')->assertExists('folder');
 
             // Zipping the file
             $this->actingAs($this->user)->json("POST", "zip", [

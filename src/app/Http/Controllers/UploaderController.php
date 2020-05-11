@@ -130,8 +130,8 @@ class UploaderController extends Controller
             $uploader = Uploader::where('name', '=', $request->input('name'))->first();
             return response()->json($uploader, 201);
         } catch (ProcessFailedException $exception) {
-            $output = $process->getOutput();
-            return response()->json(['message' => $output], 400);
+            //$output = $process->getOutput();
+            return response()->json(['message' => 'Impossible to create a new channel.'], 400);
         }
     }
 
