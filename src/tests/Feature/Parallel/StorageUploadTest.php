@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Parallel;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -11,13 +11,14 @@ use App\User;
 use App\Uploader;
 
 /**
- * Check if the download feature allows to download
- * a file uploaded and sent through the data diode.
+ * Check if the upload feature allows to upload a file
+ * and check that the file is sent through the data 
+ * diode.
  * 
  * This test must be run on diodein first. Then wait ~10 
  * seconds and run it on diodeout. 
  */
-class StorageDownloadTest extends TestCase
+class StorageUploadTest extends TestCase
 {
     private $user;
 
@@ -39,7 +40,7 @@ class StorageDownloadTest extends TestCase
         parent::tearDown();
     }    
 
-    public function testPostStorageDownload() {
+    public function testPostStorageUpload() {
         if (env("DIODE_IN", true)) {
             // Adding the new uploader via POST (to launch the Python script)
             $json = $this->actingAs($this->user)->post("/uploader", [
@@ -65,16 +66,8 @@ class StorageDownloadTest extends TestCase
                  ->assertStatus(204);
 
         } else {
-            // Getting the new uploader
-            $obj = Uploader::where('name', '=', 'test0')->first();
-
             // The file should have been sent to diodeout...
             Storage::disk('diode_local_test')->assertExists('upload.jpg');
-
-            // Downloading the file
-            $response = $this->actingAs($this->user)->json("POST", "download", [
-                "path" => $obj['name'] . "/upload.jpg",
-            ])->assertStatus(200);            
         }
     }
 }

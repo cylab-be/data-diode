@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Parallel;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -12,13 +12,13 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 
 /**
  * Check the adding and removing features concerning a 
- * channel's APT module of do add to and remove it from
+ * channel's PIP module of do add to and remove it from
  * that channel.
  * 
  * This test must be run on diodein first. Then wait ~10 
  * seconds and run it on diodeout. 
  */
-class UploaderAddAndRemoveAptTest extends TestCase
+class UploaderAddAndRemovePipTest extends TestCase
 {
     private $user;
 
@@ -40,7 +40,7 @@ class UploaderAddAndRemoveAptTest extends TestCase
         parent::tearDown();
     }
 
-    public function testPostUploaderAddAndRemoveApt()
+    public function testPostUploaderAddAndRemovePip()
     {
         if (env("DIODE_IN", true)) {
             // Adding the new uploader via POST (to launch the Python script)
@@ -56,44 +56,44 @@ class UploaderAddAndRemoveAptTest extends TestCase
 
         if (env("DIODE_IN", true)) {
 
-            // Checking the uploader's aptport in the DB
-            $this->assertTrue(Uploader::where('name', '=', 'test0')->first()->aptport == 0);
+            // Checking the uploader's pipport in the DB
+            $this->assertTrue(Uploader::where('name', '=', 'test0')->first()->pipport == 0);
 
-            // Adding the APT module to diodeout (only a DB update for diodein)
-            $this->actingAs($this->user)->post("/apt/" . $obj["id"], [
+            // Adding the PIP module to diodeout (only a DB update for diodein)
+            $this->actingAs($this->user)->post("/pip/" . $obj["id"], [
                 "port" => 40001,
             ])->assertStatus(200);
 
-            // Checking the uploader's aptport in the DB
-            $this->assertTrue(Uploader::where('name', '=', 'test0')->first()->aptport == 40001);
+            // Checking the uploader's pipport in the DB
+            $this->assertTrue(Uploader::where('name', '=', 'test0')->first()->pipport == 40001);
         } else {
-            // The APT module should have been added now...
+            // The PIP module should have been added now...
 
-            // Checking the uploader's aptport in the DB
-            $this->assertTrue(Uploader::where('name', '=', 'test0')->first()->aptport == 40001);
+            // Checking the uploader's pipport in the DB
+            $this->assertTrue(Uploader::where('name', '=', 'test0')->first()->pipport == 40001);
 
             // Checking if something is running on port 40001
             $cmd = 'sudo ' . base_path('app/Scripts') . '/get-netstat.sh 40001';
             $process = new Process($cmd);
             try {
-                $process->mustRun();            
+                $process->mustRun();
                 $output = $process->getOutput();
-                $this->assertTrue(strlen($output) != 0); // The APT module should be running
+                $this->assertTrue(strlen($output) != 0); // The PIP module should be running
             } catch (ProcessFailedException $exception) {
                 $output = $process->getOutput();
-                $this->assertTrue(strlen($output) != 0); // The APT module should be running
+                $this->assertTrue(strlen($output) != 0); // The PIP module should be running
             }
         }
 
         if (env("DIODE_IN", true)) {
             sleep(20);
 
-            // Removing the APT module from diodeout (only a DB update for diodein)
-            $this->actingAs($this->user)->delete("/apt/" . $obj["id"])
+            // Removing the PIP module from diodeout (only a DB update for diodein)
+            $this->actingAs($this->user)->delete("/pip/" . $obj["id"])
                  ->assertStatus(200);
 
-            // Checking the uploader's aptport in the DB
-            $this->assertTrue(Uploader::where('name', '=', 'test0')->first()->aptport == 0);
+            // Checking the uploader's pipport in the DB
+            $this->assertTrue(Uploader::where('name', '=', 'test0')->first()->pipport == 0);
 
             sleep(20);
 
@@ -103,10 +103,10 @@ class UploaderAddAndRemoveAptTest extends TestCase
 
         } else {
             sleep(20);
-            // The new uploader having been deleted, the module should have disappeared...
+            // The PIP module should have been removed now...
 
-            // Checking the uploader's aptport in the DB
-            $this->assertTrue(Uploader::where('name', '=', 'test0')->first()->aptport == 0);
+            // Checking the uploader's pipport in the DB
+            $this->assertTrue(Uploader::where('name', '=', 'test0')->first()->pipport == 0);
 
             // Checking if something is running on port 40001
             $cmd = 'sudo ' . base_path('app/Scripts') . '/get-netstat.sh 40001';

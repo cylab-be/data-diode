@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Parallel;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -11,13 +11,13 @@ use App\User;
 use App\Uploader;
 
 /**
- * Check if the zip feature allows to zip
+ * Check if the remove feature allows to remove
  * a file uploaded and sent through the data diode.
  * 
  * This test must be run on diodein first. Then wait ~10 
  * seconds and run it on diodeout. 
  */
-class StorageZipAndGetZipTest extends TestCase
+class StorageRemoveTest extends TestCase
 {
     private $user;
 
@@ -39,7 +39,7 @@ class StorageZipAndGetZipTest extends TestCase
         parent::tearDown();
     }    
 
-    public function testStorageZipAndGetZip() {
+    public function testPostStorageDownload() {
         if (env("DIODE_IN", true)) {
             // Adding the new uploader via POST (to launch the Python script)
             $json = $this->actingAs($this->user)->post("/uploader", [
@@ -51,11 +51,11 @@ class StorageZipAndGetZipTest extends TestCase
             // Uploading a file
             $this->actingAs($this->user)->json("POST", "upload/" . $obj['id'], [
                 "input_file" => UploadedFile::fake()->image('folder')->size(1),
-                "input_file_full_path" => "folder",
+                "input_file_full_path" => "upload.jpg",
             ])->assertStatus(200);
             
             // Checking the file has been uploaded
-            Storage::disk('diode_local_test')->assertExists('folder');
+            Storage::disk('diode_local_test')->assertExists('upload.jpg');
             
             // Waiting for diodeout            
             sleep(20);
@@ -69,31 +69,15 @@ class StorageZipAndGetZipTest extends TestCase
             $obj = Uploader::where('name', '=', 'test0')->first();
 
             // The file should have been sent to diodeout...
-            Storage::disk('diode_local_test')->assertExists('folder');
-
-            // Zipping the file
-            $this->actingAs($this->user)->json("POST", "zip", [
-                "time" => 1,
-                "name" => $obj['name'],
-                "path" => "/" . $obj['name'],
-            ])->assertStatus(200);
-
-            // Checking the new zipped folder has appeared
-            Storage::disk('diode_local')->assertExists('.zips/' . $obj['name'] . '_1.zip');
-
-            // Getting the zipped file
-            $this->actingAs($this->user)->json("POST", "getzip", [
-                "time" => 1,
-                "name" => $obj['name'],
-            ])->assertStatus(200);
+            Storage::disk('diode_local_test')->assertExists('upload.jpg');
 
             // Removing the file
             $this->actingAs($this->user)->json("POST", "remove", [
-                "name" => $obj['name'] . '_1.zip',
-                "path" => '/.zips/' . $obj['name'] . '_1.zip',
+                "name" => "upload.jpg",
+                "path" => "/" . $obj['name'] . '/upload.jpg',
             ])->assertStatus(200);
 
-            $this->assertFalse(Storage::disk('diode_local')->exists('.zips/' . $obj['name'] . '_1.zip'));
+            $this->assertFalse(Storage::disk('diode_local')->exists($obj['name'] . '/upload.jpg'));
         }
     }
 }

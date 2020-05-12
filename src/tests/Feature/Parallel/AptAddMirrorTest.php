@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Parallel;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -10,14 +10,14 @@ use App\Uploader;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * Check if if the downloaded package is in the uploader's
- * folder. Also checks if the package is sent from diodein
+ * Check if if the downloaded mirror is in the uploader's
+ * folder. Also checks if the mirror is sent from diodein
  * to diodeout.
  * 
  * This test must be run on diodein first. Then wait ~10 
  * seconds and run it on diodeout. 
  */
-class PipRunPipTest extends TestCase
+class AptAddMirrorTest extends TestCase
 {
     private $user;
     private $uploader;
@@ -56,26 +56,21 @@ class PipRunPipTest extends TestCase
         parent::tearDown();
     }
 
-    public function testPostPipRunPip()
+    public function testPostAptAddMirror()
     {
         if (env("DIODE_IN", true)) {
-            $this->actingAs($this->user)->json("POST", "pip/package/" . $this->uploader["id"], [
-                "package" => "requests",
+            $this->actingAs($this->user)->json("POST", "apt/mirror/" . $this->uploader["id"], [
+                "url" => 'https://deb.opera.com/opera',
             ])->assertStatus(200);
 
             // Checking that there is the mirror folder
-            Storage::disk('diode_local_test')->assertExists('simple/requests');
-
-            // The requests package takes very little time to be downloaded,
-            // this time will allow its transfer to diodeout before the 
-            // uploader is deleted.
-            sleep(20);
+            Storage::disk('diode_local_test')->assertExists('deb.opera.com');
         } else {
             $contains = false;
             while (Uploader::where('name', '=', 'test0')->count() != 0) {
                 // Diodeout should receive the folder while diodein is sending
                 // it at least once before diodein's test destroys the channel.
-                if (Storage::disk('diode_local_test')->exists('simple/requests')) {
+                if (Storage::disk('diode_local_test')->exists('deb.opera.com')) {
                     $this->assertTrue(true);
                     $contains = true;
                     break;

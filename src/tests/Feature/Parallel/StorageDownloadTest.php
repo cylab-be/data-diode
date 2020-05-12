@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Parallel;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -11,13 +11,13 @@ use App\User;
 use App\Uploader;
 
 /**
- * Check if the remove feature allows to remove
+ * Check if the download feature allows to download
  * a file uploaded and sent through the data diode.
  * 
  * This test must be run on diodein first. Then wait ~10 
  * seconds and run it on diodeout. 
  */
-class StorageRemoveTest extends TestCase
+class StorageDownloadTest extends TestCase
 {
     private $user;
 
@@ -50,7 +50,7 @@ class StorageRemoveTest extends TestCase
 
             // Uploading a file
             $this->actingAs($this->user)->json("POST", "upload/" . $obj['id'], [
-                "input_file" => UploadedFile::fake()->image('folder')->size(1),
+                "input_file" => UploadedFile::fake()->image('upload.jpg')->size(1),
                 "input_file_full_path" => "upload.jpg",
             ])->assertStatus(200);
             
@@ -71,13 +71,10 @@ class StorageRemoveTest extends TestCase
             // The file should have been sent to diodeout...
             Storage::disk('diode_local_test')->assertExists('upload.jpg');
 
-            // Removing the file
-            $this->actingAs($this->user)->json("POST", "remove", [
-                "name" => "upload.jpg",
-                "path" => "/" . $obj['name'] . '/upload.jpg',
-            ])->assertStatus(200);
-
-            $this->assertFalse(Storage::disk('diode_local')->exists($obj['name'] . '/upload.jpg'));
+            // Downloading the file
+            $response = $this->actingAs($this->user)->json("POST", "download", [
+                "path" => $obj['name'] . "/upload.jpg",
+            ])->assertStatus(200);            
         }
     }
 }
