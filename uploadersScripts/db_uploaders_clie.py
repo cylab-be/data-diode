@@ -142,13 +142,13 @@ if __name__ == '__main__':
         
         elif sys.argv[1] == 'help':
             print('%s help\n\tshow this help\n' %sys.argv[0])
-            print('%s add name state port\n\tadd an uploader with:\n\t\tname regex ' + name_pattern + '\n\t\tstate in [0, 1]\n\t\tport in [1025, 65535]\n' %sys.argv[0])
-            print('%s update name state\n\tupdate an uploader\'s state with:\n\t\tname regex ' + name_pattern + '\n\t\tstate in [0, 1]\n' %sys.argv[0])
-            print('%s remove name\n\tremove an uploader with:\n\t\t name regex ' + name_pattern + '\n' %sys.argv[0])
-            print('%s pipadd name port\n\tadd a pip module to an uploader with:\n\t\tname regex ' + name_pattern + '\n\t\tport in [1025, 65535]\n' %sys.argv[0])
-            print('%s pipremove name\n\tremove a pip module from an uploader with:\n\t\tname regex ' + name_pattern + '\n' %sys.argv[0])
-            print('%s aptadd name port\n\tadd an apt module to an uploader with:\n\t\tname regex ' + name_pattern + '\n\t\tport in [1025, 65535]\n' %sys.argv[0])
-            print('%s aptremove name\n\tremove an apt module from an uploader with:\n\t\tname regex ' + name_pattern + '\n' %sys.argv[0])
+            print('%s add name state port\n\tadd an uploader with:\n\t\tname regex %s\n\t\tstate in [0, 1]\n\t\tport in [1025, 65535]\n' %(sys.argv[0], name_pattern))
+            print('%s update name state\n\tupdate an uploader\'s state with:\n\t\tname regex %s\n\t\tstate in [0, 1]\n' %(sys.argv[0], name_pattern))
+            print('%s remove name\n\tremove an uploader with:\n\t\t name regex %s\n' %(sys.argv[0], name_pattern))
+            print('%s pipadd name port\n\tadd a pip module to an uploader with:\n\t\tname regex %s\n\t\tport in [1025, 65535]\n' %(sys.argv[0], name_pattern))
+            print('%s pipremove name\n\tremove a pip module from an uploader with:\n\t\tname regex %s\n' %(sys.argv[0], name_pattern))
+            print('%s aptadd name port\n\tadd an apt module to an uploader with:\n\t\tname regex %s\n\t\tport in [1025, 65535]\n' %(sys.argv[0], name_pattern))
+            print('%s aptremove name\n\tremove an apt module from an uploader with:\n\t\tname regex %s\n' %(sys.argv[0], name_pattern))
     
         elif sys.argv[1] == 'add':
             if not len(sys.argv) == 5:
