@@ -255,7 +255,7 @@ ATTR_LASTVIEW = "LastView"	        	# Last View Date
 ATTR_LASTSEND = "LastSend"	        	# Last Send Date
 
 #=== Valeurs � traiter au sein du fichier .ini in fine ========================
-MinFileRedundancy = 1
+MinFileRedundancy = 2
 
 #=== VARIABLES GLOBALES =======================================================
 
