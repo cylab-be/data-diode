@@ -43719,6 +43719,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
+        ipAddr: String,
         item: Object,
         diodein: Boolean
     },
@@ -43737,10 +43738,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         if (this.item.pipport != 0 && this.item.pipport != undefined) {
             this.pipport = this.item.pipport;
             this.isPipModule = true;
-            var ip = '192.168.102.1';
             var command = 'sudo -H python3 -m pip install --trusted-host';
-            command += ' ' + ip + ' ';
-            command += '-i http://' + ip + ':';
+            command += ' ' + this.ipAddr + ' ';
+            command += '-i http://' + this.ipAddr + ':';
             command += this.item.pipport + '/simple ';
             this.command = command;
         }
@@ -44852,11 +44852,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
-        //items: Array,
-        //statuses: Array,
+        ipAddr: String,
         interval: Number,
         diodein: Boolean,
         maxUploadSize: Number,
@@ -45184,7 +45184,8 @@ var render = function() {
                   "max-upload-size": _vm.maxUploadSize,
                   "max-upload-size-error-message":
                     _vm.maxUploadSizeErrorMessage,
-                  diodein: _vm.diodein
+                  diodein: _vm.diodein,
+                  "ip-addr": _vm.ipAddr
                 },
                 on: { del: _vm.del }
               })
@@ -45372,6 +45373,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
+        ipAddr: String,
         item: Object,
         maxUploadSize: Number,
         maxUploadSizeErrorMessage: String,
@@ -45682,7 +45684,11 @@ var render = function() {
           },
           [
             _c("python-pip", {
-              attrs: { item: _vm.item, diodein: _vm.diodein }
+              attrs: {
+                item: _vm.item,
+                diodein: _vm.diodein,
+                "ip-addr": _vm.ipAddr
+              }
             })
           ],
           1
@@ -45702,7 +45708,11 @@ var render = function() {
           },
           [
             _c("apt-mirror", {
-              attrs: { item: _vm.item, diodein: _vm.diodein }
+              attrs: {
+                item: _vm.item,
+                diodein: _vm.diodein,
+                "ip-addr": _vm.ipAddr
+              }
             })
           ],
           1
@@ -46178,9 +46188,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
+        ipAddr: String,
         item: Object,
         maxUploadSize: Number,
         maxUploadSizeErrorMessage: String,
@@ -46296,7 +46308,8 @@ var render = function() {
           item: _vm.item,
           "max-upload-size": _vm.maxUploadSize,
           "max-upload-size-error-message": _vm.maxUploadSizeErrorMessage,
-          diodein: _vm.diodein
+          diodein: _vm.diodein,
+          "ip-addr": _vm.ipAddr
         },
         on: { stop: _vm.stop, restart: _vm.restart, del: _vm.del }
       })
@@ -49831,6 +49844,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
+        ipAddr: String,
         item: Object,
         diodein: Boolean
     },
@@ -49854,9 +49868,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         if (this.item.aptport != 0 && this.item.aptport != undefined) {
             this.aptport = this.item.aptport;
             this.isAptModule = true;
-            var ip = '192.168.102.1';
             var command = 'deb [trusted=yes] ';
-            command += 'http://' + ip + ':';
+            command += 'http://' + this.ipAddr + ':';
             command += this.item.aptport;
             this.command = command;
         }

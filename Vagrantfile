@@ -19,7 +19,7 @@ Vagrant.configure("2") do |config|
     diodeout.vm.network "forwarded_port", guest: 80, host: 8082, host_ip: "127.0.0.1"
     diodeout.vm.network "forwarded_port", guest: 8000, host: 8083, host_ip: "127.0.0.1"
     diodeout.vm.network "private_network", ip: "192.168.101.2", mac: "AABBCCDDEEFF"
-    diodeout.vm.network "private_network", ip: "192.168.102.1", mac: "00AABBBBAA00"
+    #diodeout.vm.network "private_network", ip: "192.168.102.1", mac: "00AABBBBAA00"
     diodeout.vm.provision "shell", path: "vagrant/diode-out.sh"
   end
 

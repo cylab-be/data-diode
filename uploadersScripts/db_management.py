@@ -1,9 +1,6 @@
 import sqlite3
 from sqlite3 import Error
 
-HOST = '192.168.101.2'
-PORT = 65431
-
 database = r"/var/www/data-diode/src/storage/app/db.sqlite"
 
 sql_uploader_exists = "SELECT * FROM uploaders WHERE name=?;"
@@ -23,6 +20,11 @@ BASEDIR = os.path.abspath(os.path.dirname(__file__))
 # Connect the path with your '.env' file name
 load_dotenv(os.path.join(BASEDIR, '../src/.env'))
 UPLOADER_NAME_REGEX = os.getenv("UPLOADER_NAME_REGEX")
+if (os.getenv("DIODE_IN", "true") == "true"):
+    HOST = os.getenv("DIODE_OUT_IP")
+else:
+    HOST = os.getenv("INTERNAL_IP")
+PORT = 65431
 
 def create_connection(db_file):
     """ create a database connection to the SQLite database

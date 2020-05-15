@@ -108,6 +108,7 @@
 <script>
 export default {
     props: {
+        ipAddr: String,
         item: Object,
         diodein: Boolean,
     },
@@ -125,11 +126,10 @@ export default {
     mounted() {
         if (this.item.pipport != 0 && this.item.pipport != undefined) {
             this.pipport = this.item.pipport
-            this.isPipModule = true
-            var ip = '192.168.102.1'
+            this.isPipModule = true            
             var command = 'sudo -H python3 -m pip install --trusted-host'
-            command += ' ' + ip + ' '
-            command += '-i http://' + ip + ':'
+            command += ' ' + this.ipAddr + ' '
+            command += '-i http://' + this.ipAddr + ':'
             command += this.item.pipport + '/simple '
             this.command = command
         }

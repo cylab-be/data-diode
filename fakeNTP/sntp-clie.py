@@ -2,7 +2,17 @@ import socket
 import subprocess
 import shlex
 
-HOST = '192.168.101.2'
+# .env
+import os
+from dotenv import load_dotenv
+# Get the path to the directory this file is in
+BASEDIR = os.path.abspath(os.path.dirname(__file__))
+# Connect the path with your '.env' file name
+load_dotenv(os.path.join(BASEDIR, '../src/.env'))
+if (os.getenv("DIODE_IN", "true") == "true"):
+    HOST = os.getenv("DIODE_OUT_IP")
+else:
+    HOST = os.getenv("INTERNAL_IP")
 PORT = 65432
 
 def run_command(command):

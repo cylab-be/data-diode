@@ -27,6 +27,7 @@
             v-on:restart="restart"
             v-on:del="del"
             :diodein="diodein"
+            :ip-addr="ipAddr"
         ></param-window>
     </div>
 </template>
@@ -34,6 +35,7 @@
 <script>
 export default {
     props: {
+        ipAddr: String,
         item: Object,
         maxUploadSize: Number,
         maxUploadSizeErrorMessage: String,

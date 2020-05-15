@@ -30,12 +30,14 @@
               :max-upload-size="{{1024 * 1024 * 1024 * env('MAX_UPLOAD_SIZE_GB', 1)}}"
               diodein
               max-upload-size-error-message="{{'Your upload cannot contain a file bigger than ' . env('MAX_UPLOAD_SIZE_GB', 1) . 'GB!'}}"
+              ip-addr="{{env('INTERNAL_IP')}}"
             ></main-modules>
             @else
             <main-modules
               :interval=10000
               :max-upload-size="{{1024 * 1024 * 1024 * env('MAX_UPLOAD_SIZE_GB', 1)}}"
               max-upload-size-error-message="{{'Your upload cannot contain a file bigger than ' . env('MAX_UPLOAD_SIZE_GB', 1) . 'GB!'}}"
+              ip-addr="{{env('INTERNAL_IP')}}"
             ></main-modules>
             @endif
         </div>

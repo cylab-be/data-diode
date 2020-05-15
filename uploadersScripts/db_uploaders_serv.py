@@ -42,7 +42,7 @@ def main():
                    change_uploader_attribute(conn,  sql_change_uploader_state, uploader, state)
                 else:
                     if 1025 <= port and port <= 65535:
-                        result = subprocess.run("sudo /var/www/data-diode/src/app/Scripts/add-supervisor-out.sh %s %d" %(uploader,port), shell=True, stdout=subprocess.PIPE)
+                        result = subprocess.run("sudo /var/www/data-diode/src/app/Scripts/add-supervisor-out.sh %s %d %s" %(uploader,port,HOST), shell=True, stdout=subprocess.PIPE)
                         if result.returncode == 0:
                             insert_uploader(conn, sql_insert_uploader, uploader, state, port)
                             print(result.stdout)

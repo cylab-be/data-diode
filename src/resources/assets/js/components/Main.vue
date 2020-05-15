@@ -34,6 +34,7 @@
                 :max-upload-size="maxUploadSize"
                 :max-upload-size-error-message="maxUploadSizeErrorMessage"
                 :diodein="diodein"
+                :ip-addr="ipAddr"
             >
             </uploader>
         </transition-group>
@@ -51,8 +52,7 @@
 <script>
 export default {
     props: {
-        //items: Array,
-        //statuses: Array,
+        ipAddr: String,
         interval: Number,
         diodein: Boolean,
         maxUploadSize: Number,

@@ -123,6 +123,7 @@ class UploaderController extends Controller
     {
         $cmd = 'sudo /var/www/data-diode/src/app/Scripts/add-supervisor-in.sh ';
         $cmd .= $request->input('name') . ' ' . strval($request->input('port'));
+        $cmd .= ' ' . env("DIODE_OUT_IP");
         $process = new Process($cmd);
         try {
             $process->mustRun();

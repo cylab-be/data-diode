@@ -54,7 +54,6 @@ service supervisord stop
 service supervisord start
 
 python3 -m pip install python-pypi-mirror
-chmod +x /var/www/data-diode/src/app/Scripts/sendpip.sh
 
 python -m pip install python-dotenv
 python3 -m pip install python-dotenv

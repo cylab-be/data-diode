@@ -50,10 +50,10 @@
                 ></upload>
             </span>
             <span v-show="param == 'pip'">
-                <python-pip :item="item" :diodein="diodein"></python-pip>
+                <python-pip :item="item" :diodein="diodein" :ip-addr="ipAddr"></python-pip>
             </span>
             <span v-show="param == 'apt'">
-                <apt-mirror :item="item" :diodein="diodein"></apt-mirror>
+                <apt-mirror :item="item" :diodein="diodein" :ip-addr="ipAddr"></apt-mirror>
             </span>
             <div class="row" :style="{position: 'absolute', bottom: '1em', width: '100%', margin: 'auto'}">
                 <hr class="window-title-bottom-bar"/>
@@ -69,6 +69,7 @@
 <script>
 export default {
     props: {
+        ipAddr: String,
         item: Object,
         maxUploadSize: Number,
         maxUploadSizeErrorMessage: String,
